@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Series details — StreamVault">
+  <title>StreamVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body data-page="series">
+
+  <!-- ── Navigation ──────────────────────────────────────── -->
+  <nav class="nav" id="navbar">
+    <div class="nav-logo">
+      <a href="./index.html">STREAM<span>VAULT</span></a>
+    </div>
+    <div class="nav-links">
+      <a href="./index.html" class="nav-link">Home</a>
+    </div>
+    <div class="nav-actions">
+      <a href="./index.html" class="btn-icon" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Series Backdrop + Info ──────────────────────────── -->
+  <div class="series-hero">
+    <div class="series-backdrop" id="seriesBackdrop" role="img" aria-label="Series backdrop"></div>
+    <div class="series-backdrop-overlay" aria-hidden="true"></div>
+  </div>
+
+  <section class="series-info-section">
+
+    <!-- Poster -->
+    <div class="series-poster-wrap" id="seriesPoster">
+      <!-- Skeleton -->
+      <div class="skeleton skeleton-poster" style="width:200px;aspect-ratio:2/3;border-radius:10px"></div>
+    </div>
+
+    <!-- Details -->
+    <div class="series-details">
+      <!-- Channel badge -->
+      <div class="series-channel-badge" id="seriesChannelBadge">
+        <div class="skeleton skeleton-text short" style="width:60px;height:12px"></div>
+      </div>
+
+      <!-- Title -->
+      <h1 class="series-title" id="seriesTitle">
+        <div class="skeleton skeleton-title" style="width:300px;height:44px"></div>
+      </h1>
+
+      <!-- Meta -->
+      <div class="series-meta-row" id="seriesMeta">
+        <div class="skeleton skeleton-text short" style="width:220px;height:13px"></div>
+      </div>
+
+      <!-- Genres -->
+      <div class="series-genres" id="seriesGenres">
+        <div class="skeleton skeleton-text short" style="width:180px;height:24px;border-radius:20px"></div>
+      </div>
+
+      <!-- Overview -->
+      <p class="series-overview" id="seriesOverview">
+        <span class="skeleton skeleton-text" style="display:block;margin-bottom:.5rem"></span>
+        <span class="skeleton skeleton-text" style="display:block;margin-bottom:.5rem;width:85%"></span>
+        <span class="skeleton skeleton-text short" style="display:block;width:60%"></span>
+      </p>
+
+      <!-- CTA buttons -->
+      <div class="series-cta" id="seriesCta">
+        <div class="skeleton skeleton-btn"></div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Episode List ─────────────────────────────────────── -->
+  <section class="episodes-section">
+    <h2>Episodes</h2>
+    <div id="episodesContainer">
+      <!-- Skeleton episode cards -->
+      <div class="season-tabs">
+        <div class="skeleton" style="width:90px;height:35px;border-radius:6px"></div>
+        <div class="skeleton" style="width:90px;height:35px;border-radius:6px"></div>
+      </div>
+      <div class="episodes-grid">
+        <div class="skeleton" style="height:68px;border-radius:8px"></div>
+        <div class="skeleton" style="height:68px;border-radius:8px"></div>
+        <div class="skeleton" style="height:68px;border-radius:8px"></div>
+        <div class="skeleton" style="height:68px;border-radius:8px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ──────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>
+      Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a>
+      &nbsp;·&nbsp; StreamVault
+    </p>
+  </footer>
+
+  <script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>
