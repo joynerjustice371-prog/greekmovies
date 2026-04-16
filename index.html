@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="StreamVault — Browse your favourite TV series">
+  <title>StreamVault</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body data-page="home">
+
+  <!-- ── Navigation ──────────────────────────────────────── -->
+  <nav class="nav" id="navbar">
+    <div class="nav-logo">
+      <a href="./index.html">STREAM<span>VAULT</span></a>
+    </div>
+    <div class="nav-links">
+      <a href="./index.html" class="nav-link active">Home</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn-icon" id="searchToggle" aria-label="Search (Ctrl+K)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Search Overlay ──────────────────────────────────── -->
+  <div class="search-overlay" id="searchOverlay" role="dialog" aria-label="Search">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search series, channels, genres…" autocomplete="off" spellcheck="false">
+      <button class="btn-icon search-close" id="searchClose" aria-label="Close search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="search-results" id="searchResults" aria-live="polite"></div>
+  </div>
+
+  <!-- ── Hero Section ────────────────────────────────────── -->
+  <section class="hero" id="hero" aria-label="Featured series">
+    <div class="hero-backdrop" id="heroBg" role="img" aria-label="Featured backdrop"></div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-content" id="heroContent">
+      <!-- Skeleton while loading -->
+      <div class="hero-channel">
+        <div class="skeleton skeleton-text short" style="width:80px;height:14px;border-radius:2px"></div>
+      </div>
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton skeleton-text" style="margin-bottom:.5rem"></div>
+      <div class="skeleton skeleton-text short"></div>
+      <div class="skeleton-buttons" style="margin-top:1.5rem">
+        <div class="skeleton skeleton-btn"></div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+    </div>
+    <div class="hero-dots" id="heroDots" aria-label="Featured series navigation"></div>
+  </section>
+
+  <!-- ── Main Content ────────────────────────────────────── -->
+  <main class="main-content" id="mainContent">
+
+    <!-- Category Filter Chips -->
+    <div class="categories-bar" id="categoriesBar" aria-label="Filter by channel">
+      <div class="categories-scroll">
+        <button class="category-chip active" data-channel="" aria-pressed="true">All</button>
+        <!-- Dynamic channel chips injected by JS -->
+      </div>
+    </div>
+
+    <!-- Series Sections (populated by JS) -->
+    <div id="sections">
+      <!-- Loading skeleton row -->
+      <div class="section visible">
+        <div class="section-header">
+          <div class="skeleton skeleton-section-title"></div>
+        </div>
+        <div class="series-row">
+          <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+          <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+          <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+          <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+          <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+          <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Footer ──────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>
+      Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a>
+      &nbsp;·&nbsp; StreamVault
+    </p>
+  </footer>
+
+  <script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>
