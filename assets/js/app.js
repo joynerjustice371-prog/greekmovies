@@ -79,7 +79,7 @@ class DataManager {
   async load() {
     if (this._raw) return this._raw;
     try {
-      const res = await fetch(`${BASE_URL}data/series.json`);
+      const res = await fetch('data/series.json');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       this._raw = await res.json();
       return this._raw;
