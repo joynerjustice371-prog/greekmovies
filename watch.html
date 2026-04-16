@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Watch — StreamVault">
+  <title>StreamVault — Watch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body data-page="watch">
+
+  <!-- ── Navigation ──────────────────────────────────────── -->
+  <nav class="nav scrolled" id="navbar">
+    <div class="nav-logo">
+      <a href="./index.html">STREAM<span>VAULT</span></a>
+    </div>
+    <div class="nav-links">
+      <a href="./index.html" class="nav-link">Home</a>
+    </div>
+    <div class="nav-actions">
+      <a href="./index.html" class="btn-icon" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ── Watch Page ───────────────────────────────────────── -->
+  <div class="watch-page">
+
+    <!-- Player -->
+    <div class="player-wrapper" id="playerWrapper">
+      <div class="player-loading" id="playerLoading">
+        <div class="spinner"></div>
+        <span>Loading player…</span>
+      </div>
+    </div>
+
+    <!-- Player Controls Bar -->
+    <div class="watch-controls">
+      <div class="watch-controls-inner">
+
+        <!-- Server switcher -->
+        <span class="controls-label">Server</span>
+        <div class="player-btns" id="playerBtns">
+          <!-- Injected by JS -->
+          <div class="skeleton" style="width:80px;height:32px;border-radius:6px"></div>
+          <div class="skeleton" style="width:80px;height:32px;border-radius:6px"></div>
+        </div>
+
+        <div class="controls-divider" aria-hidden="true"></div>
+
+        <!-- Episode selector -->
+        <span class="controls-label">Episode</span>
+        <select id="episodeSelect" class="episode-select" aria-label="Select episode">
+          <option>Loading…</option>
+        </select>
+
+        <!-- Prev / Next buttons -->
+        <div class="nav-ep-btns">
+          <button class="nav-ep-btn" id="prevEpBtn" aria-label="Previous episode" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Prev
+          </button>
+          <button class="nav-ep-btn" id="nextEpBtn" aria-label="Next episode" disabled>
+            Next
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Watch Meta (title + episode + back link) -->
+    <div class="watch-meta">
+      <h1 class="watch-title" id="watchTitle">
+        <span class="skeleton" style="width:200px;height:28px;display:inline-block;border-radius:4px"></span>
+      </h1>
+      <span class="watch-ep-badge" id="watchEpBadge">S1 E1</span>
+      <a href="./series.html" class="watch-series-link" id="watchSeriesLink" aria-label="Back to series page">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        All Episodes
+      </a>
+    </div>
+
+    <!-- All Episodes Panel (current season) -->
+    <div class="all-episodes-panel" id="allEpisodesPanel">
+      <!-- Injected by JS -->
+      <h3>Episodes</h3>
+      <div class="episodes-grid">
+        <div class="skeleton" style="height:68px;border-radius:8px"></div>
+        <div class="skeleton" style="height:68px;border-radius:8px"></div>
+        <div class="skeleton" style="height:68px;border-radius:8px"></div>
+        <div class="skeleton" style="height:68px;border-radius:8px"></div>
+      </div>
+    </div>
+
+  </div><!-- /.watch-page -->
+
+  <!-- ── Footer ──────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>
+      Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a>
+      &nbsp;·&nbsp; StreamVault
+    </p>
+  </footer>
+
+  <script type="module" src="./assets/js/app.js"></script>
+</body>
+</html>
