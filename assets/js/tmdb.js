@@ -3,7 +3,7 @@
    Replace TMDB_API_KEY with your key from themoviedb.org
    ============================================================ */
 
-const TMDB_API_KEY  = "YOUR_TMDB_API_KEY";
+const TMDB_API_KEY  = "f6aeb62fa60713990edbc2894a8d1d5d";
 const TMDB_BASE     = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p";
 
