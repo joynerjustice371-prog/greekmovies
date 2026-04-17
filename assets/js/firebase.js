@@ -32,12 +32,13 @@ import {
 
 /* ── Your Firebase project config ─────────────────────────── */
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId:             "YOUR_APP_ID",
+  apiKey: "AIzaSyCCvlyYUwn4KSPCrjzJ8gw1SIXcRd4jcEE",
+  authDomain: "my-site-greek-m.firebaseapp.com",
+  projectId: "my-site-greek-m",
+  storageBucket: "my-site-greek-m.firebasestorage.app",
+  messagingSenderId: "1059332450786",
+  appId: "1:1059332450786:web:d321b95a3e9951c28ef1bb",
+  measurementId: "G-VBPHLPBPYT"
 };
 
 const app  = initializeApp(firebaseConfig);
