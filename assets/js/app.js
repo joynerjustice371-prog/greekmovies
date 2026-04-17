@@ -148,123 +148,223 @@ const ICONS = {
    Shows: "Σύνδεση" when logged out
    Shows: Avatar + dropdown (Προφίλ, Αγαπημένα, Watchlist, Αποσύνδεση) when logged in
    ══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   AUTH UI CONTROLLER  v2.1  — FIXED
+   ─────────────────────────────────────────────────────────
+   ROOT CAUSE OF BUG (prev version):
+     _updateNavUI() re-queried DOM with $() after an async
+     getUserProfile() call. If Firestore was slow/unconfigured,
+     the UI update was delayed or silently dropped. Also stored
+     no element refs, so late DOM queries could fail.
+
+   FIXES:
+     ① Store direct element refs during _injectNavUI() — never
+        re-query with $() in the update path
+     ② Split into _setLoggedIn() / _setLoggedOut() — called
+        immediately on auth change, not after async profile load
+     ③ Two-phase update: show user instantly (Firebase user obj),
+        enhance with Firestore username AFTER it resolves
+     ④ Guard against double-init (re-navigate on SPA flows)
+     ⑤ Use `hidden` attribute — more reliable than style.display
+   ══════════════════════════════════════════════════════════ */
 class AuthController {
   constructor() {
-    this._modal = null;
-    this._tab   = 'login';
+    this._modal   = null;
+    this._tab     = 'login';
+
+    /* ── Stored element refs (set in _injectNavUI) ──────── */
+    this.$wrap     = null;   // #authNavWrap
+    this.$loginBtn = null;   // "Σύνδεση" button
+    this.$userMenu = null;   // avatar + dropdown container
+    this.$initials = null;   // avatar letter
+    this.$username = null;   // dropdown header username
+    this.$dropdown = null;   // the dropdown panel
+    this.$avatarBtn= null;   // avatar click target
   }
 
+  /* ── Bootstrap ──────────────────────────────────────────── */
   init() {
     this._injectNavUI();
+
     fb.onAuth(async (user) => {
-      _currentUser    = user;
-      _currentProfile = user ? await fb.getUserProfile(user.uid) : null;
-      this._updateNavUI();
+      _currentUser = user;
+
+      if (user) {
+        /* Step 1: update UI immediately with what Firebase gives us */
+        const quickName = user.displayName
+          || user.email?.split('@')[0]
+          || '?';
+        this._setLoggedIn(quickName);
+
+        /* Step 2: enhance with Firestore username (non-blocking) */
+        try {
+          _currentProfile = await fb.getUserProfile(user.uid);
+          if (_currentProfile?.username) {
+            this._setLoggedIn(_currentProfile.username);
+          }
+        } catch (e) {
+          /* Profile load failed — nav already shows basic name, fine */
+          console.warn('[AuthController] getUserProfile:', e.message);
+        }
+      } else {
+        _currentProfile = null;
+        this._setLoggedOut();
+      }
+
       document.dispatchEvent(new CustomEvent('authStateChanged', {
         detail: { user, profile: _currentProfile },
       }));
     });
-    // Allow other parts of the app to open auth modal
+
+    /* Allow other modules to open the modal */
     document.addEventListener('openAuthModal', () => this._openModal());
   }
 
+  /* ── DOM Injection ──────────────────────────────────────── */
   _injectNavUI() {
-    const actions = $('#nav-actions');
+    const actions = document.getElementById('nav-actions');
     if (!actions) return;
 
+    /* Guard: remove previous wrap if controller is re-initialised */
+    document.getElementById('authNavWrap')?.remove();
+
     const wrap = document.createElement('div');
-    wrap.id = 'authNavWrap';
+    wrap.id        = 'authNavWrap';
     wrap.className = 'auth-nav-wrap';
     wrap.innerHTML = `
-      <!-- Logged-out state -->
+      <!-- ── Logged-OUT state ── -->
       <button id="navLoginBtn" class="nav-login-btn">Σύνδεση</button>
 
-      <!-- Logged-in state (avatar + dropdown) -->
-      <div class="nav-user-menu" id="navUserMenu" style="display:none">
-        <button class="nav-avatar-btn" id="navAvatarBtn" aria-label="Μενού χρήστη" aria-expanded="false">
+      <!-- ── Logged-IN state ── -->
+      <div id="navUserMenu" class="nav-user-menu" hidden>
+
+        <!-- Avatar button -->
+        <button class="nav-avatar-btn" id="navAvatarBtn"
+                aria-label="Μενού χρήστη" aria-expanded="false">
           <span class="nav-avatar-initials" id="navAvatarInitials">?</span>
         </button>
+
+        <!-- Dropdown -->
         <div class="nav-dropdown" id="navDropdown" role="menu">
-          <div class="nav-dropdown-header" id="navDropdownHeader">
+          <div class="nav-dropdown-header">
             <span class="nav-dropdown-username" id="navDropdownUsername"></span>
           </div>
           <a class="nav-dropdown-item" href="./profile.html" role="menuitem">
-            ${ICONS.user} Προφίλ
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" width="15" height="15">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Προφίλ
           </a>
-          <a class="nav-dropdown-item" id="navDropFavorites" href="./profile.html#favorites" role="menuitem">
-            ${ICONS.heart} Αγαπημένα
+          <a class="nav-dropdown-item" href="./profile.html#favorites" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5
+                       5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78
+                       1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Αγαπημένα
           </a>
-          <a class="nav-dropdown-item" id="navDropWatchlist" href="./profile.html#watchlist" role="menuitem">
-            ${ICONS.bookmark} Watchlist
+          <a class="nav-dropdown-item" href="./profile.html#watchlist" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            Watchlist
           </a>
           <div class="nav-dropdown-divider"></div>
-          <button class="nav-dropdown-item nav-dropdown-logout" id="navLogoutBtn" role="menuitem">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <button class="nav-dropdown-item nav-dropdown-logout"
+                  id="navLogoutBtn" role="menuitem">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" width="15" height="15">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
               <polyline points="16 17 21 12 16 7"/>
               <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
             Αποσύνδεση
           </button>
-        </div>
-      </div>`;
+        </div><!-- /.nav-dropdown -->
+      </div><!-- /#navUserMenu -->`;
 
     actions.appendChild(wrap);
 
-    // Wire up login button
-    $('#navLoginBtn', wrap)?.addEventListener('click', () => this._openModal());
+    /* ── Store refs — SINGLE source of truth for all updates ── */
+    this.$wrap      = wrap;
+    this.$loginBtn  = wrap.querySelector('#navLoginBtn');
+    this.$userMenu  = wrap.querySelector('#navUserMenu');
+    this.$initials  = wrap.querySelector('#navAvatarInitials');
+    this.$username  = wrap.querySelector('#navDropdownUsername');
+    this.$dropdown  = wrap.querySelector('#navDropdown');
+    this.$avatarBtn = wrap.querySelector('#navAvatarBtn');
 
-    // Wire up avatar toggle
-    const avatarBtn = $('#navAvatarBtn', wrap);
-    const dropdown  = $('#navDropdown',  wrap);
-    avatarBtn?.addEventListener('click', (e) => {
+    /* ── Event wiring (all via stored refs, not re-query) ───── */
+
+    this.$loginBtn.addEventListener('click', () => this._openModal());
+
+    this.$avatarBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const open = dropdown.classList.toggle('open');
-      avatarBtn.setAttribute('aria-expanded', String(open));
+      const isOpen = this.$dropdown.classList.toggle('open');
+      this.$avatarBtn.setAttribute('aria-expanded', String(isOpen));
     });
 
-    // Close dropdown on outside click
+    /* Close dropdown on any outside click */
     document.addEventListener('click', (e) => {
-      if (!wrap.contains(e.target)) {
-        dropdown?.classList.remove('open');
-        avatarBtn?.setAttribute('aria-expanded', 'false');
+      if (this.$wrap && !this.$wrap.contains(e.target)) {
+        this.$dropdown?.classList.remove('open');
+        this.$avatarBtn?.setAttribute('aria-expanded', 'false');
       }
     });
 
-    // Logout
-    $('#navLogoutBtn', wrap)?.addEventListener('click', async () => {
-      dropdown?.classList.remove('open');
-      await fb.logout();
-      toast('Αποσυνδεθήκατε.', 'info');
+    /* Keyboard: Escape closes dropdown */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.$dropdown?.classList.remove('open');
+        this.$avatarBtn?.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    /* Logout */
+    wrap.querySelector('#navLogoutBtn').addEventListener('click', async () => {
+      this.$dropdown?.classList.remove('open');
+      try {
+        await fb.logout();
+        toast('Αποσυνδεθήκατε.', 'info');
+      } catch (e) {
+        toast('Σφάλμα αποσύνδεσης: ' + e.message, 'error');
+      }
     });
   }
 
-  _updateNavUI() {
-    const loginBtn   = $('#navLoginBtn');
-    const userMenu   = $('#navUserMenu');
-    const initials   = $('#navAvatarInitials');
-    const usernameEl = $('#navDropdownUsername');
+  /* ── UI State: Logged IN ────────────────────────────────── */
+  _setLoggedIn(name) {
+    if (!this.$loginBtn) return; /* guard: nav not injected yet */
 
-    if (_currentUser) {
-      loginBtn?.style.setProperty  && (loginBtn.style.display = 'none');
-      if (loginBtn) loginBtn.style.display = 'none';
-      if (userMenu) userMenu.style.display = 'block';
-      const name = _currentProfile?.username ?? _currentUser.email?.split('@')[0] ?? '?';
-      if (initials)   initials.textContent   = name.charAt(0).toUpperCase();
-      if (usernameEl) usernameEl.textContent  = name;
-    } else {
-      if (loginBtn) loginBtn.style.display = 'inline-flex';
-      if (userMenu) userMenu.style.display = 'none';
-    }
+    this.$loginBtn.hidden = true;
+    this.$userMenu.hidden = false;
+
+    const display = String(name || '?');
+    this.$initials.textContent = display.charAt(0).toUpperCase();
+    this.$username.textContent = display;
   }
 
-  /* ── Auth Modal ────────────────────────────────────────── */
+  /* ── UI State: Logged OUT ───────────────────────────────── */
+  _setLoggedOut() {
+    if (!this.$loginBtn) return;
+
+    this.$loginBtn.hidden = false;
+    this.$userMenu.hidden = true;
+    this.$dropdown?.classList.remove('open');
+    this.$avatarBtn?.setAttribute('aria-expanded', 'false');
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     AUTH MODAL
+     ══════════════════════════════════════════════════════════ */
   _openModal(tab = 'login') {
     this._tab = tab;
     this._modal?.remove();
 
     const overlay = document.createElement('div');
-    overlay.id = 'authModal';
+    overlay.id        = 'authModal';
     overlay.className = 'auth-overlay';
     overlay.innerHTML = this._buildModalHTML(tab);
     document.body.appendChild(overlay);
@@ -284,16 +384,20 @@ class AuthController {
 
         ${!isForgot ? `
         <div class="auth-tabs">
-          <button class="auth-tab${isLogin ? ' auth-tab-active' : ''}" data-tab="login">Σύνδεση</button>
+          <button class="auth-tab${isLogin    ? ' auth-tab-active' : ''}" data-tab="login">Σύνδεση</button>
           <button class="auth-tab${isRegister ? ' auth-tab-active' : ''}" data-tab="register">Εγγραφή</button>
         </div>
 
         <button id="googleSignIn" class="auth-google-btn">
           <svg width="18" height="18" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26
+              1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23
+              1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07
+              H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09
+              14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
           Συνέχεια με Google
         </button>
@@ -301,22 +405,35 @@ class AuthController {
         <div class="auth-divider"><span>ή με email</span></div>
 
         <div id="authFormWrap">
-          ${isRegister ? `<input id="authUsername" type="text" placeholder="Ψευδώνυμο" autocomplete="username" class="auth-input">` : ''}
-          <input id="authEmail" type="email" placeholder="Email" autocomplete="email" class="auth-input">
-          <input id="authPassword" type="password" placeholder="Κωδικός" autocomplete="${isLogin ? 'current-password' : 'new-password'}" class="auth-input">
+          ${isRegister
+            ? `<input id="authUsername" type="text" placeholder="Ψευδώνυμο"
+                      autocomplete="username" class="auth-input">`
+            : ''}
+          <input id="authEmail" type="email" placeholder="Email"
+                 autocomplete="email" class="auth-input">
+          <input id="authPassword" type="password" placeholder="Κωδικός"
+                 autocomplete="${isLogin ? 'current-password' : 'new-password'}"
+                 class="auth-input">
           <p id="authError" class="auth-error" style="display:none"></p>
           <button id="authSubmit" class="auth-submit-btn">
             ${isLogin ? 'Σύνδεση' : 'Δημιουργία Λογαριασμού'}
           </button>
-          ${isLogin ? `<button class="auth-forgot-link" id="authForgotLink">Ξεχάσατε τον κωδικό;</button>` : ''}
+          ${isLogin
+            ? `<button class="auth-forgot-link" id="authForgotLink">
+                 Ξεχάσατε τον κωδικό;
+               </button>`
+            : ''}
         </div>
-        ` : `
-        <!-- Forgot Password View -->
+
+        ` : /* ── Forgot Password view ── */ `
         <div class="auth-forgot-view">
           <h3 class="auth-forgot-title">Επαναφορά Κωδικού</h3>
-          <p class="auth-forgot-desc">Εισάγετε το email σας και θα σας στείλουμε σύνδεσμο επαναφοράς.</p>
-          <input id="forgotEmail" type="email" placeholder="Email" autocomplete="email" class="auth-input">
-          <p id="forgotError" class="auth-error" style="display:none"></p>
+          <p class="auth-forgot-desc">
+            Εισάγετε το email σας και θα σας στείλουμε σύνδεσμο επαναφοράς.
+          </p>
+          <input id="forgotEmail" type="email" placeholder="Email"
+                 autocomplete="email" class="auth-input">
+          <p id="forgotError"   class="auth-error"   style="display:none"></p>
           <p id="forgotSuccess" class="auth-success" style="display:none"></p>
           <button id="forgotSubmit" class="auth-submit-btn">Αποστολή Email</button>
           <button class="auth-forgot-link" id="backToLogin">← Πίσω στη Σύνδεση</button>
@@ -326,34 +443,41 @@ class AuthController {
   }
 
   _wireModal(overlay) {
-    // Close on backdrop click or close button
+    /* Close */
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
     overlay.querySelector('#authClose')?.addEventListener('click', () => overlay.remove());
 
-    // Tab switching
+    /* Tab switch */
     overlay.querySelectorAll('.auth-tab').forEach(btn => {
       btn.addEventListener('click', () => this._openModal(btn.dataset.tab));
     });
 
-    // Forgot password link
+    /* Forgot / back links */
     overlay.querySelector('#authForgotLink')?.addEventListener('click', () => this._openModal('forgot'));
-    overlay.querySelector('#backToLogin')?.addEventListener('click', () => this._openModal('login'));
+    overlay.querySelector('#backToLogin')?.addEventListener('click',    () => this._openModal('login'));
 
-    // Google
+    /* Google sign-in */
     overlay.querySelector('#googleSignIn')?.addEventListener('click', async () => {
       try {
         await fb.loginWithGoogle();
         overlay.remove();
         toast('Συνδεθήκατε με Google! 🎉', 'success');
-      } catch (e) { this._showError(e.message); }
+      } catch (e) {
+        this._showError(this._mapError(e));
+      }
     });
 
-    // Email submit
+    /* Email submit */
     overlay.querySelector('#authSubmit')?.addEventListener('click', async () => {
       const email    = overlay.querySelector('#authEmail')?.value?.trim();
       const password = overlay.querySelector('#authPassword')?.value;
       const username = overlay.querySelector('#authUsername')?.value?.trim();
-      if (!email || !password) { this._showError('Συμπληρώστε email και κωδικό.'); return; }
+
+      if (!email || !password) {
+        this._showError('Συμπληρώστε email και κωδικό.');
+        return;
+      }
+
       try {
         if (this._tab === 'register') {
           if (!username) { this._showError('Συμπληρώστε ψευδώνυμο.'); return; }
@@ -365,42 +489,26 @@ class AuthController {
         }
         overlay.remove();
       } catch (e) {
-        const map = {
-          'auth/user-not-found':       'Δεν βρέθηκε χρήστης με αυτό το email.',
-          'auth/wrong-password':       'Λανθασμένος κωδικός.',
-          'auth/invalid-credential':   'Λανθασμένο email ή κωδικός.',
-          'auth/email-already-in-use': 'Το email χρησιμοποιείται ήδη.',
-          'auth/weak-password':        'Ο κωδικός πρέπει να έχει τουλάχιστον 6 χαρακτήρες.',
-          'auth/invalid-email':        'Μη έγκυρο email.',
-          'auth/too-many-requests':    'Πολλές αποτυχημένες προσπάθειες. Δοκιμάστε αργότερα.',
-        };
-        this._showError(map[e.code] ?? e.message);
+        this._showError(this._mapError(e));
       }
     });
 
-    // Forgot password submit
+    /* Forgot password submit */
     overlay.querySelector('#forgotSubmit')?.addEventListener('click', async () => {
       const email = overlay.querySelector('#forgotEmail')?.value?.trim();
       if (!email) { this._showForgotError('Εισάγετε το email σας.'); return; }
       try {
         await fb.forgotPassword(email);
-        const successEl = overlay.querySelector('#forgotSuccess');
-        if (successEl) {
-          successEl.textContent = `Στάλθηκε email επαναφοράς στο ${email}!`;
-          successEl.style.display = 'block';
-        }
-        const errEl = overlay.querySelector('#forgotError');
-        if (errEl) errEl.style.display = 'none';
+        const s = overlay.querySelector('#forgotSuccess');
+        const err = overlay.querySelector('#forgotError');
+        if (s)   { s.textContent = `Στάλθηκε email επαναφοράς στο ${email}!`; s.style.display = 'block'; }
+        if (err) { err.style.display = 'none'; }
       } catch (e) {
-        const map = {
-          'auth/user-not-found': 'Δεν βρέθηκε λογαριασμός με αυτό το email.',
-          'auth/invalid-email':  'Μη έγκυρο email.',
-        };
-        this._showForgotError(map[e.code] ?? e.message);
+        this._showForgotError(this._mapError(e));
       }
     });
 
-    // Enter key support
+    /* Enter key shortcut */
     overlay.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         overlay.querySelector('#authSubmit')?.click();
@@ -408,6 +516,19 @@ class AuthController {
       }
       if (e.key === 'Escape') overlay.remove();
     });
+  }
+
+  _mapError(e) {
+    const map = {
+      'auth/user-not-found':       'Δεν βρέθηκε χρήστης με αυτό το email.',
+      'auth/wrong-password':       'Λανθασμένος κωδικός.',
+      'auth/invalid-credential':   'Λανθασμένο email ή κωδικός.',
+      'auth/email-already-in-use': 'Το email χρησιμοποιείται ήδη.',
+      'auth/weak-password':        'Ο κωδικός πρέπει να έχει τουλάχιστον 6 χαρακτήρες.',
+      'auth/invalid-email':        'Μη έγκυρο email.',
+      'auth/too-many-requests':    'Πολλές αποτυχημένες προσπάθειες. Δοκιμάστε αργότερα.',
+    };
+    return map[e.code] ?? e.message;
   }
 
   _showError(msg) {
@@ -420,6 +541,7 @@ class AuthController {
     if (el) { el.textContent = msg; el.style.display = 'block'; }
   }
 }
+
 
 /* ══════════════════════════════════════════════════════════
    DATA MANAGER
