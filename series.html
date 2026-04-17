@@ -1,27 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Series details — StreamVault">
+  <meta name="description" content="Λεπτομέρειες σειράς — StreamVault">
   <title>StreamVault</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    /* ── User-action buttons ── */
+    .series-user-actions {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      flex-wrap: wrap;
+      margin-top: .75rem;
+    }
+
+    /* ── Star rating ── */
+    .star-rating {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .star-btn {
+      background: none;
+      border: none;
+      padding: 2px;
+      cursor: pointer;
+      color: var(--text-4);
+      transition: color .18s, transform .18s;
+      line-height: 1;
+    }
+    .star-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+      display: block;
+    }
+    .star-btn.active,
+    .star-btn.hover { color: var(--gold); transform: scale(1.15); }
+    .star-label {
+      font-size: .75rem;
+      color: var(--text-3);
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+
+    /* ── Comment item ── */
+    .comment-item {
+      padding: .85rem 1rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+    }
+    .comment-header {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: .35rem;
+    }
+    .comment-user {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text-1);
+    }
+    .comment-date {
+      font-size: .72rem;
+      color: var(--text-4);
+      margin-left: auto;
+    }
+    .comment-text {
+      font-size: .85rem;
+      color: var(--text-2);
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ── Comments section wrapper ── */
+    .comments-section { padding: 0 0 2.5rem; }
+    .comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: .65rem;
+    }
+
+    /* ── Section wrapper for user content ── */
+    .series-user-section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 4vw 0.5rem;
+    }
+    .series-user-section-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      letter-spacing: .06em;
+      color: var(--text-2);
+      margin-bottom: 1rem;
+    }
+  </style>
 </head>
 <body data-page="series">
 
-  <!-- ── Navigation ──────────────────────────────────────── -->
+  <!-- ── Navigation ─────────────────────────────────────────── -->
   <nav class="nav" id="navbar">
     <div class="nav-logo">
       <a href="./index.html">STREAM<span>VAULT</span></a>
     </div>
     <div class="nav-links">
-      <a href="./index.html" class="nav-link">Home</a>
+      <a href="./index.html" class="nav-link">Αρχική Σελίδα</a>
     </div>
-    <div class="nav-actions">
-      <a href="./index.html" class="btn-icon" aria-label="Back to home">
+    <!-- PART 5: Auth injected here -->
+    <div class="nav-actions" id="nav-actions">
+      <a href="./index.html" class="btn-icon" aria-label="Επιστροφή στην αρχική">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="15 18 9 12 15 6"/>
         </svg>
@@ -29,63 +123,64 @@
     </div>
   </nav>
 
-  <!-- ── Series Backdrop + Info ──────────────────────────── -->
+  <!-- ── Series Backdrop ────────────────────────────────────── -->
   <div class="series-hero">
-    <div class="series-backdrop" id="seriesBackdrop" role="img" aria-label="Series backdrop"></div>
+    <div class="series-backdrop" id="seriesBackdrop" role="img" aria-label="Backdrop σειράς"></div>
     <div class="series-backdrop-overlay" aria-hidden="true"></div>
   </div>
 
+  <!-- ── Series Info ────────────────────────────────────────── -->
   <section class="series-info-section">
 
     <!-- Poster -->
     <div class="series-poster-wrap" id="seriesPoster">
-      <!-- Skeleton -->
       <div class="skeleton skeleton-poster" style="width:200px;aspect-ratio:2/3;border-radius:10px"></div>
     </div>
 
     <!-- Details -->
     <div class="series-details">
-      <!-- Channel badge -->
+
       <div class="series-channel-badge" id="seriesChannelBadge">
         <div class="skeleton skeleton-text short" style="width:60px;height:12px"></div>
       </div>
 
-      <!-- Title -->
       <h1 class="series-title" id="seriesTitle">
         <div class="skeleton skeleton-title" style="width:300px;height:44px"></div>
       </h1>
 
-      <!-- Meta -->
       <div class="series-meta-row" id="seriesMeta">
         <div class="skeleton skeleton-text short" style="width:220px;height:13px"></div>
       </div>
 
-      <!-- Genres -->
       <div class="series-genres" id="seriesGenres">
         <div class="skeleton skeleton-text short" style="width:180px;height:24px;border-radius:20px"></div>
       </div>
 
-      <!-- Overview -->
+      <!-- PART 2 FIX: overview pulled from data.overview → tmdb.overview -->
       <p class="series-overview" id="seriesOverview">
         <span class="skeleton skeleton-text" style="display:block;margin-bottom:.5rem"></span>
         <span class="skeleton skeleton-text" style="display:block;margin-bottom:.5rem;width:85%"></span>
         <span class="skeleton skeleton-text short" style="display:block;width:60%"></span>
       </p>
 
-      <!-- CTA buttons -->
+      <!-- CTA Buttons — Watch Now + Back + Favorites + Watchlist (injected by JS) -->
       <div class="series-cta" id="seriesCta">
         <div class="skeleton skeleton-btn"></div>
         <div class="skeleton skeleton-btn"></div>
       </div>
-    </div>
 
+      <!-- PART 11: Star rating widget -->
+      <div class="series-user-actions" id="seriesRatingWrap" style="margin-top:1rem">
+        <!-- Injected by app.js renderStarRating() -->
+      </div>
+
+    </div>
   </section>
 
-  <!-- ── Episode List ─────────────────────────────────────── -->
+  <!-- ── Episode List ───────────────────────────────────────── -->
   <section class="episodes-section">
-    <h2>Episodes</h2>
+    <h2>Επεισόδια</h2>
     <div id="episodesContainer">
-      <!-- Skeleton episode cards -->
       <div class="season-tabs">
         <div class="skeleton" style="width:90px;height:35px;border-radius:6px"></div>
         <div class="skeleton" style="width:90px;height:35px;border-radius:6px"></div>
@@ -99,7 +194,14 @@
     </div>
   </section>
 
-  <!-- ── Footer ──────────────────────────────────────────── -->
+  <!-- ── PART 10 & 11: Comments Section ─────────────────────── -->
+  <section class="series-user-section" aria-label="Σχόλια">
+    <div id="seriesComments">
+      <!-- Injected by app.js renderComments() -->
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
   <footer class="footer">
     <p>
       Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a>
