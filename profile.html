@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Προφίλ χρήστη — StreamVault">
+  <title>StreamVault — Προφίλ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    /* ── Profile hero banner ── */
+    .profile-hero {
+      padding: calc(var(--nav-h) + 2.5rem) 4vw 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(229,9,20,.08) 0%,
+        transparent 100%
+      );
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .profile-banner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding-bottom: 2rem;
+    }
+
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: var(--accent);
+      letter-spacing: .04em;
+    }
+
+    .profile-info { flex: 1; }
+
+    .profile-username {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      letter-spacing: .04em;
+      color: var(--text-1);
+      line-height: 1.1;
+    }
+
+    .profile-email {
+      font-size: .82rem;
+      color: var(--text-3);
+      margin-top: .25rem;
+    }
+
+    /* ── Profile tab nav ── */
+    .profile-tabs {
+      max-width: 1400px;
+      margin: 0 auto 2rem;
+      padding: 0 4vw;
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+    }
+
+    .profile-tab {
+      padding: .55rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--text-3);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .profile-tab.active,
+    .profile-tab:hover {
+      color: var(--text-1);
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* ── Profile content panels ── */
+    .profile-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 4vw 4rem;
+    }
+
+    .profile-panel { display: none; }
+    .profile-panel.active { display: block; }
+
+    .profile-panel-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      letter-spacing: .06em;
+      color: var(--text-2);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .profile-panel-title .count-badge {
+      font-family: var(--font-body);
+      font-size: .72rem;
+      font-weight: 600;
+      color: var(--text-3);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 20px;
+      vertical-align: middle;
+    }
+
+    .profile-empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-3);
+    }
+
+    .profile-empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: .75rem;
+      opacity: .5;
+    }
+
+    .profile-empty p {
+      font-size: .9rem;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Login prompt ── */
+    .profile-login-prompt {
+      max-width: 420px;
+      margin: 6rem auto;
+      text-align: center;
+      padding: 2.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .profile-login-prompt h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      letter-spacing: .04em;
+      margin-bottom: .75rem;
+    }
+
+    .profile-login-prompt p {
+      font-size: .88rem;
+      color: var(--text-3);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .profile-login-prompt .btn-primary {
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body data-page="profile">
+
+  <!-- ── Navigation ─────────────────────────────────────────── -->
+  <nav class="nav scrolled" id="navbar">
+    <div class="nav-logo">
+      <a href="./index.html">STREAM<span>VAULT</span></a>
+    </div>
+    <div class="nav-links">
+      <a href="./index.html" class="nav-link">Αρχική Σελίδα</a>
+    </div>
+    <div class="nav-actions" id="nav-actions">
+      <!-- Auth injected by AuthController -->
+    </div>
+  </nav>
+
+  <!-- ── Profile Hero ───────────────────────────────────────── -->
+  <div class="profile-hero" id="profileHero">
+    <div class="profile-banner">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-info">
+        <div class="profile-username" id="profileUsername">
+          <div class="skeleton" style="width:180px;height:32px;border-radius:4px"></div>
+        </div>
+        <div class="profile-email" id="profileEmail"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main Profile Area ──────────────────────────────────── -->
+  <main id="profileMain">
+
+    <!-- Tab navigation -->
+    <nav class="profile-tabs" id="profileTabs" aria-label="Ενότητες προφίλ">
+      <button class="profile-tab active" data-panel="favorites">❤️ Αγαπημένα</button>
+      <button class="profile-tab" data-panel="watchlist">📌 Θα τα δω</button>
+      <button class="profile-tab" data-panel="watched">✅ Είδα</button>
+    </nav>
+
+    <!-- Tab content -->
+    <div class="profile-content">
+
+      <!-- Favorites -->
+      <div class="profile-panel active" id="panel-favorites">
+        <h2 class="profile-panel-title">
+          ❤️ Αγαπημένα
+          <span class="count-badge" id="favCount">0</span>
+        </h2>
+        <div id="favoritesGrid">
+          <!-- Skeleton -->
+          <div class="series-grid">
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watchlist -->
+      <div class="profile-panel" id="panel-watchlist">
+        <h2 class="profile-panel-title">
+          📌 Θα τα δω
+          <span class="count-badge" id="watchlistCount">0</span>
+        </h2>
+        <div id="watchlistGrid">
+          <div class="series-grid">
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watched -->
+      <div class="profile-panel" id="panel-watched">
+        <h2 class="profile-panel-title">
+          ✅ Είδα
+          <span class="count-badge" id="watchedCount">0</span>
+        </h2>
+        <div id="watchedGrid">
+          <div class="series-grid">
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>
+      Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a>
+      &nbsp;·&nbsp; StreamVault
+    </p>
+  </footer>
+
+  <script type="module" src="./assets/js/app.js"></script>
+  <script>
+    /* Tab switcher — pure HTML/CSS, no framework needed */
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs  = document.querySelectorAll('.profile-tab');
+      const panels= document.querySelectorAll('.profile-panel');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          const panel = document.getElementById(`panel-${tab.dataset.panel}`);
+          if (panel) panel.classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
