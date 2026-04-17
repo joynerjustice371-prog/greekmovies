@@ -1,18 +1,39 @@
 {
-  "series": {
-    "tmdb_id": 15247,
-    "channel": "ANT1",
+  "ΤοΣόισου": {
+    "tmdb_id": 81887,
+    "title": "Το Σόι Σου",
+    "channel": "Alpha",
     "featured": true,
+    "created_at": 0,
     "episodes": [
       {
         "season": 1,
         "ep": 1,
         "players": {
-          "VidMoly": "https://vidmoly.biz/embed-ar63y1165v4j.html",
-          "Streamruby": "https://vidmoly.biz/embed-ar63y1165v4j.html"
+          "StreamRuby": "https://anyplayer.top/g6knwnbeokjq.html\tΤΟ ΣΟΙ ΣΟΥ (2014)S01E01"
+        }
+      },
+      {
+        "season": 1,
+        "ep": 2,
+        "players": {
+          "StreamRuby": "https://anyplayer.top/dst4g5vndsjo.html\tΤΟ ΣΟΙ ΣΟΥ (2014)S01E02"
+        }
+      },
+      {
+        "season": 1,
+        "ep": 3,
+        "players": {
+          "StreamRuby": "https://anyplayer.top/t99zui3434sk.html\tΤΟ ΣΟΙ ΣΟΥ (2014)S01E03"
+        }
+      },
+      {
+        "season": 1,
+        "ep": 4,
+        "players": {
+          "StreamRuby": "https://anyplayer.top/psj9vaqplzjt.html\tΤΟ ΣΟΙ ΣΟΥ (2014)S01E04"
         }
       }
-    ],
-    "title_cache": "Κωνσταντίνου και Ελένης"
+    ]
   }
 }
