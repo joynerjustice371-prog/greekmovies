@@ -1,11 +1,11 @@
 // ============================================================
-// firestore.rules — StreamVault Security Rules
-//
-// Rules:
-//  • Users can read/write ONLY their own document in users/{uid}
-//  • Comments are readable by everyone (public)
-//  • Only authenticated users can write comments
-//  • No one can delete or overwrite other users' comments
+// firestore.rules — StreamVault v2
+// Structure:
+//   users/{uid}                       — profile (email private)
+//   users/{uid}/favorites/{seriesId}
+//   users/{uid}/watchlist/{seriesId}
+//   users/{uid}/ratings/{seriesId}
+//   series/{seriesId}/comments/{commentId}
 // ============================================================
 
 rules_version = '2';
@@ -13,66 +13,76 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ── USERS ─────────────────────────────────────────────────
-    // Each user can read and write only their own profile document.
-    // Pattern: users/{uid}
     match /users/{uid} {
-      // Read: only the owner
-      allow read: if request.auth != null && request.auth.uid == uid;
+      allow read:   if isOwner(uid);
+      allow create: if isOwner(uid) && validNewUser(request.resource.data);
+      // Owner can update username/avatar; cannot change role or status
+      allow update: if isOwner(uid)
+                    && !('role'   in request.resource.data.diff(resource.data).affectedKeys())
+                    && !('status' in request.resource.data.diff(resource.data).affectedKeys());
+      allow delete: if false;
 
-      // Create: only if the caller is creating their own document
-      allow create: if request.auth != null
-                    && request.auth.uid == uid
-                    && validUserData(request.resource.data);
-
-      // Update: only the owner; cannot change uid-derived fields
-      allow update: if request.auth != null
-                    && request.auth.uid == uid
-                    && validUserData(request.resource.data);
-
-      // Delete: only the owner
-      allow delete: if request.auth != null && request.auth.uid == uid;
+      match /favorites/{seriesId} { allow read, write: if isOwner(uid); }
+      match /watchlist/{seriesId} { allow read, write: if isOwner(uid); }
+      match /ratings/{seriesId}   { allow read, write: if isOwner(uid); }
     }
 
-    // ── COMMENTS ──────────────────────────────────────────────
-    // Subcollection path: comments/{seriesSlug}/items/{commentId}
-    match /comments/{seriesSlug}/items/{commentId} {
-      // PART 13: Anyone (including unauthenticated) can read comments
+    // ── SERIES → COMMENTS ─────────────────────────────────────
+    match /series/{seriesId}/comments/{commentId} {
+      // Public read — shadowban enforced client-side
       allow read: if true;
 
-      // PART 13: Only authenticated users can create a comment
-      // The comment's userId must match the caller's uid
-      allow create: if request.auth != null
-                    && request.resource.data.userId == request.auth.uid
-                    && request.resource.data.text is string
-                    && request.resource.data.text.size() > 0
-                    && request.resource.data.text.size() <= 2000
-                    && request.resource.data.username is string;
+      // Only authenticated users can post
+      allow create: if isLoggedIn()
+                    && request.resource.data.uid == request.auth.uid
+                    && validComment(request.resource.data);
 
-      // Update: only the comment's original author can edit
-      allow update: if request.auth != null
-                    && resource.data.userId == request.auth.uid;
+      // Author can update own comment text
+      allow update: if isLoggedIn()
+                    && resource.data.uid == request.auth.uid
+                    && onlyTextUpdated();
 
-      // Delete: only the comment's original author
-      allow delete: if request.auth != null
-                    && resource.data.userId == request.auth.uid;
+      // Anyone logged in can increment counters (likes/dislikes/reports)
+      allow update: if isLoggedIn() && onlyCountersUpdated();
+
+      // Author can soft-delete
+      allow delete: if isLoggedIn() && resource.data.uid == request.auth.uid;
     }
 
-    // ── DEFAULT: deny everything else ─────────────────────────
-    match /{document=**} {
-      allow read, write: if false;
-    }
+    // ── CATCH-ALL DENY ────────────────────────────────────────
+    match /{document=**} { allow read, write: if false; }
   }
-}
 
-// ── Helper: validate user document fields ─────────────────────
-function validUserData(data) {
-  return data.keys().hasAll(['username', 'email', 'favorites', 'watchlist', 'watched', 'ratings'])
-    && data.username is string
-    && data.username.size() >= 1
-    && data.username.size() <= 50
-    && data.email is string
-    && data.favorites is list
-    && data.watchlist is list
-    && data.watched is list
-    && data.ratings is map;
+  function isLoggedIn()   { return request.auth != null; }
+  function isOwner(uid)   { return request.auth != null && request.auth.uid == uid; }
+
+  function validNewUser(d) {
+    return d.keys().hasAll(['username','email','avatar','role','status','createdAt'])
+        && d.username is string && d.username.size() >= 3 && d.username.size() <= 50
+        && d.email is string
+        && d.avatar is string
+        && d.role == 'user'
+        && d.status == 'active';
+  }
+
+  function validComment(d) {
+    return d.keys().hasAll(['uid','username','avatar','text','rating',
+                             'likes','dislikes','status','reports','createdAt'])
+        && d.uid is string
+        && d.username is string
+        && d.text is string && d.text.size() > 0 && d.text.size() <= 2000
+        && d.rating is int && d.rating >= 0 && d.rating <= 5
+        && d.likes == 0 && d.dislikes == 0 && d.reports == 0
+        && d.status == 'visible';
+  }
+
+  function onlyTextUpdated() {
+    return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text']);
+  }
+
+  function onlyCountersUpdated() {
+    let k = request.resource.data.diff(resource.data).affectedKeys();
+    return k.hasOnly(['likes']) || k.hasOnly(['dislikes'])
+        || k.hasOnly(['reports']) || k.hasOnly(['likes','dislikes','reports']);
+  }
 }
