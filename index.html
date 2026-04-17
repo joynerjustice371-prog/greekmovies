@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="StreamVault — Browse your favourite TV series">
-  <title>StreamVault</title>
+  <meta name="description" content="StreamVault — Παρακολουθήστε τις αγαπημένες σας ελληνικές σειρές">
+  <title>StreamVault — Αρχική Σελίδα</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,33 +12,38 @@
 </head>
 <body data-page="home">
 
-  <!-- ── Navigation ──────────────────────────────────────── -->
+  <!-- ── Navigation ─────────────────────────────────────────── -->
   <nav class="nav" id="navbar">
     <div class="nav-logo">
       <a href="./index.html">STREAM<span>VAULT</span></a>
     </div>
     <div class="nav-links">
-      <a href="./index.html" class="nav-link active">Home</a>
+      <!-- PART 3 FIX: Greek label -->
+      <a href="./index.html" class="nav-link active">Αρχική Σελίδα</a>
     </div>
-    <div class="nav-actions">
-      <button class="btn-icon" id="searchToggle" aria-label="Search (Ctrl+K)">
+    <!-- PART 5: Auth nav actions injected by AuthController -->
+    <div class="nav-actions" id="nav-actions">
+      <button class="btn-icon" id="searchToggle" aria-label="Αναζήτηση (Ctrl+K)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/>
           <path d="m21 21-4.35-4.35"/>
         </svg>
       </button>
+      <!-- Auth buttons injected here by AuthController.init() -->
     </div>
   </nav>
 
-  <!-- ── Search Overlay ──────────────────────────────────── -->
-  <div class="search-overlay" id="searchOverlay" role="dialog" aria-label="Search">
+  <!-- ── Search Overlay ─────────────────────────────────────── -->
+  <div class="search-overlay" id="searchOverlay" role="dialog" aria-label="Αναζήτηση">
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <circle cx="11" cy="11" r="8"/>
         <path d="m21 21-4.35-4.35"/>
       </svg>
-      <input type="text" id="searchInput" placeholder="Search series, channels, genres…" autocomplete="off" spellcheck="false">
-      <button class="btn-icon search-close" id="searchClose" aria-label="Close search">
+      <input type="text" id="searchInput"
+             placeholder="Αναζήτηση σειράς, καναλιού, είδους…"
+             autocomplete="off" spellcheck="false">
+      <button class="btn-icon search-close" id="searchClose" aria-label="Κλείσιμο αναζήτησης">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
@@ -48,12 +53,11 @@
     <div class="search-results" id="searchResults" aria-live="polite"></div>
   </div>
 
-  <!-- ── Hero Section ────────────────────────────────────── -->
-  <section class="hero" id="hero" aria-label="Featured series">
+  <!-- ── Hero Section ───────────────────────────────────────── -->
+  <section class="hero" id="hero" aria-label="Προτεινόμενες σειρές">
     <div class="hero-backdrop" id="heroBg" role="img" aria-label="Featured backdrop"></div>
     <div class="hero-overlay" aria-hidden="true"></div>
     <div class="hero-content" id="heroContent">
-      <!-- Skeleton while loading -->
       <div class="hero-channel">
         <div class="skeleton skeleton-text short" style="width:80px;height:14px;border-radius:2px"></div>
       </div>
@@ -65,23 +69,23 @@
         <div class="skeleton skeleton-btn"></div>
       </div>
     </div>
-    <div class="hero-dots" id="heroDots" aria-label="Featured series navigation"></div>
+    <div class="hero-dots" id="heroDots" aria-label="Πλοήγηση προτεινόμενων σειρών"></div>
   </section>
 
-  <!-- ── Main Content ────────────────────────────────────── -->
+  <!-- ── Main Content ───────────────────────────────────────── -->
   <main class="main-content" id="mainContent">
 
     <!-- Category Filter Chips -->
-    <div class="categories-bar" id="categoriesBar" aria-label="Filter by channel">
+    <div class="categories-bar" id="categoriesBar" aria-label="Φιλτράρισμα ανά κανάλι">
       <div class="categories-scroll">
-        <button class="category-chip active" data-channel="" aria-pressed="true">All</button>
+        <button class="category-chip active" data-channel="" aria-pressed="true">Όλα</button>
         <!-- Dynamic channel chips injected by JS -->
       </div>
     </div>
 
-    <!-- Series Sections (populated by JS) -->
+    <!-- Series Sections — populated by JS -->
+    <!-- PART 3 FIX: Greek section titles rendered by app.js -->
     <div id="sections">
-      <!-- Loading skeleton row -->
       <div class="section visible">
         <div class="section-header">
           <div class="skeleton skeleton-section-title"></div>
@@ -99,7 +103,7 @@
 
   </main>
 
-  <!-- ── Footer ──────────────────────────────────────────── -->
+  <!-- ── Footer ─────────────────────────────────────────────── -->
   <footer class="footer">
     <p>
       Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a>
