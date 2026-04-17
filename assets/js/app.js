@@ -145,8 +145,20 @@ class DataManager {
     if (this._rich) return this._rich;
     const raw     = await this.load();
     const entries = Object.entries(raw).map(([slug, data]) => ({ slug, data }));
-    this._rich    = await tmdb.batchResolve(entries);
-    this._rich = this._rich.map(e => ({
+    let resolved = [];
+
+    try {
+      resolved = await tmdb.batchResolve(entries);
+    } catch (err) {
+      console.error('[TMDB] batchResolve failed:', err);
+    }
+
+    if (!Array.isArray(resolved) || resolved.length === 0) {
+      // fallback χωρίς TMDB
+      resolved = entries.map(e => ({ ...e, tmdb: null }));
+    }
+
+    this._rich = resolved.map(e => ({
       ...e,
       title:    e.data.title    ?? e.tmdb?.title    ?? e.slug,
       overview: e.data.overview ?? e.tmdb?.overview ?? '',
