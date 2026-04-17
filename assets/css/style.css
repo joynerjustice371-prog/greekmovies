@@ -1866,3 +1866,95 @@ body { animation: pageIn 0.4s ease forwards; }
   .auth-modal { padding: 1.5rem; }
   .nav-dropdown { min-width: 180px; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   v3.0 FIXES  —  CRITICAL AUTH-NAV STATE CSS
+   ─────────────────────────────────────────────────────────
+   The base .nav-login-btn { display: inline-flex } rule has
+   the same specificity as the UA [hidden] { display: none }
+   rule, and author beats UA → `.hidden = true` from JS had
+   NO effect. This manifested as double-state UI (Σύνδεση
+   button + avatar both visible after login).
+
+   Fix: id-scoped rules with higher specificity + !important.
+   Initial state "pending" keeps BOTH hidden → zero flicker
+   while Firebase hydrates its auth session.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Default: both children hidden until state is known */
+#authNavWrap > #navLoginBtn,
+#authNavWrap > #navUserMenu { display: none !important; }
+
+/* Logged-OUT state: show only the login button */
+#authNavWrap[data-state="loggedOut"] > #navLoginBtn {
+  display: inline-flex !important;
+}
+
+/* Logged-IN state: show only the user menu (avatar + dropdown) */
+#authNavWrap[data-state="loggedIn"] > #navUserMenu {
+  display: block !important;
+}
+
+/* ── Avatar image in navbar ────────────────────────────── */
+.nav-avatar-btn {
+  overflow: hidden;
+  padding: 0;
+}
+.nav-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+.nav-avatar-img[hidden] { display: none; }
+
+/* ── Series user-action buttons (Fav/Watchlist/Seen) ───── */
+.user-action-btn {
+  position: relative;
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+.user-action-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+.user-action-btn.active svg { color: var(--accent); }
+#seenBtn.active {
+  border-color: #6edf6e;
+  color: #6edf6e;
+  background: rgba(110,223,110,.08);
+}
+#seenBtn.active svg { color: #6edf6e; }
+#watchlistBtn.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(212,175,55,.08);
+}
+#watchlistBtn.active svg { color: var(--gold); }
+
+/* ── Comment avatars ───────────────────────────────────── */
+.comment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--accent-dim);
+  border: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.comment-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.comment-avatar-initials {
+  font-family: var(--font-display);
+  font-size: .9rem;
+  color: var(--accent);
+  letter-spacing: .04em;
+  line-height: 1;
+}
