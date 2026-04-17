@@ -10,166 +10,102 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/css/style.css">
   <style>
-    /* ── Profile hero banner ── */
+    /* Profile page styles */
     .profile-hero {
       padding: calc(var(--nav-h) + 2.5rem) 4vw 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(229,9,20,.08) 0%,
-        transparent 100%
-      );
       border-bottom: 1px solid var(--border);
       margin-bottom: 2.5rem;
     }
-
     .profile-banner {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
+      max-width: 1400px; margin: 0 auto;
+      display: flex; align-items: center; gap: 1.5rem;
       padding-bottom: 2rem;
     }
-
-    .profile-avatar {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: var(--accent-dim);
-      border: 2px solid var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      color: var(--accent);
-      letter-spacing: .04em;
-    }
-
+    .profile-avatar-wrap { flex-shrink: 0; }
     .profile-info { flex: 1; }
-
     .profile-username {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      letter-spacing: .04em;
-      color: var(--text-1);
-      line-height: 1.1;
+      font-family: var(--font-display); font-size: 2rem;
+      letter-spacing: .04em; color: var(--text-1); line-height: 1.1;
     }
-
-    .profile-email {
-      font-size: .82rem;
-      color: var(--text-3);
-      margin-top: .25rem;
-    }
-
-    /* ── Profile tab nav ── */
     .profile-tabs {
-      max-width: 1400px;
-      margin: 0 auto 2rem;
-      padding: 0 4vw;
-      display: flex;
-      gap: .4rem;
-      flex-wrap: wrap;
+      max-width: 1400px; margin: 0 auto 2rem;
+      padding: 0 4vw; display: flex; gap: .4rem; flex-wrap: wrap;
     }
-
     .profile-tab {
-      padding: .55rem 1.25rem;
-      border-radius: var(--radius);
-      font-size: .85rem;
-      font-weight: 500;
-      color: var(--text-3);
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      cursor: pointer;
-      transition: all var(--transition);
+      padding: .55rem 1.2rem; border-radius: var(--radius);
+      font-size: .84rem; font-weight: 500;
+      color: var(--text-3); background: var(--bg-surface);
+      border: 1px solid var(--border); cursor: pointer;
+      font-family: inherit; transition: all var(--transition);
     }
-
-    .profile-tab.active,
-    .profile-tab:hover {
-      color: var(--text-1);
-      border-color: var(--accent);
+    .profile-tab.active, .profile-tab:hover {
+      color: var(--text-1); border-color: var(--accent);
       background: var(--accent-dim);
     }
-
-    /* ── Profile content panels ── */
     .profile-content {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 4vw 4rem;
+      max-width: 1400px; margin: 0 auto; padding: 0 4vw 4rem;
     }
-
     .profile-panel { display: none; }
     .profile-panel.active { display: block; }
-
     .profile-panel-title {
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      letter-spacing: .06em;
-      color: var(--text-2);
-      margin-bottom: 1.25rem;
-      display: flex;
-      align-items: center;
-      gap: .5rem;
+      font-family: var(--font-display); font-size: 1.35rem;
+      letter-spacing: .06em; color: var(--text-2);
+      margin-bottom: 1.25rem; display: flex; align-items: center; gap: .5rem;
     }
-
-    .profile-panel-title .count-badge {
-      font-family: var(--font-body);
-      font-size: .72rem;
-      font-weight: 600;
-      color: var(--text-3);
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      padding: 2px 8px;
-      border-radius: 20px;
-      vertical-align: middle;
+    .count-badge {
+      font-family: var(--font-body); font-size: .72rem; font-weight: 600;
+      color: var(--text-3); background: var(--bg-surface);
+      border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px;
     }
-
-    .profile-empty {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--text-3);
-    }
-
-    .profile-empty-icon {
-      font-size: 2.5rem;
-      margin-bottom: .75rem;
-      opacity: .5;
-    }
-
-    .profile-empty p {
-      font-size: .9rem;
-      margin-bottom: 1rem;
-    }
-
-    /* ── Login prompt ── */
+    .profile-empty { text-align: center; padding: 3rem 1rem; color: var(--text-3); }
+    .profile-empty-icon { font-size: 2.5rem; margin-bottom: .75rem; opacity: .5; }
+    .profile-empty p { font-size: .9rem; margin-bottom: .75rem; }
     .profile-login-prompt {
-      max-width: 420px;
-      margin: 6rem auto;
-      text-align: center;
-      padding: 2.5rem;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      max-width: 420px; margin: 6rem auto; text-align: center;
+      padding: 2.5rem; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 12px;
     }
-
     .profile-login-prompt h2 {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      letter-spacing: .04em;
-      margin-bottom: .75rem;
+      font-family: var(--font-display); font-size: 1.5rem;
+      letter-spacing: .04em; margin-bottom: .75rem;
     }
-
     .profile-login-prompt p {
-      font-size: .88rem;
-      color: var(--text-3);
-      margin-bottom: 1.5rem;
-      line-height: 1.6;
+      font-size: .88rem; color: var(--text-3);
+      margin-bottom: 1.5rem; line-height: 1.6;
     }
-
-    .profile-login-prompt .btn-primary {
-      margin: 0 auto;
+    /* Edit profile form */
+    .edit-form-section {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
     }
+    .edit-form-section h3 {
+      font-size: 1rem; color: var(--text-2); margin-bottom: 1rem;
+    }
+    .edit-form-row { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1rem; }
+    .edit-form-row label { font-size: .82rem; color: var(--text-3); }
+    .edit-form-input {
+      padding: .65rem .8rem; border-radius: 7px;
+      border: 1px solid var(--border); background: var(--bg-surface);
+      color: var(--text-1); font-size: .9rem; font-family: inherit;
+      outline: none; transition: border-color .18s; max-width: 320px;
+    }
+    .edit-form-input:focus { border-color: var(--accent); }
+    .edit-form-msg {
+      font-size: .8rem; padding: 7px 10px; border-radius: 6px;
+      display: none; margin-top: .4rem;
+    }
+    .edit-form-msg.success { background: rgba(0,200,83,.1); color: #00c853; }
+    .edit-form-msg.error   { background: rgba(255,60,80,.1); color: #ff5566; }
+    /* Spinner (used by UserController / CommentsController) */
+    .sv-spinner {
+      width: 28px; height: 28px;
+      border: 2px solid rgba(255,255,255,.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: sv-spin .7s linear infinite;
+      display: block; margin: 2rem auto;
+    }
+    @keyframes sv-spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body data-page="profile">
@@ -182,80 +118,107 @@
     <div class="nav-links">
       <a href="./index.html" class="nav-link">Αρχική Σελίδα</a>
     </div>
-    <div class="nav-actions" id="nav-actions">
-      <!-- Auth injected by AuthController -->
-    </div>
+    <div class="nav-actions" id="nav-actions"></div>
   </nav>
 
   <!-- ── Profile Hero ───────────────────────────────────────── -->
   <div class="profile-hero" id="profileHero">
     <div class="profile-banner">
-      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-avatar-wrap">
+        <div id="profileAvatar">
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--bg-surface);
+                      border:2px solid var(--border)" class="skeleton"></div>
+        </div>
+      </div>
       <div class="profile-info">
         <div class="profile-username" id="profileUsername">
           <div class="skeleton" style="width:180px;height:32px;border-radius:4px"></div>
         </div>
-        <div class="profile-email" id="profileEmail"></div>
       </div>
     </div>
   </div>
 
-  <!-- ── Main Profile Area ──────────────────────────────────── -->
+  <!-- ── Main Profile ───────────────────────────────────────── -->
   <main id="profileMain">
 
     <!-- Tab navigation -->
-    <nav class="profile-tabs" id="profileTabs" aria-label="Ενότητες προφίλ">
+    <nav class="profile-tabs" id="profileTabs">
       <button class="profile-tab active" data-panel="favorites">❤️ Αγαπημένα</button>
       <button class="profile-tab" data-panel="watchlist">📌 Θα τα δω</button>
-      <button class="profile-tab" data-panel="watched">✅ Είδα</button>
+      <button class="profile-tab" data-panel="ratings">⭐ Αξιολογήσεις</button>
+      <button class="profile-tab" data-panel="comments">💬 Σχόλια</button>
+      <button class="profile-tab" data-panel="edit">✏️ Επεξεργασία</button>
     </nav>
 
-    <!-- Tab content -->
+    <!-- Content panels -->
     <div class="profile-content">
 
       <!-- Favorites -->
       <div class="profile-panel active" id="panel-favorites">
         <h2 class="profile-panel-title">
-          ❤️ Αγαπημένα
-          <span class="count-badge" id="favCount">0</span>
+          ❤️ Αγαπημένα <span class="count-badge" id="favCount">0</span>
         </h2>
-        <div id="favoritesGrid">
-          <!-- Skeleton -->
-          <div class="series-grid">
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-          </div>
-        </div>
+        <div id="favoritesGrid"><div class="sv-spinner"></div></div>
       </div>
 
       <!-- Watchlist -->
       <div class="profile-panel" id="panel-watchlist">
         <h2 class="profile-panel-title">
-          📌 Θα τα δω
-          <span class="count-badge" id="watchlistCount">0</span>
+          📌 Θα τα δω <span class="count-badge" id="watchlistCount">0</span>
         </h2>
-        <div id="watchlistGrid">
-          <div class="series-grid">
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-          </div>
-        </div>
+        <div id="watchlistGrid"><div class="sv-spinner"></div></div>
       </div>
 
-      <!-- Watched -->
-      <div class="profile-panel" id="panel-watched">
+      <!-- Ratings -->
+      <div class="profile-panel" id="panel-ratings">
         <h2 class="profile-panel-title">
-          ✅ Είδα
-          <span class="count-badge" id="watchedCount">0</span>
+          ⭐ Αξιολογήσεις <span class="count-badge" id="ratingsCount">0</span>
         </h2>
-        <div id="watchedGrid">
-          <div class="series-grid">
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-            <div class="series-card skeleton-card"><div class="skeleton skeleton-poster"></div></div>
-          </div>
+        <div id="ratingsGrid"><div class="sv-spinner"></div></div>
+      </div>
+
+      <!-- Comments notice -->
+      <div class="profile-panel" id="panel-comments">
+        <h2 class="profile-panel-title">💬 Σχόλια</h2>
+        <div id="commentsTabGrid"></div>
+      </div>
+
+      <!-- Edit Profile -->
+      <div class="profile-panel" id="panel-edit">
+        <h2 class="profile-panel-title">✏️ Επεξεργασία Προφίλ</h2>
+        <div class="edit-form-section">
+          <h3>Στοιχεία λογαριασμού</h3>
+          <form id="editProfileForm" novalidate>
+            <!-- Avatar -->
+            <div class="edit-form-row">
+              <label>Avatar</label>
+              <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+                <div id="avatarPreview"></div>
+                <label for="avatarFileInput" style="cursor:pointer">
+                  <div style="padding:.55rem 1.1rem;border:1px dashed var(--border);border-radius:8px;
+                               font-size:.84rem;color:var(--text-3);transition:border-color .18s"
+                       onmouseover="this.style.borderColor='var(--accent)'"
+                       onmouseout="this.style.borderColor='var(--border)'">
+                    📷 Επιλογή εικόνας (max 2MB)
+                  </div>
+                  <input type="file" id="avatarFileInput" accept="image/*"
+                         style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none">
+                </label>
+              </div>
+            </div>
+            <!-- Username -->
+            <div class="edit-form-row">
+              <label for="editUsername">Ψευδώνυμο</label>
+              <input type="text" id="editUsername" class="edit-form-input"
+                     placeholder="Το ψευδώνυμό σας" autocomplete="username">
+            </div>
+            <!-- Messages -->
+            <p id="editProfileError"   class="edit-form-msg error"></p>
+            <p id="editProfileSuccess" class="edit-form-msg success"></p>
+            <!-- Submit -->
+            <button type="submit" id="editProfileSubmit" class="btn-primary"
+                    style="margin-top:.5rem">Αποθήκευση</button>
+          </form>
         </div>
       </div>
 
@@ -272,20 +235,25 @@
 
   <script type="module" src="./assets/js/app.js"></script>
   <script>
-    /* Tab switcher — pure HTML/CSS, no framework needed */
+    /* Tab switcher (pure JS, no framework) */
     document.addEventListener('DOMContentLoaded', () => {
       const tabs  = document.querySelectorAll('.profile-tab');
       const panels= document.querySelectorAll('.profile-panel');
-
       tabs.forEach(tab => {
         tab.addEventListener('click', () => {
           tabs.forEach(t => t.classList.remove('active'));
           panels.forEach(p => p.classList.remove('active'));
           tab.classList.add('active');
-          const panel = document.getElementById(`panel-${tab.dataset.panel}`);
+          const panel = document.getElementById('panel-' + tab.dataset.panel);
           if (panel) panel.classList.add('active');
         });
       });
+      // Activate tab from URL ?tab=
+      const param = new URLSearchParams(location.search).get('tab');
+      if (param) {
+        const btn = document.querySelector(`.profile-tab[data-panel="${param}"]`);
+        if (btn) btn.click();
+      }
     });
   </script>
 </body>
