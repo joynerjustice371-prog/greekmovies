@@ -1,10 +1,20 @@
 /* ============================================================
-   tmdb.js — TMDB API Client (Greek-first with en-US fallback)
+   tmdb.js — TMDB API Client
+   Greek-first with en-US fallback
+   All calls wrapped in try/catch — safe to use with invalid key
    ============================================================ */
 
 const TMDB_API_KEY  = "f6aeb62fa60713990edbc2894a8d1d5d";
 const TMDB_BASE     = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p";
+
+/* ── Timeout helper ──────────────────────────────────────── */
+function withTimeout(promise, ms, fallback = null) {
+  return Promise.race([
+    promise,
+    new Promise(resolve => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
 
 export const IMG = {
   poster:   (path) => path ? `${TMDB_IMG_BASE}/w500${path}`     : null,
@@ -24,23 +34,23 @@ export class TMDBClient {
     if (this._cache.has(key)) return this._cache.get(key);
 
     try {
-      // PART 1 FIX: always request Greek first
-      const res = await fetch(
-        `${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=el-GR`
+      const res = await withTimeout(
+        fetch(`${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=el-GR`),
+        5000
       );
-      if (!res.ok) throw new Error(`TMDB ${res.status}`);
+      if (!res || !res.ok) throw new Error(res ? `TMDB ${res.status}` : "Timeout");
       const grData = await res.json();
 
-      // PART 1 FIX: fallback — if Greek title/overview is empty, fetch en-US
       let enData = null;
       const needsFallback = !grData.name?.trim() || !grData.overview?.trim();
       if (needsFallback) {
         try {
-          const resEn = await fetch(
-            `${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`
+          const resEn = await withTimeout(
+            fetch(`${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`),
+            4000
           );
-          if (resEn.ok) enData = await resEn.json();
-        } catch (_) { /* silent — best effort */ }
+          if (resEn?.ok) enData = await resEn.json();
+        } catch (_) { /* silent */ }
       }
 
       const normalized = this._normalize(grData, enData);
@@ -52,17 +62,17 @@ export class TMDBClient {
     }
   }
 
-  /* ── Search by title — Greek first ────────────────────────── */
+  /* ── Search by title ────────────────────────────────────── */
   async searchByTitle(title) {
     const key = `search:${title.toLowerCase()}`;
     if (this._cache.has(key)) return this._cache.get(key);
 
     try {
-      // PART 1 FIX: Greek language for search
-      const res = await fetch(
-        `${TMDB_BASE}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}&language=el-GR`
+      const res = await withTimeout(
+        fetch(`${TMDB_BASE}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}&language=el-GR`),
+        5000
       );
-      if (!res.ok) throw new Error(`TMDB search ${res.status}`);
+      if (!res || !res.ok) throw new Error(res ? `TMDB search ${res.status}` : "Timeout");
       const data = await res.json();
 
       if (!data.results?.length) {
@@ -70,10 +80,7 @@ export class TMDBClient {
         return null;
       }
 
-      const best = data.results.reduce((a, b) =>
-        (b.popularity > a.popularity ? b : a)
-      );
-
+      const best = data.results.reduce((a, b) => (b.popularity > a.popularity ? b : a));
       const full = await this.fetchById(best.id);
       this._cache.set(key, full);
       return full;
@@ -83,7 +90,7 @@ export class TMDBClient {
     }
   }
 
-  /* ── Smart resolver: ID first, search fallback ─────────────── */
+  /* ── Smart resolver: ID first, search fallback ─────────── */
   async getDetails(seriesEntry) {
     if (seriesEntry.tmdb_id) {
       const result = await this.fetchById(seriesEntry.tmdb_id);
@@ -95,13 +102,10 @@ export class TMDBClient {
     return null;
   }
 
-  /* ── Normalize: Greek data with en-US fallback for blanks ─── */
+  /* ── Normalize: Greek with en-US fallback ───────────────── */
   _normalize(gr, en = null) {
-    // PART 1 FIX: title → gr.name, fallback to en.name, then original_name
-    const title    = gr.name?.trim()     || en?.name?.trim()          || gr.original_name || "Unknown";
-    // PART 1 FIX: overview → gr.overview, fallback to en.overview
-    const overview = gr.overview?.trim() || en?.overview?.trim()      || "";
-    // Genres from Greek response (may be empty); fallback to English
+    const title    = gr.name?.trim()     || en?.name?.trim()     || gr.original_name || "Unknown";
+    const overview = gr.overview?.trim() || en?.overview?.trim() || "";
     const genres   = (gr.genres?.length ? gr.genres : en?.genres ?? []).map(g => g.name);
 
     return {
@@ -123,16 +127,22 @@ export class TMDBClient {
     };
   }
 
-  /* ── Batch resolve ─────────────────────────────────────────── */
+  /* ── Batch resolve — ALWAYS returns array ────────────────── */
   async batchResolve(entries) {
-    const results = await Promise.allSettled(
-      entries.map(({ slug, data }) =>
-        this.getDetails(data).then(tmdb => ({ slug, data, tmdb }))
-      )
-    );
-    return results
-      .filter(r => r.status === "fulfilled")
-      .map(r => r.value);
+    try {
+      const results = await Promise.allSettled(
+        entries.map(({ slug, data }) =>
+          this.getDetails(data).then(tmdb => ({ slug, data, tmdb }))
+        )
+      );
+      return results
+        .filter(r => r.status === "fulfilled")
+        .map(r => r.value);
+    } catch (err) {
+      console.warn("[TMDB] batchResolve failed:", err.message);
+      // Return entries with null tmdb — still renders from local data
+      return entries.map(({ slug, data }) => ({ slug, data, tmdb: null }));
+    }
   }
 
   cacheSize() { return this._cache.size; }
