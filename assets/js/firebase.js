@@ -1,8 +1,8 @@
 /* ============================================================
    firebase.js — Firebase Modular SDK v10
-   Safe initialization: exports stub functions if Firebase fails
-   Replace firebaseConfig values with your project config from:
-   Firebase Console → Project Settings → Your Apps
+   v3.0 FIXED — adds toggleSeen, updateUserProfile,
+                postComment(avatar), getUserComments via
+                collectionGroup query.
    ============================================================ */
 
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -25,6 +25,7 @@ import {
   arrayUnion,
   arrayRemove,
   collection,
+  collectionGroup,
   addDoc,
   getDocs,
   query,
@@ -55,37 +56,31 @@ const googleProvider = new GoogleAuthProvider();
    AUTH HELPERS
    ══════════════════════════════════════════════════════════════ */
 
-/** Google Sign-In popup */
 export async function loginWithGoogle() {
   const result = await signInWithPopup(auth, googleProvider);
   await ensureUserDoc(result.user);
   return result.user;
 }
 
-/** Email + password sign-in */
 export async function loginWithEmail(email, password) {
   const result = await signInWithEmailAndPassword(auth, email, password);
   return result.user;
 }
 
-/** Email + password registration */
 export async function registerWithEmail(email, password, username) {
   const result = await createUserWithEmailAndPassword(auth, email, password);
   await ensureUserDoc(result.user, username);
   return result.user;
 }
 
-/** Forgot password — sends reset email */
 export async function forgotPassword(email) {
   await sendPasswordResetEmail(auth, email);
 }
 
-/** Sign out */
 export async function logout() {
   await signOut(auth);
 }
 
-/** Subscribe to auth state — calls cb(user | null) */
 export function onAuth(cb) {
   return onAuthStateChanged(auth, cb);
 }
@@ -94,18 +89,17 @@ export function onAuth(cb) {
    FIRESTORE — USER PROFILE
    Schema: users/{uid}
      username    : string
-     email       : string  (private — only used server-side)
-     avatar      : string  (URL, optional)
+     email       : string  (private)
+     avatar      : string|null
      role        : 'user' | 'admin'
      status      : 'active' | 'banned' | 'shadowbanned'
-     favorites   : string[]   (series slugs)
+     favorites   : string[]
      watchlist   : string[]
-     watched     : string[]
+     watched     : string[]    ← "Έχω δει"
      ratings     : { [slug]: number 1-5 }
      createdAt   : Timestamp
    ══════════════════════════════════════════════════════════════ */
 
-/** Create user document if it doesn't exist (idempotent) */
 async function ensureUserDoc(user, username = null) {
   const ref  = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
@@ -125,7 +119,6 @@ async function ensureUserDoc(user, username = null) {
   }
 }
 
-/** Get full user profile document */
 export async function getUserProfile(uid) {
   try {
     const snap = await getDoc(doc(db, "users", uid));
@@ -134,6 +127,19 @@ export async function getUserProfile(uid) {
     console.warn("[Firebase] getUserProfile failed:", e.message);
     return null;
   }
+}
+
+/** Update username / avatar. Firestore rules block role/status changes. */
+export async function updateUserProfile(uid, updates = {}) {
+  const allowed = {};
+  if (typeof updates.username === 'string' && updates.username.trim()) {
+    allowed.username = updates.username.trim().slice(0, 40);
+  }
+  if (updates.avatar === null || typeof updates.avatar === 'string') {
+    allowed.avatar = updates.avatar || null;
+  }
+  if (!Object.keys(allowed).length) return;
+  await updateDoc(doc(db, "users", uid), allowed);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -148,16 +154,14 @@ export async function removeFavorite(uid, slug) {
   await updateDoc(doc(db, "users", uid), { favorites: arrayRemove(slug) });
 }
 
-/** Toggle favorite — returns true if now added, false if removed */
 export async function toggleFavorite(uid, slug) {
   const profile = await getUserProfile(uid);
   if (profile?.favorites?.includes(slug)) {
     await removeFavorite(uid, slug);
     return false;
-  } else {
-    await addFavorite(uid, slug);
-    return true;
   }
+  await addFavorite(uid, slug);
+  return true;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -177,17 +181,38 @@ export async function toggleWatchlist(uid, slug) {
   if (profile?.watchlist?.includes(slug)) {
     await removeFromWatchlist(uid, slug);
     return false;
-  } else {
-    await addToWatchlist(uid, slug);
-    return true;
   }
+  await addToWatchlist(uid, slug);
+  return true;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FIRESTORE — SEEN / WATCHED ("Έχω δει")
+   Uses the existing `watched` array field.
+   ══════════════════════════════════════════════════════════════ */
+
+export async function addSeen(uid, slug) {
+  await updateDoc(doc(db, "users", uid), { watched: arrayUnion(slug) });
+}
+
+export async function removeSeen(uid, slug) {
+  await updateDoc(doc(db, "users", uid), { watched: arrayRemove(slug) });
+}
+
+export async function toggleSeen(uid, slug) {
+  const profile = await getUserProfile(uid);
+  if (profile?.watched?.includes(slug)) {
+    await removeSeen(uid, slug);
+    return false;
+  }
+  await addSeen(uid, slug);
+  return true;
 }
 
 /* ══════════════════════════════════════════════════════════════
    FIRESTORE — RATINGS
    ══════════════════════════════════════════════════════════════ */
 
-/** Save a 1–5 star rating for a series */
 export async function setRating(uid, slug, stars) {
   await updateDoc(doc(db, "users", uid), {
     [`ratings.${slug}`]: stars,
@@ -199,7 +224,6 @@ export async function getRating(uid, slug) {
   return profile?.ratings?.[slug] ?? 0;
 }
 
-/** Get all ratings for a user (returns { slug: stars } map) */
 export async function getAllRatings(uid) {
   const profile = await getUserProfile(uid);
   return profile?.ratings ?? {};
@@ -207,25 +231,27 @@ export async function getAllRatings(uid) {
 
 /* ══════════════════════════════════════════════════════════════
    FIRESTORE — COMMENTS
-   Collection: comments/{seriesSlug}/items
+   Collection: comments/{seriesSlug}/items/{commentId}
    Schema:
-     userId    : string
-     username  : string
-     text      : string
-     likes     : number
-     dislikes  : number
-     createdAt : Timestamp
+     userId     : string
+     username   : string
+     userAvatar : string|null      ← NEW
+     text       : string
+     likes      : number
+     dislikes   : number
+     createdAt  : Timestamp
    ══════════════════════════════════════════════════════════════ */
 
-export async function postComment(slug, uid, username, text) {
+export async function postComment(slug, uid, username, text, userAvatar = null) {
   const col = collection(db, "comments", slug, "items");
   await addDoc(col, {
-    userId:    uid,
+    userId:     uid,
     username,
-    text:      text.trim(),
-    likes:     0,
-    dislikes:  0,
-    createdAt: serverTimestamp(),
+    userAvatar: userAvatar || null,
+    text:       text.trim(),
+    likes:      0,
+    dislikes:   0,
+    createdAt:  serverTimestamp(),
   });
 }
 
@@ -241,13 +267,29 @@ export async function getComments(slug) {
   }
 }
 
-/** Get all comments by a specific user across all series */
+/**
+ * Get all comments by a specific user across all series.
+ * Uses collectionGroup query on "items". Requires a Firestore
+ * single-field exemption or composite index on userId + createdAt
+ * at the collection-group level. Falls back to [] gracefully.
+ */
 export async function getUserComments(uid) {
   try {
-    // Note: This requires a Firestore index on userId across the comments collection group
-    // Fallback: return empty array gracefully if index not set up
-    return [];
+    const cg   = collectionGroup(db, "items");
+    const q    = query(cg, where("userId", "==", uid), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => {
+      // Parent path:  comments/{seriesSlug}/items/{commentId}
+      const parent = d.ref.parent.parent; // doc under /comments/
+      return {
+        id:         d.id,
+        seriesSlug: parent?.id ?? '',
+        ...d.data(),
+      };
+    });
   } catch (e) {
+    // Likely missing collectionGroup index — graceful fallback
+    console.warn("[Firebase] getUserComments failed (needs index?):", e.message);
     return [];
   }
 }
