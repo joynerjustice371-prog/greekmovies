@@ -1,9 +1,8 @@
 /* ============================================================
-   tmdb.js — TMDB API Client
-   Replace TMDB_API_KEY with your key from themoviedb.org
+   tmdb.js — TMDB API Client (Greek-first with en-US fallback)
    ============================================================ */
 
-const TMDB_API_KEY  = "f6aeb62fa60713990edbc2894a8d1d5d";
+const TMDB_API_KEY  = "YOUR_TMDB_API_KEY";
 const TMDB_BASE     = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p";
 
@@ -19,18 +18,32 @@ export class TMDBClient {
     this._cache = new Map();
   }
 
-  /* ── Mode A: fetch by TMDB ID ────────────────────────────── */
+  /* ── Fetch TV details by ID — Greek first, en-US fallback ── */
   async fetchById(id) {
     const key = `id:${id}`;
     if (this._cache.has(key)) return this._cache.get(key);
 
     try {
+      // PART 1 FIX: always request Greek first
       const res = await fetch(
-        `${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`
+        `${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=el-GR`
       );
       if (!res.ok) throw new Error(`TMDB ${res.status}`);
-      const data = await res.json();
-      const normalized = this._normalize(data);
+      const grData = await res.json();
+
+      // PART 1 FIX: fallback — if Greek title/overview is empty, fetch en-US
+      let enData = null;
+      const needsFallback = !grData.name?.trim() || !grData.overview?.trim();
+      if (needsFallback) {
+        try {
+          const resEn = await fetch(
+            `${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`
+          );
+          if (resEn.ok) enData = await resEn.json();
+        } catch (_) { /* silent — best effort */ }
+      }
+
+      const normalized = this._normalize(grData, enData);
       this._cache.set(key, normalized);
       return normalized;
     } catch (err) {
@@ -39,14 +52,15 @@ export class TMDBClient {
     }
   }
 
-  /* ── Mode B: search by title, pick best match ────────────── */
+  /* ── Search by title — Greek first ────────────────────────── */
   async searchByTitle(title) {
     const key = `search:${title.toLowerCase()}`;
     if (this._cache.has(key)) return this._cache.get(key);
 
     try {
+      // PART 1 FIX: Greek language for search
       const res = await fetch(
-        `${TMDB_BASE}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}&language=en-US`
+        `${TMDB_BASE}/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(title)}&language=el-GR`
       );
       if (!res.ok) throw new Error(`TMDB search ${res.status}`);
       const data = await res.json();
@@ -56,7 +70,6 @@ export class TMDBClient {
         return null;
       }
 
-      // Best match: highest popularity from first page
       const best = data.results.reduce((a, b) =>
         (b.popularity > a.popularity ? b : a)
       );
@@ -70,12 +83,11 @@ export class TMDBClient {
     }
   }
 
-  /* ── Smart resolver: tries ID first, falls back to search ── */
+  /* ── Smart resolver: ID first, search fallback ─────────────── */
   async getDetails(seriesEntry) {
     if (seriesEntry.tmdb_id) {
       const result = await this.fetchById(seriesEntry.tmdb_id);
       if (result) return result;
-      // ID failed — fall through to search
     }
     if (seriesEntry.title_fallback) {
       return this.searchByTitle(seriesEntry.title_fallback);
@@ -83,28 +95,35 @@ export class TMDBClient {
     return null;
   }
 
-  /* ── Normalize raw TMDB response ────────────────────────── */
-  _normalize(raw) {
+  /* ── Normalize: Greek data with en-US fallback for blanks ─── */
+  _normalize(gr, en = null) {
+    // PART 1 FIX: title → gr.name, fallback to en.name, then original_name
+    const title    = gr.name?.trim()     || en?.name?.trim()          || gr.original_name || "Unknown";
+    // PART 1 FIX: overview → gr.overview, fallback to en.overview
+    const overview = gr.overview?.trim() || en?.overview?.trim()      || "";
+    // Genres from Greek response (may be empty); fallback to English
+    const genres   = (gr.genres?.length ? gr.genres : en?.genres ?? []).map(g => g.name);
+
     return {
-      tmdbId:        raw.id,
-      title:         raw.name               ?? "Unknown",
-      originalTitle: raw.original_name      ?? raw.name,
-      overview:      raw.overview           ?? "",
-      poster:        IMG.poster(raw.poster_path),
-      posterLg:      IMG.posterLg(raw.poster_path),
-      backdrop:      IMG.backdrop(raw.backdrop_path),
-      genres:        (raw.genres ?? []).map(g => g.name),
-      year:          raw.first_air_date?.slice(0, 4) ?? null,
-      rating:        raw.vote_average != null ? +raw.vote_average.toFixed(1) : null,
-      seasons:       raw.number_of_seasons  ?? null,
-      episodes:      raw.number_of_episodes ?? null,
-      status:        raw.status             ?? null,
-      networks:      (raw.networks ?? []).map(n => n.name),
-      language:      raw.original_language  ?? null,
+      tmdbId:        gr.id,
+      title,
+      originalTitle: gr.original_name ?? gr.name,
+      overview,
+      poster:        IMG.poster(gr.poster_path),
+      posterLg:      IMG.posterLg(gr.poster_path),
+      backdrop:      IMG.backdrop(gr.backdrop_path),
+      genres,
+      year:          gr.first_air_date?.slice(0, 4) ?? null,
+      rating:        gr.vote_average != null ? +gr.vote_average.toFixed(1) : null,
+      seasons:       gr.number_of_seasons  ?? null,
+      episodes:      gr.number_of_episodes ?? null,
+      status:        gr.status             ?? null,
+      networks:      (gr.networks ?? []).map(n => n.name),
+      language:      gr.original_language  ?? null,
     };
   }
 
-  /* ── Batch resolve many series entries ───────────────────── */
+  /* ── Batch resolve ─────────────────────────────────────────── */
   async batchResolve(entries) {
     const results = await Promise.allSettled(
       entries.map(({ slug, data }) =>
@@ -119,5 +138,5 @@ export class TMDBClient {
   cacheSize() { return this._cache.size; }
 }
 
-/* Singleton export */
+/* Singleton */
 export const tmdb = new TMDBClient();
