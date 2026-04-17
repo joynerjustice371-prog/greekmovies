@@ -1,0 +1,78 @@
+// ============================================================
+// firestore.rules — StreamVault Security Rules
+//
+// Rules:
+//  • Users can read/write ONLY their own document in users/{uid}
+//  • Comments are readable by everyone (public)
+//  • Only authenticated users can write comments
+//  • No one can delete or overwrite other users' comments
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── USERS ─────────────────────────────────────────────────
+    // Each user can read and write only their own profile document.
+    // Pattern: users/{uid}
+    match /users/{uid} {
+      // Read: only the owner
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // Create: only if the caller is creating their own document
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && validUserData(request.resource.data);
+
+      // Update: only the owner; cannot change uid-derived fields
+      allow update: if request.auth != null
+                    && request.auth.uid == uid
+                    && validUserData(request.resource.data);
+
+      // Delete: only the owner
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── COMMENTS ──────────────────────────────────────────────
+    // Subcollection path: comments/{seriesSlug}/items/{commentId}
+    match /comments/{seriesSlug}/items/{commentId} {
+      // PART 13: Anyone (including unauthenticated) can read comments
+      allow read: if true;
+
+      // PART 13: Only authenticated users can create a comment
+      // The comment's userId must match the caller's uid
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.text is string
+                    && request.resource.data.text.size() > 0
+                    && request.resource.data.text.size() <= 2000
+                    && request.resource.data.username is string;
+
+      // Update: only the comment's original author can edit
+      allow update: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
+
+      // Delete: only the comment's original author
+      allow delete: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
+    }
+
+    // ── DEFAULT: deny everything else ─────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// ── Helper: validate user document fields ─────────────────────
+function validUserData(data) {
+  return data.keys().hasAll(['username', 'email', 'favorites', 'watchlist', 'watched', 'ratings'])
+    && data.username is string
+    && data.username.size() >= 1
+    && data.username.size() <= 50
+    && data.email is string
+    && data.favorites is list
+    && data.watchlist is list
+    && data.watched is list
+    && data.ratings is map;
+}
