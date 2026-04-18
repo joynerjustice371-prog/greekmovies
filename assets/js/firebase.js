@@ -64,6 +64,9 @@ export async function loginWithGoogle() {
 
 export async function loginWithEmail(email, password) {
   const result = await signInWithEmailAndPassword(auth, email, password);
+  /* Safety net: self-heal missing Firestore user doc for legacy
+     accounts that were created before the schema existed. */
+  try { await ensureUserDoc(result.user); } catch (_) {}
   return result.user;
 }
 
@@ -100,7 +103,7 @@ export function onAuth(cb) {
      createdAt   : Timestamp
    ══════════════════════════════════════════════════════════════ */
 
-async function ensureUserDoc(user, username = null) {
+export async function ensureUserDoc(user, username = null) {
   const ref  = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
   if (!snap.exists()) {
