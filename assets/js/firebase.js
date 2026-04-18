@@ -1,12 +1,18 @@
 /* ============================================================
-   firebase.js — Firebase Modular SDK v10  v3.1
+   firebase.js — StreamVault  v3.2
    ─────────────────────────────────────────────────────────────
-   FIXES vs v3.0:
-   ① setRating — replaced updateDoc (fails on missing doc) with
-     setDoc+merge for user doc AND writes to seriesRatings/
-   ② getAverageRating — new: reads seriesRatings/{id}/ratings/
-   ③ onSeriesRatingsSnapshot — new: live average updates
-   ④ getRating — reads seriesRatings first, falls back to user doc
+   CHANGES vs v3.1:
+   ① favorites / watchlist / seen → subcollections
+       users/{uid}/favorites/{slug}
+       users/{uid}/watchlist/{slug}
+       users/{uid}/seen/{slug}
+     Write: setDoc   Read: getDoc/getDocs   Delete: deleteDoc
+   ② isFavorite / isInWatchlist / isInSeen — single-doc checks
+     (used in SeriesController for parallel Promise.all)
+   ③ getUserFavorites / getUserWatchlist / getUserSeen — bulk reads
+     (used in ProfileController parallel loading)
+   ④ setRating — stores uid field so collectionGroup can filter
+   ⑤ getAllRatings — user-doc fast path + collectionGroup fallback
    ============================================================ */
 
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -26,6 +32,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   arrayUnion,
   arrayRemove,
   collection,
@@ -68,7 +75,6 @@ export async function loginWithGoogle() {
 
 export async function loginWithEmail(email, password) {
   const result = await signInWithEmailAndPassword(auth, email, password);
-  /* Safety net: self-heal missing Firestore user doc */
   try { await ensureUserDoc(result.user); } catch (_) {}
   return result.user;
 }
@@ -93,20 +99,11 @@ export function onAuth(cb) {
 
 /* ══════════════════════════════════════════════════════════════
    USER PROFILE
-   Schema: users/{uid}
-     username  : string
-     email     : string
-     avatar    : string|null
-     role      : 'user'|'admin'
-     status    : 'active'|'banned'|'shadowbanned'
-     favorites : string[]
-     watchlist : string[]
-     watched   : string[]
-     ratings   : { [slug]: number }
-     createdAt : Timestamp
+   Firestore path: users/{uid}
    ══════════════════════════════════════════════════════════════ */
 
 export async function ensureUserDoc(user, username = null) {
+  if (!user?.uid) return;
   const ref  = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
   if (!snap.exists()) {
@@ -116,9 +113,6 @@ export async function ensureUserDoc(user, username = null) {
       avatar:    user.photoURL ?? null,
       role:      "user",
       status:    "active",
-      favorites: [],
-      watchlist: [],
-      watched:   [],
       ratings:   {},
       createdAt: serverTimestamp(),
     });
@@ -148,117 +142,186 @@ export async function updateUserProfile(uid, updates = {}) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   FAVORITES
+   FAVORITES  —  subcollection: users/{uid}/favorites/{slug}
    ══════════════════════════════════════════════════════════════ */
 
+/**
+ * Returns all favorite slugs for a user (one getDocs call).
+ * Suitable for ProfileController bulk loading.
+ */
+export async function getUserFavorites(uid) {
+  try {
+    const snap = await getDocs(collection(db, "users", uid, "favorites"));
+    return snap.docs.map(d => d.id);
+  } catch (e) {
+    console.error("[Firebase] getUserFavorites failed:", e.message);
+    return [];
+  }
+}
+
+/**
+ * Returns true/false for a single series.
+ * Suitable for SeriesController parallel checks.
+ */
+export async function isFavorite(uid, slug) {
+  try {
+    const snap = await getDoc(doc(db, "users", uid, "favorites", slug));
+    return snap.exists();
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function addFavorite(uid, slug) {
-  await updateDoc(doc(db, "users", uid), { favorites: arrayUnion(slug) });
+  await setDoc(doc(db, "users", uid, "favorites", slug), {
+    addedAt: serverTimestamp(),
+  });
 }
 
 export async function removeFavorite(uid, slug) {
-  await updateDoc(doc(db, "users", uid), { favorites: arrayRemove(slug) });
+  await deleteDoc(doc(db, "users", uid, "favorites", slug));
 }
 
 export async function toggleFavorite(uid, slug) {
-  const profile = await getUserProfile(uid);
-  if (profile?.favorites?.includes(slug)) {
-    await removeFavorite(uid, slug);
-    return false;
+  const ref  = doc(db, "users", uid, "favorites", slug);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    await deleteDoc(ref);
+    return false; // removed
   }
-  await addFavorite(uid, slug);
-  return true;
+  await setDoc(ref, { addedAt: serverTimestamp() });
+  return true;   // added
 }
 
 /* ══════════════════════════════════════════════════════════════
-   WATCHLIST
+   WATCHLIST  —  subcollection: users/{uid}/watchlist/{slug}
    ══════════════════════════════════════════════════════════════ */
 
+export async function getUserWatchlist(uid) {
+  try {
+    const snap = await getDocs(collection(db, "users", uid, "watchlist"));
+    return snap.docs.map(d => d.id);
+  } catch (e) {
+    console.error("[Firebase] getUserWatchlist failed:", e.message);
+    return [];
+  }
+}
+
+export async function isInWatchlist(uid, slug) {
+  try {
+    const snap = await getDoc(doc(db, "users", uid, "watchlist", slug));
+    return snap.exists();
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function addToWatchlist(uid, slug) {
-  await updateDoc(doc(db, "users", uid), { watchlist: arrayUnion(slug) });
+  await setDoc(doc(db, "users", uid, "watchlist", slug), {
+    addedAt: serverTimestamp(),
+  });
 }
 
 export async function removeFromWatchlist(uid, slug) {
-  await updateDoc(doc(db, "users", uid), { watchlist: arrayRemove(slug) });
+  await deleteDoc(doc(db, "users", uid, "watchlist", slug));
 }
 
 export async function toggleWatchlist(uid, slug) {
-  const profile = await getUserProfile(uid);
-  if (profile?.watchlist?.includes(slug)) {
-    await removeFromWatchlist(uid, slug);
+  const ref  = doc(db, "users", uid, "watchlist", slug);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    await deleteDoc(ref);
     return false;
   }
-  await addToWatchlist(uid, slug);
+  await setDoc(ref, { addedAt: serverTimestamp() });
   return true;
 }
 
 /* ══════════════════════════════════════════════════════════════
-   SEEN / WATCHED
+   SEEN  —  subcollection: users/{uid}/seen/{slug}
    ══════════════════════════════════════════════════════════════ */
 
+export async function getUserSeen(uid) {
+  try {
+    const snap = await getDocs(collection(db, "users", uid, "seen"));
+    return snap.docs.map(d => d.id);
+  } catch (e) {
+    console.error("[Firebase] getUserSeen failed:", e.message);
+    return [];
+  }
+}
+
+export async function isInSeen(uid, slug) {
+  try {
+    const snap = await getDoc(doc(db, "users", uid, "seen", slug));
+    return snap.exists();
+  } catch (e) {
+    return false;
+  }
+}
+
 export async function addSeen(uid, slug) {
-  await updateDoc(doc(db, "users", uid), { watched: arrayUnion(slug) });
+  await setDoc(doc(db, "users", uid, "seen", slug), {
+    addedAt: serverTimestamp(),
+  });
 }
 
 export async function removeSeen(uid, slug) {
-  await updateDoc(doc(db, "users", uid), { watched: arrayRemove(slug) });
+  await deleteDoc(doc(db, "users", uid, "seen", slug));
 }
 
 export async function toggleSeen(uid, slug) {
-  const profile = await getUserProfile(uid);
-  if (profile?.watched?.includes(slug)) {
-    await removeSeen(uid, slug);
+  const ref  = doc(db, "users", uid, "seen", slug);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    await deleteDoc(ref);
     return false;
   }
-  await addSeen(uid, slug);
+  await setDoc(ref, { addedAt: serverTimestamp() });
   return true;
 }
 
 /* ══════════════════════════════════════════════════════════════
-   RATINGS  v3.1
-   ─────────────────────────────────────────────────────────────
-   Dual-write:
-     (A) users/{uid}  ratings.{slug}  — for profile page tab
-     (B) seriesRatings/{slug}/ratings/{uid} — for per-series avg
-
-   FIX: old code used updateDoc which throws on missing doc.
-        New code uses setDoc+merge which upserts safely.
+   RATINGS  —  seriesRatings/{seriesId}/ratings/{uid}
+   ──────────────────────────────────────────────────────────────
+   Primary store: seriesRatings (independent of user doc)
+   Secondary store: users/{uid}.ratings map (for profile tab)
    ══════════════════════════════════════════════════════════════ */
 
 /**
- * Save a rating. Writes to both the user doc (profile tab) and
- * the seriesRatings collection (average calculation).
+ * Save a rating.
+ * Primary write → seriesRatings (always, rules are simple).
+ * Secondary write → user doc ratings map (best-effort).
  */
 export async function setRating(uid, slug, stars) {
-  /* (A) User profile — use setDoc+merge so it works even if
-     the user doc was created moments ago or doesn't exist yet. */
-  try {
-    await setDoc(
-      doc(db, "users", uid),
-      { ratings: { [slug]: stars } },
-      { merge: true }
-    );
-  } catch (e) {
-    /* Non-fatal: profile write failing doesn't block the main rating */
-    console.warn("[Firebase] setRating user-doc write failed:", e.message);
-  }
+  if (!uid) throw new Error("uid required");
 
-  /* (B) Series ratings collection — this is the primary store */
+  /* Primary — stores uid field for collectionGroup queries */
   await setDoc(
     doc(db, "seriesRatings", slug, "ratings", uid),
-    { rating: stars, updatedAt: serverTimestamp() }
+    { rating: stars, uid, updatedAt: serverTimestamp() }
   );
+
+  /* Secondary — update user doc ratings map for profile tab */
+  try {
+    await updateDoc(doc(db, "users", uid), {
+      [`ratings.${slug}`]: stars,
+    });
+  } catch (e) {
+    /* updateDoc fails on missing doc — non-critical, seriesRatings is primary */
+    console.warn("[Firebase] setRating user-doc secondary write:", e.message);
+  }
 }
 
 /**
- * Get the current user's rating for a series.
- * Reads from seriesRatings first (faster), falls back to user doc.
+ * Read current user's rating for a series.
+ * Reads from seriesRatings first (fast single doc), falls back to user doc.
  */
 export async function getRating(uid, slug) {
   try {
     const snap = await getDoc(doc(db, "seriesRatings", slug, "ratings", uid));
     if (snap.exists()) return snap.data().rating ?? 0;
   } catch (_) {}
-  /* Fallback: read from user profile ratings map */
   try {
     const profile = await getUserProfile(uid);
     return profile?.ratings?.[slug] ?? 0;
@@ -266,19 +329,42 @@ export async function getRating(uid, slug) {
   return 0;
 }
 
+/**
+ * Get ALL ratings for a user (profile ratings tab).
+ * Fast path: reads from user doc ratings map.
+ * Fallback: collectionGroup query on "ratings" subcollections.
+ *   Requires Firestore index: collectionGroup "ratings", field "uid" ASC.
+ */
 export async function getAllRatings(uid) {
-  const profile = await getUserProfile(uid);
-  return profile?.ratings ?? {};
+  /* Fast path */
+  try {
+    const profile    = await getUserProfile(uid);
+    const userRatings = profile?.ratings ?? {};
+    if (Object.keys(userRatings).length > 0) return userRatings;
+  } catch (_) {}
+
+  /* Fallback: collectionGroup (needs index) */
+  try {
+    const q    = query(collectionGroup(db, "ratings"), where("uid", "==", uid));
+    const snap = await getDocs(q);
+    const result = {};
+    snap.docs.forEach(d => {
+      const seriesId = d.ref.parent.parent?.id;
+      if (seriesId) result[seriesId] = d.data().rating;
+    });
+    return result;
+  } catch (e) {
+    console.warn("[Firebase] getAllRatings collectionGroup fallback failed:", e.message);
+    return {};
+  }
 }
 
 /**
- * Calculate the average rating for a series (one-time read).
- * Returns { avg: number, count: number }
+ * Calculate community average for a series (one-time read).
  */
 export async function getAverageRating(slug) {
   try {
-    const col  = collection(db, "seriesRatings", slug, "ratings");
-    const snap = await getDocs(col);
+    const snap   = await getDocs(collection(db, "seriesRatings", slug, "ratings"));
     if (snap.empty) return { avg: 0, count: 0 };
     const values = snap.docs.map(d => d.data().rating ?? 0).filter(r => r > 0);
     if (!values.length) return { avg: 0, count: 0 };
@@ -291,8 +377,7 @@ export async function getAverageRating(slug) {
 }
 
 /**
- * Subscribe to live rating updates for a series.
- * Callback receives { avg, count } every time any user rates.
+ * Subscribe to live average rating updates for a series.
  * Returns an unsubscribe function.
  */
 export function onSeriesRatingsSnapshot(slug, callback) {
@@ -306,28 +391,19 @@ export function onSeriesRatingsSnapshot(slug, callback) {
         const avg = values.reduce((s, r) => s + r, 0) / values.length;
         callback({ avg: Math.round(avg * 10) / 10, count: values.length });
       } catch (e) {
-        console.warn("[Firebase] onSeriesRatingsSnapshot callback error:", e.message);
+        console.warn("[Firebase] onSeriesRatingsSnapshot cb error:", e.message);
       }
     }, (e) => {
       console.warn("[Firebase] onSeriesRatingsSnapshot error:", e.message);
     });
   } catch (e) {
     console.warn("[Firebase] onSeriesRatingsSnapshot setup failed:", e.message);
-    return () => {};  /* noop unsubscribe */
+    return () => {};
   }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   COMMENTS
-   Collection: comments/{seriesSlug}/items/{commentId}
-   Schema:
-     userId     : string
-     username   : string
-     userAvatar : string|null
-     text       : string
-     likes      : number
-     dislikes   : number
-     createdAt  : Timestamp
+   COMMENTS  —  comments/{seriesSlug}/items/{commentId}
    ══════════════════════════════════════════════════════════════ */
 
 export async function postComment(slug, uid, username, text, userAvatar = null) {
@@ -345,8 +421,7 @@ export async function postComment(slug, uid, username, text, userAvatar = null) 
 
 export async function getComments(slug) {
   try {
-    const col  = collection(db, "comments", slug, "items");
-    const q    = query(col, orderBy("createdAt", "asc"));
+    const q    = query(collection(db, "comments", slug, "items"), orderBy("createdAt", "asc"));
     const snap = await getDocs(q);
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (e) {
@@ -355,10 +430,17 @@ export async function getComments(slug) {
   }
 }
 
+/**
+ * Get all comments by a user across all series.
+ * Requires collectionGroup index: collection "items", field "userId" + "createdAt".
+ */
 export async function getUserComments(uid) {
   try {
-    const cg   = collectionGroup(db, "items");
-    const q    = query(cg, where("userId", "==", uid), orderBy("createdAt", "desc"));
+    const q    = query(
+      collectionGroup(db, "items"),
+      where("userId", "==", uid),
+      orderBy("createdAt", "desc")
+    );
     const snap = await getDocs(q);
     return snap.docs.map(d => {
       const parent = d.ref.parent.parent;
