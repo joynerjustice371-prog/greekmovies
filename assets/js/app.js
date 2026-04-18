@@ -163,60 +163,89 @@ const Session = {
   isSeen(slug)  { return this.seen.has(slug); },
   getRating(slug) { return this.ratings[slug] ?? 0; },
 
-  /* Optimistic mutations — update cache + UI first, sync Firestore,
-     revert on error */
+  /* Optimistic mutations — use LIVE auth (fb.auth.currentUser), not cached.
+     This ensures buttons work the instant the user is signed in, even before
+     Session.hydrate() completes. If hydrated, we also do optimistic UI; if
+     not, we just call Firestore and sync the cache after. */
+  _liveUid() {
+    return this.user?.uid ?? fb?.auth?.currentUser?.uid ?? null;
+  },
+
   async toggleFavorite(slug) {
-    if (!this.user) throw new Error('Not signed in');
+    const uid = this._liveUid();
+    if (!uid) throw new Error('Not signed in');
     const was = this.favorites.has(slug);
-    if (was) this.favorites.delete(slug); else this.favorites.add(slug);
-    this._emitChange();
-    try {
-      await fb.toggleFavorite(this.user.uid, slug);
-      return !was;
-    } catch (e) {
-      if (was) this.favorites.add(slug); else this.favorites.delete(slug);
+    if (this.loaded) {
+      if (was) this.favorites.delete(slug); else this.favorites.add(slug);
       this._emitChange();
+    }
+    try {
+      const result = await fb.toggleFavorite(uid, slug);
+      /* Sync cache from actual result (esp. important if not hydrated) */
+      if (result) this.favorites.add(slug); else this.favorites.delete(slug);
+      if (!this.loaded) this._emitChange();
+      return result;
+    } catch (e) {
+      if (this.loaded) {
+        if (was) this.favorites.add(slug); else this.favorites.delete(slug);
+        this._emitChange();
+      }
       throw e;
     }
   },
 
   async toggleWatchlist(slug) {
-    if (!this.user) throw new Error('Not signed in');
+    const uid = this._liveUid();
+    if (!uid) throw new Error('Not signed in');
     const was = this.watchlist.has(slug);
-    if (was) this.watchlist.delete(slug); else this.watchlist.add(slug);
-    this._emitChange();
-    try {
-      await fb.toggleWatchlist(this.user.uid, slug);
-      return !was;
-    } catch (e) {
-      if (was) this.watchlist.add(slug); else this.watchlist.delete(slug);
+    if (this.loaded) {
+      if (was) this.watchlist.delete(slug); else this.watchlist.add(slug);
       this._emitChange();
+    }
+    try {
+      const result = await fb.toggleWatchlist(uid, slug);
+      if (result) this.watchlist.add(slug); else this.watchlist.delete(slug);
+      if (!this.loaded) this._emitChange();
+      return result;
+    } catch (e) {
+      if (this.loaded) {
+        if (was) this.watchlist.add(slug); else this.watchlist.delete(slug);
+        this._emitChange();
+      }
       throw e;
     }
   },
 
   async toggleSeen(slug) {
-    if (!this.user) throw new Error('Not signed in');
+    const uid = this._liveUid();
+    if (!uid) throw new Error('Not signed in');
     const was = this.seen.has(slug);
-    if (was) this.seen.delete(slug); else this.seen.add(slug);
-    this._emitChange();
-    try {
-      await fb.toggleSeen(this.user.uid, slug);
-      return !was;
-    } catch (e) {
-      if (was) this.seen.add(slug); else this.seen.delete(slug);
+    if (this.loaded) {
+      if (was) this.seen.delete(slug); else this.seen.add(slug);
       this._emitChange();
+    }
+    try {
+      const result = await fb.toggleSeen(uid, slug);
+      if (result) this.seen.add(slug); else this.seen.delete(slug);
+      if (!this.loaded) this._emitChange();
+      return result;
+    } catch (e) {
+      if (this.loaded) {
+        if (was) this.seen.add(slug); else this.seen.delete(slug);
+        this._emitChange();
+      }
       throw e;
     }
   },
 
   async setRating(slug, stars) {
-    if (!this.user) throw new Error('Not signed in');
+    const uid = this._liveUid();
+    if (!uid) throw new Error('Not signed in');
     const prev = this.ratings[slug] ?? 0;
     this.ratings[slug] = stars;
     this._emitChange();
     try {
-      await fb.setRating(this.user.uid, slug, stars);
+      await fb.setRating(uid, slug, stars);
       return stars;
     } catch (e) {
       if (prev) this.ratings[slug] = prev; else delete this.ratings[slug];
@@ -254,10 +283,10 @@ class AuthController {
       try { AuthController._authUnsub(); } catch (_) {}
     }
 
-    AuthController._authUnsub = fb.onAuth(async (user) => {
+    AuthController._authUnsub = fb.onAuth((user) => {
+      /* NON-BLOCKING: this callback itself is synchronous-looking — all
+         async work happens in background without blocking the auth event. */
       if (user) {
-        /* Close any open auth modal immediately on sign-in (fallback for cases
-           where the modal's own close handler fails, e.g. ensureUserDoc error) */
         if (this._modal) {
           try { this._modal.remove(); } catch (_) {}
           this._modal = null;
@@ -265,21 +294,35 @@ class AuthController {
         /* Phase 1: immediate paint from Firebase user */
         const quickName = user.displayName || user.email?.split('@')[0] || '?';
         this._setLoggedIn(quickName, user.photoURL ?? null);
-        /* Phase 2: hydrate session + upgrade nav */
-        try {
-          await Session.hydrate(user);
-          if (Session.profile) {
-            this._setLoggedIn(Session.profile.username || quickName,
-                              Session.profile.avatar || user.photoURL || null);
-          }
-        } catch (e) { console.warn('[Auth] hydrate:', e.message); }
+
+        /* Dispatch FIRST event immediately so pages can react to login
+           right away, even before Session is hydrated. Pages use
+           fb.auth.currentUser for live auth checks. */
+        document.dispatchEvent(new CustomEvent('authStateChanged', {
+          detail: { user, profile: null }
+        }));
+
+        /* Hydrate session in BACKGROUND — no await here. Pages get a
+           second 'sessionChanged' (and updated auth) when done. */
+        Session.hydrate(user)
+          .then(() => {
+            if (Session.profile) {
+              this._setLoggedIn(Session.profile.username || quickName,
+                                Session.profile.avatar || user.photoURL || null);
+            }
+            /* Also dispatch authStateChanged again with profile populated */
+            document.dispatchEvent(new CustomEvent('authStateChanged', {
+              detail: { user, profile: Session.profile }
+            }));
+          })
+          .catch(e => console.warn('[Auth] hydrate:', e.message));
       } else {
         Session.clear();
         this._setLoggedOut();
+        document.dispatchEvent(new CustomEvent('authStateChanged', {
+          detail: { user: null, profile: null }
+        }));
       }
-      document.dispatchEvent(new CustomEvent('authStateChanged', {
-        detail: { user, profile: Session.profile }
-      }));
     });
 
     document.addEventListener('openAuthModal', () => this._openModal());
@@ -857,7 +900,8 @@ function renderStarRating(container, slug) {
       container.querySelectorAll('.star-btn').forEach(b => b.classList.remove('hover'));
     });
     btn.addEventListener('click', async () => {
-      if (!Session.user) { toast('Συνδεθείτε για να αξιολογήσετε.', 'info'); return; }
+      /* Live auth check — works even before Session.hydrate completes */
+      if (!fb?.auth?.currentUser) { toast('Συνδεθείτε για να αξιολογήσετε.', 'info'); return; }
       const stars = +btn.dataset.star;
       container.querySelectorAll('.star-btn').forEach((b, i) => { b.classList.toggle('active', i < stars); b.classList.remove('hover'); });
       const lbl = document.getElementById(`starLabel-${safe}`);
@@ -906,7 +950,7 @@ async function renderComments(container, slug) {
       </div>`;
   }).join('') : '<p class="comments-empty">Δεν υπάρχουν σχόλια ακόμα. Γίνετε οι πρώτοι!</p>';
 
-  const isLoggedIn = !!Session.user;
+  const isLoggedIn = !!(fb?.auth?.currentUser || Session.user);
   container.innerHTML = `
     <div class="comments-section">
       <h3 class="comments-title">💬 Σχόλια${comments.length ? ` <span class="count-badge">${comments.length}</span>` : ''}</h3>
@@ -926,23 +970,24 @@ async function renderComments(container, slug) {
     document.dispatchEvent(new CustomEvent('openAuthModal'))
   );
   container.querySelectorAll('.like-btn').forEach(b => b.addEventListener('click', async () => {
-    if (!Session.user) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
+    if (!fb?.auth?.currentUser) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
     await fb.likeComment(b.dataset.slug, b.dataset.id);
     await renderComments(container, slug);
   }));
   container.querySelectorAll('.dislike-btn').forEach(b => b.addEventListener('click', async () => {
-    if (!Session.user) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
+    if (!fb?.auth?.currentUser) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
     await fb.dislikeComment(b.dataset.slug, b.dataset.id);
     await renderComments(container, slug);
   }));
   container.querySelector('#commentSubmit')?.addEventListener('click', async () => {
     const text = container.querySelector('#commentText')?.value?.trim();
     if (!text) { toast('Γράψτε κάτι πρώτα.', 'info'); return; }
-    if (!Session.user) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
+    const liveUser = fb?.auth?.currentUser ?? Session.user;
+    if (!liveUser) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
     try {
-      const u = Session.profile?.username ?? Session.user.displayName ?? Session.user.email?.split('@')[0] ?? 'Ανώνυμος';
-      const a = Session.profile?.avatar ?? Session.user.photoURL ?? null;
-      await fb.postComment(slug, Session.user.uid, u, text, a);
+      const u = Session.profile?.username ?? liveUser.displayName ?? liveUser.email?.split('@')[0] ?? 'Ανώνυμος';
+      const a = Session.profile?.avatar ?? liveUser.photoURL ?? null;
+      await fb.postComment(slug, liveUser.uid, u, text, a);
       container.querySelector('#commentText').value = '';
       await renderComments(container, slug);
       toast('Το σχόλιο δημοσιεύτηκε!', 'success');
@@ -959,12 +1004,9 @@ class SeriesController {
   async init() {
     initNavScroll();
     new AuthController().init();
-    const _authUser = await fb.authReady; // wait for Firebase auth token
-    /* DESYNC FIX: authReady resolves before Session.hydrate() completes.
-       Hydrate here so Session.user/.favorites/.watchlist/.seen are populated
-       before _render() runs syncBtns() / syncRating(). */
-    if (_authUser) await Session.hydrate(_authUser);
-
+    /* NON-BLOCKING: render immediately. Auth/session updates arrive via
+       'authStateChanged' + 'sessionChanged' events, which trigger syncAll().
+       The page is fully usable before auth resolves. */
     const slug = new URLSearchParams(window.location.search).get('id');
     if (!slug) { window.location.href = pageUrl('index.html'); return; }
     const entry = await this._dm.getOne(slug);
@@ -1012,16 +1054,19 @@ class SeriesController {
         <button id="seenBtn"      class="btn-secondary user-action-btn" type="button">${ICONS.check}    <span id="seenLabel">Έχω δει</span></button>`;
     }
 
-    /* Button state: read from Session cache (instant, no Firestore) */
+    /* Button state: use LIVE auth (fb.auth.currentUser) so labels update
+       immediately when user signs in, even before Session hydrates.
+       Session cache provides the isFav/isWatch/isSeen lookups for active state. */
     const syncBtns = () => {
+      const liveUser = fb?.auth?.currentUser ?? Session.user;
       const isFav = Session.isFav(slug), isW = Session.isWatch(slug), isS = Session.isSeen(slug);
       const fl = $('#favLabel'), wl = $('#watchlistLabel'), sl = $('#seenLabel');
-      if (fl) fl.textContent = Session.user ? (isFav ? '❤️ Αφαίρεση' : 'Αγαπημένα') : 'Αγαπημένα';
-      if (wl) wl.textContent = Session.user ? (isW ? '📌 Στη λίστα' : 'Watchlist') : 'Watchlist';
-      if (sl) sl.textContent = Session.user ? (isS ? '✓ Το είδα' : 'Έχω δει') : 'Έχω δει';
-      $('#favBtn')      ?.classList.toggle('active', !!isFav && !!Session.user);
-      $('#watchlistBtn')?.classList.toggle('active', !!isW   && !!Session.user);
-      $('#seenBtn')     ?.classList.toggle('active', !!isS   && !!Session.user);
+      if (fl) fl.textContent = liveUser ? (isFav ? '❤️ Αφαίρεση' : 'Αγαπημένα') : 'Αγαπημένα';
+      if (wl) wl.textContent = liveUser ? (isW ? '📌 Στη λίστα' : 'Watchlist') : 'Watchlist';
+      if (sl) sl.textContent = liveUser ? (isS ? '✓ Το είδα' : 'Έχω δει') : 'Έχω δει';
+      $('#favBtn')      ?.classList.toggle('active', !!isFav && !!liveUser);
+      $('#watchlistBtn')?.classList.toggle('active', !!isW   && !!liveUser);
+      $('#seenBtn')     ?.classList.toggle('active', !!isS   && !!liveUser);
     };
 
     const ratingWrap = $('#seriesRatingWrap');
@@ -1032,18 +1077,22 @@ class SeriesController {
     document.addEventListener('authStateChanged', syncAll);
     syncAll();
 
+    /* Click handlers check LIVE auth (fb.auth.currentUser) at click time —
+       not cached Session.user. This means buttons work the instant a user
+       signs in, even if Session hasn't hydrated yet. */
+    const liveAuthOk = () => !!(fb?.auth?.currentUser);
     $('#favBtn')?.addEventListener('click', async () => {
-      if (!Session.user) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
+      if (!liveAuthOk()) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
       try { const a = await Session.toggleFavorite(slug); toast(a ? '❤️ Προστέθηκε!' : 'Αφαιρέθηκε.', 'success'); }
       catch (e) { toast('Σφάλμα: ' + e.message, 'error'); }
     });
     $('#watchlistBtn')?.addEventListener('click', async () => {
-      if (!Session.user) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
+      if (!liveAuthOk()) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
       try { const a = await Session.toggleWatchlist(slug); toast(a ? '📌 Προστέθηκε!' : 'Αφαιρέθηκε.', 'success'); }
       catch (e) { toast('Σφάλμα: ' + e.message, 'error'); }
     });
     $('#seenBtn')?.addEventListener('click', async () => {
-      if (!Session.user) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
+      if (!liveAuthOk()) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
       try { const a = await Session.toggleSeen(slug); toast(a ? '✓ Σημειώθηκε!' : 'Αφαιρέθηκε.', 'success'); }
       catch (e) { toast('Σφάλμα: ' + e.message, 'error'); }
     });
@@ -1093,9 +1142,7 @@ class WatchController {
   async init() {
     initNavScroll();
     new AuthController().init();
-    const _authUser2 = await fb.authReady;
-    /* DESYNC FIX: same as SeriesController — hydrate before page renders */
-    if (_authUser2) await Session.hydrate(_authUser2);
+    /* NON-BLOCKING: render immediately. Auth irrelevant for watching. */
     const p = new URLSearchParams(window.location.search);
     this._slug = p.get('series'); this._season = +(p.get('season') ?? 1); this._ep = +(p.get('ep') ?? 1);
     if (!this._slug) { window.location.href = pageUrl('index.html'); return; }
@@ -1195,38 +1242,56 @@ class ProfileController {
     this._initTabs();
     this._initEdit();
 
-    /* Initial auth state */
-    const user = await fb.authReady;
-    if (!user) {
-      this._renderLoggedOut();
-    } else {
-      /* DESYNC FIX: wait for hydration so Session.user is populated */
-      await Session.hydrate(user);
-      await this._render();
-    }
+    /* NON-BLOCKING: show a skeleton/loading state immediately.
+       UI renders in <50ms; auth updates arrive reactively. */
+    this._renderLoading();
 
-    /* Re-render on session data mutations (favorites toggled, etc.) */
+    /* Reactive: react to auth state from the document event bus
+       (AuthController dispatches 'authStateChanged' after each onAuth fires
+       AND after Session.hydrate completes for signed-in users). */
     if (!this._sessionChangedBound) {
       this._sessionChangedBound = true;
-      document.addEventListener('sessionChanged', () => { if (Session.user) this._render(); });
 
-      /* Handle auth changes AFTER initial page load:
-         - User was NOT logged in when page loaded → logs in → render profile
-         - User was logged in → logs out → show login prompt
-         Uses authStateChanged (fired by AuthController) to avoid duplicate
-         onAuthStateChanged listeners. */
-      document.addEventListener('authStateChanged', async (e) => {
+      document.addEventListener('authStateChanged', (e) => {
         const evtUser = e.detail?.user;
         if (!evtUser) {
           this._renderLoggedOut();
-        } else if (!Session.loaded || Session.user?.uid !== evtUser.uid) {
-          /* User just logged in (or switched accounts) */
+        } else {
           this._showProfileUI();
-          await Session.hydrate(evtUser);
-          await this._render();
+          /* Render from whatever Session state we have now; if hydration
+             is in progress, sessionChanged will fire when it completes
+             and trigger another _render(). */
+          this._render();
         }
       });
+
+      document.addEventListener('sessionChanged', () => {
+        if (Session.user) this._render();
+      });
     }
+
+    /* If Firebase auth is ALREADY resolved (e.g. persisted session, page
+       refresh), trigger initial render without waiting. fb.auth.currentUser
+       is read synchronously — no promise, no blocking. */
+    const currentUser = fb.auth?.currentUser;
+    if (currentUser) {
+      this._showProfileUI();
+      this._render();
+      /* Kick off hydration in the background (no await). sessionChanged
+         will fire when done and trigger another _render() with full data. */
+      Session.hydrate(currentUser).catch(e => console.warn('[Profile] hydrate:', e.message));
+    } else {
+      /* If auth hasn't resolved yet, wait for authStateChanged event
+         (non-blocking — the listener above handles it when it fires). */
+    }
+  }
+
+  /* Immediate skeleton while we wait for reactive auth events. */
+  _renderLoading() {
+    /* Nothing to do — the HTML already has skeleton placeholders for the
+       hero and stats. We just ensure the page is visible. */
+    const hero = $('#profileHero'); if (hero) hero.style.display = '';
+    const tabs = document.querySelector('.profile-tabs'); if (tabs) tabs.style.display = '';
   }
 
   /* Shows the login prompt WITHOUT destroying the profile DOM.
