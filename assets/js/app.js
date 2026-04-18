@@ -1,19 +1,14 @@
 /* ============================================================
-   app.js — StreamVault Main Application  v3.0  FIXED
+   app.js — StreamVault Main Application  v3.1
    ─────────────────────────────────────────────────────────────
-   CRITICAL FIXES vs v2.x:
-   ① Auth nav uses data-state attribute on #authNavWrap instead
-      of .hidden (which was being overridden by
-      .nav-login-btn { display: inline-flex } — same specificity,
-      author rule wins → double-state bug)
-   ② Initial render hides BOTH states until onAuth fires once
-      (no flicker of "Σύνδεση" before avatar mounts)
-   ③ Static singleton + unsubscribe guard in AuthController
-      (no duplicate onAuth listeners on SPA re-navigation)
-   ④ Avatar image support (user.photoURL) in navbar + comments
-   ⑤ "Έχω δει" button on series page + profile tab
-   ⑥ Profile edit (username + avatar URL)
-   ⑦ Comments include avatar
+   FIXES vs v3.0:
+   ① renderStarRating — instant visual feedback, no recursive
+     re-render, shows community avg (getAverageRating),
+     live updates (onSeriesRatingsSnapshot), proper try/catch
+   ② ProfileController — ensureUserDoc called first (not as
+     fallback), entire auth body wrapped in try/catch,
+     console.error for easy debugging
+   ③ Stubs updated: getAverageRating, onSeriesRatingsSnapshot
    ============================================================ */
 
 import { tmdb } from './tmdb.js';
@@ -26,28 +21,30 @@ let fb = null;
 function _createFirebaseStubs() {
   const _notAvail = () => Promise.reject(new Error('Firebase non διαθέσιμο. Ελέγξτε τη σύνδεση.'));
   return {
-    auth:              null,
-    db:                null,
-    loginWithGoogle:   _notAvail,
-    loginWithEmail:    _notAvail,
-    registerWithEmail: _notAvail,
-    forgotPassword:    _notAvail,
-    logout:            _notAvail,
-    onAuth:            (cb) => { cb(null); return () => {}; },
-    getUserProfile:    async () => null,
-    ensureUserDoc:     async () => {},
-    updateUserProfile: _notAvail,
-    toggleFavorite:    _notAvail,
-    toggleWatchlist:   _notAvail,
-    toggleSeen:        _notAvail,
-    setRating:         _notAvail,
-    getRating:         async () => 0,
-    getAllRatings:     async () => ({}),
-    postComment:       _notAvail,
-    getComments:       async () => [],
-    getUserComments:   async () => [],
-    likeComment:       _notAvail,
-    dislikeComment:    _notAvail,
+    auth:                     null,
+    db:                       null,
+    loginWithGoogle:          _notAvail,
+    loginWithEmail:           _notAvail,
+    registerWithEmail:        _notAvail,
+    forgotPassword:           _notAvail,
+    logout:                   _notAvail,
+    onAuth:                   (cb) => { cb(null); return () => {}; },
+    ensureUserDoc:            async () => {},
+    getUserProfile:           async () => null,
+    updateUserProfile:        _notAvail,
+    toggleFavorite:           _notAvail,
+    toggleWatchlist:          _notAvail,
+    toggleSeen:               _notAvail,
+    setRating:                _notAvail,
+    getRating:                async () => 0,
+    getAllRatings:             async () => ({}),
+    getAverageRating:         async () => ({ avg: 0, count: 0 }),
+    onSeriesRatingsSnapshot:  () => () => {},
+    postComment:              _notAvail,
+    getComments:              async () => [],
+    getUserComments:          async () => [],
+    likeComment:              _notAvail,
+    dislikeComment:           _notAvail,
   };
 }
 
@@ -152,17 +149,7 @@ const ICONS = {
 };
 
 /* ══════════════════════════════════════════════════════════
-   AUTH CONTROLLER v3.0 — FIXED
-   ─────────────────────────────────────────────────────────
-   ROOT CAUSES FIXED:
-     (a) .hidden attr was overridden by .nav-login-btn { display:
-         inline-flex } (equal specificity, author rule wins).
-         Now uses data-state attribute with higher-specificity
-         id-scoped CSS + !important.
-     (b) Flash of "Σύνδεση" before Firebase hydrates. Now initial
-         state is "pending" → both hidden until first onAuth fires.
-     (c) Duplicate onAuth listeners on multi-controller init.
-         Static singleton pattern.
+   AUTH CONTROLLER v3.0
    ══════════════════════════════════════════════════════════ */
 class AuthController {
   static _instance    = null;
@@ -182,13 +169,11 @@ class AuthController {
   }
 
   init() {
-    /* Singleton guard — only one live AuthController per page */
     if (AuthController._instance) return AuthController._instance;
     AuthController._instance = this;
 
     this._injectNavUI();
 
-    /* Unsubscribe any prior onAuth listener (defensive) */
     if (typeof AuthController._unsubscribe === 'function') {
       try { AuthController._unsubscribe(); } catch (_) {}
     }
@@ -197,13 +182,9 @@ class AuthController {
       _currentUser = user;
 
       if (user) {
-        /* Phase 1 — INSTANT UI update from Firebase user obj */
-        const quickName = user.displayName
-          || user.email?.split('@')[0]
-          || '?';
+        const quickName = user.displayName || user.email?.split('@')[0] || '?';
         this._setLoggedIn(quickName, user.photoURL ?? null);
 
-        /* Phase 2 — Enhance with Firestore profile (non-blocking) */
         try {
           _currentProfile = await fb.getUserProfile(user.uid);
           if (_currentProfile) {
@@ -226,27 +207,23 @@ class AuthController {
     });
 
     document.addEventListener('openAuthModal', () => this._openModal());
-
     return this;
   }
 
-  /* ── DOM Injection ─────────────────────────────────────── */
   _injectNavUI() {
     const actions = document.getElementById('nav-actions');
     if (!actions) return;
 
-    /* Guard: remove previous wrap */
     document.getElementById('authNavWrap')?.remove();
 
     const wrap = document.createElement('div');
     wrap.id        = 'authNavWrap';
     wrap.className = 'auth-nav-wrap';
-    wrap.dataset.state = 'pending';   /* starts hidden → prevents flicker */
+    wrap.dataset.state = 'pending';
     wrap.innerHTML = `
       <button id="navLoginBtn" class="nav-login-btn" type="button">Σύνδεση</button>
 
       <div id="navUserMenu" class="nav-user-menu">
-
         <button class="nav-avatar-btn" id="navAvatarBtn" type="button"
                 aria-label="Μενού χρήστη" aria-expanded="false">
           <img id="navAvatarImg" class="nav-avatar-img" alt="" hidden>
@@ -288,7 +265,6 @@ class AuthController {
 
     actions.appendChild(wrap);
 
-    /* Element refs — single source of truth */
     this.$wrap      = wrap;
     this.$loginBtn  = wrap.querySelector('#navLoginBtn');
     this.$userMenu  = wrap.querySelector('#navUserMenu');
@@ -331,7 +307,6 @@ class AuthController {
     });
   }
 
-  /* ── UI State: Logged IN ───────────────────────────────── */
   _setLoggedIn(name, avatarUrl = null) {
     if (!this.$wrap) return;
     this.$wrap.dataset.state = 'loggedIn';
@@ -341,8 +316,8 @@ class AuthController {
     this.$username.textContent = display;
 
     if (avatarUrl) {
-      this.$avatarImg.src = avatarUrl;
-      this.$avatarImg.alt = display;
+      this.$avatarImg.src    = avatarUrl;
+      this.$avatarImg.alt    = display;
       this.$avatarImg.hidden = false;
       this.$initials.style.display = 'none';
       this.$avatarImg.onerror = () => {
@@ -351,12 +326,11 @@ class AuthController {
       };
     } else {
       this.$avatarImg.hidden = true;
-      this.$avatarImg.src = '';
+      this.$avatarImg.src    = '';
       this.$initials.style.display = '';
     }
   }
 
-  /* ── UI State: Logged OUT ──────────────────────────────── */
   _setLoggedOut() {
     if (!this.$wrap) return;
     this.$wrap.dataset.state = 'loggedOut';
@@ -364,9 +338,6 @@ class AuthController {
     this.$avatarBtn?.setAttribute('aria-expanded', 'false');
   }
 
-  /* ══════════════════════════════════════════════════════════
-     AUTH MODAL
-     ══════════════════════════════════════════════════════════ */
   _openModal(tab = 'login') {
     this._tab = tab;
     this._modal?.remove();
@@ -377,7 +348,6 @@ class AuthController {
     overlay.innerHTML = this._buildModalHTML(tab);
     document.body.appendChild(overlay);
     this._modal = overlay;
-
     this._wireModal(overlay);
   }
 
@@ -398,14 +368,10 @@ class AuthController {
 
         <button id="googleSignIn" class="auth-google-btn" type="button">
           <svg width="18" height="18" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26
-              1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23
-              1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07
-              H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09
-              14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
           Συνέχεια με Google
         </button>
@@ -413,34 +379,22 @@ class AuthController {
         <div class="auth-divider"><span>ή με email</span></div>
 
         <div id="authFormWrap">
-          ${isRegister
-            ? `<input id="authUsername" type="text" placeholder="Ψευδώνυμο"
-                      autocomplete="username" class="auth-input">`
-            : ''}
-          <input id="authEmail" type="email" placeholder="Email"
-                 autocomplete="email" class="auth-input">
+          ${isRegister ? `<input id="authUsername" type="text" placeholder="Ψευδώνυμο" autocomplete="username" class="auth-input">` : ''}
+          <input id="authEmail" type="email" placeholder="Email" autocomplete="email" class="auth-input">
           <input id="authPassword" type="password" placeholder="Κωδικός"
-                 autocomplete="${isLogin ? 'current-password' : 'new-password'}"
-                 class="auth-input">
+                 autocomplete="${isLogin ? 'current-password' : 'new-password'}" class="auth-input">
           <p id="authError" class="auth-error" style="display:none"></p>
           <button id="authSubmit" class="auth-submit-btn" type="button">
             ${isLogin ? 'Σύνδεση' : 'Δημιουργία Λογαριασμού'}
           </button>
-          ${isLogin
-            ? `<button class="auth-forgot-link" id="authForgotLink" type="button">
-                 Ξεχάσατε τον κωδικό;
-               </button>`
-            : ''}
+          ${isLogin ? `<button class="auth-forgot-link" id="authForgotLink" type="button">Ξεχάσατε τον κωδικό;</button>` : ''}
         </div>
 
         ` : `
         <div class="auth-forgot-view">
           <h3 class="auth-forgot-title">Επαναφορά Κωδικού</h3>
-          <p class="auth-forgot-desc">
-            Εισάγετε το email σας και θα σας στείλουμε σύνδεσμο επαναφοράς.
-          </p>
-          <input id="forgotEmail" type="email" placeholder="Email"
-                 autocomplete="email" class="auth-input">
+          <p class="auth-forgot-desc">Εισάγετε το email σας και θα σας στείλουμε σύνδεσμο επαναφοράς.</p>
+          <input id="forgotEmail" type="email" placeholder="Email" autocomplete="email" class="auth-input">
           <p id="forgotError"   class="auth-error"   style="display:none"></p>
           <p id="forgotSuccess" class="auth-success" style="display:none"></p>
           <button id="forgotSubmit" class="auth-submit-btn" type="button">Αποστολή Email</button>
@@ -466,9 +420,7 @@ class AuthController {
         await fb.loginWithGoogle();
         overlay.remove();
         toast('Συνδεθήκατε με Google! 🎉', 'success');
-      } catch (e) {
-        this._showError(this._mapError(e));
-      }
+      } catch (e) { this._showError(this._mapError(e)); }
     });
 
     overlay.querySelector('#authSubmit')?.addEventListener('click', async () => {
@@ -476,10 +428,7 @@ class AuthController {
       const password = overlay.querySelector('#authPassword')?.value;
       const username = overlay.querySelector('#authUsername')?.value?.trim();
 
-      if (!email || !password) {
-        this._showError('Συμπληρώστε email και κωδικό.');
-        return;
-      }
+      if (!email || !password) { this._showError('Συμπληρώστε email και κωδικό.'); return; }
 
       try {
         if (this._tab === 'register') {
@@ -491,9 +440,7 @@ class AuthController {
           toast('Συνδεθήκατε!', 'success');
         }
         overlay.remove();
-      } catch (e) {
-        this._showError(this._mapError(e));
-      }
+      } catch (e) { this._showError(this._mapError(e)); }
     });
 
     overlay.querySelector('#forgotSubmit')?.addEventListener('click', async () => {
@@ -505,9 +452,7 @@ class AuthController {
         const err = overlay.querySelector('#forgotError');
         if (s)   { s.textContent = `Στάλθηκε email επαναφοράς στο ${email}!`; s.style.display = 'block'; }
         if (err) { err.style.display = 'none'; }
-      } catch (e) {
-        this._showForgotError(this._mapError(e));
-      }
+      } catch (e) { this._showForgotError(this._mapError(e)); }
     });
 
     overlay.addEventListener('keydown', e => {
@@ -543,15 +488,14 @@ class AuthController {
   }
 }
 
-
 /* ══════════════════════════════════════════════════════════
-   DATA MANAGER  (unchanged from v2 — stable)
+   DATA MANAGER
    ══════════════════════════════════════════════════════════ */
 class DataManager {
   constructor() {
-    this._raw       = null;
-    this._localAll  = null;
-    this._rich      = null;
+    this._raw      = null;
+    this._localAll = null;
+    this._rich     = null;
   }
 
   async _loadRaw() {
@@ -560,9 +504,7 @@ class DataManager {
       const res = await fetch(`${BASE_URL}data/series.json`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       this._raw = await res.json();
-      if (typeof this._raw !== 'object' || Array.isArray(this._raw)) {
-        throw new Error('Invalid JSON format');
-      }
+      if (typeof this._raw !== 'object' || Array.isArray(this._raw)) throw new Error('Invalid JSON format');
       return this._raw;
     } catch (err) {
       console.error('[DataManager] loadRaw:', err.message);
@@ -618,7 +560,7 @@ class DataManager {
   }
 
   async getOne(slug) {
-    const raw = await this._loadRaw();
+    const raw  = await this._loadRaw();
     const data = raw[slug];
     if (!data) return null;
 
@@ -636,13 +578,7 @@ class DataManager {
         tmdb.getDetails(data),
         new Promise(resolve => setTimeout(() => resolve(null), 6000)),
       ]);
-      if (t) {
-        return {
-          ...local, tmdb: t,
-          title:    data.title    ?? t.title    ?? local.title,
-          overview: data.overview ?? t.overview ?? local.overview,
-        };
-      }
+      if (t) return { ...local, tmdb: t, title: data.title ?? t.title ?? local.title, overview: data.overview ?? t.overview ?? local.overview };
     } catch (err) {
       console.warn('[DataManager] getOne TMDB failed:', err.message);
     }
@@ -651,19 +587,17 @@ class DataManager {
 }
 
 /* ══════════════════════════════════════════════════════════
-   CARD RENDERER  (unchanged)
+   CARD RENDERER
    ══════════════════════════════════════════════════════════ */
 function renderCard(entry) {
   const { slug, title, channel, tmdb: t, _posterFallback } = entry;
-  const poster  = t?.poster ?? _posterFallback ?? null;
-  const year    = t?.year   ?? entry.data?.year    ?? '';
-  const rating  = t?.rating ?? '';
-  const watchUrl= pageUrl('watch.html', { series: slug, season: 1, ep: 1 });
-  const genres  = (t?.genres ?? entry.data?.genres ?? []).slice(0, 2);
+  const poster   = t?.poster ?? _posterFallback ?? null;
+  const year     = t?.year   ?? entry.data?.year ?? '';
+  const rating   = t?.rating ?? '';
+  const watchUrl = pageUrl('watch.html', { series: slug, season: 1, ep: 1 });
+  const genres   = (t?.genres ?? entry.data?.genres ?? []).slice(0, 2);
 
-  const posterHtml = poster
-    ? `<img class="card-poster" src="${poster}" alt="${title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-    : '';
+  const posterHtml      = poster ? `<img class="card-poster" src="${poster}" alt="${title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : '';
   const placeholderHtml = `<div class="card-no-poster" style="${poster ? 'display:none' : ''}">${ICONS.film}<span>${title}</span></div>`;
 
   return `
@@ -675,14 +609,12 @@ function renderCard(entry) {
       <div class="card-overlay">
         <div class="card-title">${title}</div>
         <div class="card-meta">
-          ${year   ? `<span>${year}</span>`                              : ''}
+          ${year   ? `<span>${year}</span>` : ''}
           ${rating ? `<span class="card-rating">${ICONS.star}${rating}</span>` : ''}
           <span class="card-channel">${channel}</span>
         </div>
       </div>
-      <a href="${watchUrl}" class="card-play-btn" aria-label="Παρακολούθηση ${title}">
-        ${ICONS.play}
-      </a>
+      <a href="${watchUrl}" class="card-play-btn" aria-label="Παρακολούθηση ${title}">${ICONS.play}</a>
     </div>`;
 }
 
@@ -690,14 +622,12 @@ function buildSection(title, entries, mode = 'row') {
   if (!entries.length) return '';
   const cards = entries.map(renderCard).join('');
   if (mode === 'grid') {
-    return `
-      <div class="section" data-section>
+    return `<div class="section" data-section>
         <div class="section-header"><h2 class="section-title">${title}</h2></div>
         <div class="series-grid">${cards}</div>
       </div>`;
   }
-  return `
-    <div class="section" data-section>
+  return `<div class="section" data-section>
       <div class="section-header"><h2 class="section-title">${title}</h2></div>
       <div class="row-wrapper">
         <button class="row-arrow left" aria-label="Scroll left">${ICONS.chevL}</button>
@@ -763,10 +693,7 @@ class SearchController {
     this._input?.addEventListener('input', debounce(() => this._run(), 200));
   }
 
-  _open()  {
-    this._overlay?.classList.add('active');
-    setTimeout(() => this._input?.focus(), 50);
-  }
+  _open()  { this._overlay?.classList.add('active'); setTimeout(() => this._input?.focus(), 50); }
   _close() {
     this._overlay?.classList.remove('active');
     if (this._input)   this._input.value   = '';
@@ -802,7 +729,6 @@ class HomepageController {
   async init() {
     initNavScroll();
     new AuthController().init();
-
     this._all = await this._dm.loadAll();
 
     if (!this._all.length) {
@@ -828,10 +754,7 @@ class HomepageController {
     if (!bar) return;
     const channels = [...new Set(this._all.map(e => e.channel))].sort();
     channels.forEach(ch => {
-      const btn = Object.assign(document.createElement('button'), {
-        className:   'category-chip',
-        textContent: ch,
-      });
+      const btn = Object.assign(document.createElement('button'), { className: 'category-chip', textContent: ch });
       btn.dataset.channel = ch.toLowerCase();
       bar.appendChild(btn);
     });
@@ -911,7 +834,7 @@ class HomepageController {
 
     const content = $('#heroContent');
     if (content) {
-      const year    = t?.year    ?? entry.data?.year    ?? '';
+      const year    = t?.year    ?? entry.data?.year ?? '';
       const rating  = t?.rating  ?? '';
       const seasons = t?.seasons ?? null;
       const genres  = (t?.genres ?? entry.data?.genres ?? []).slice(0, 3);
@@ -921,19 +844,15 @@ class HomepageController {
         <div class="hero-channel">${channel}</div>
         <h1 class="hero-title">${title}</h1>
         <div class="hero-meta">
-          ${year    ? `<span>${year}</span>`                              : ''}
+          ${year    ? `<span>${year}</span>` : ''}
           ${rating  ? `<span class="hero-rating">${ICONS.star} ${rating}</span>` : ''}
-          ${seasons ? `<span>${seasons} Σεζόν</span>`                    : ''}
+          ${seasons ? `<span>${seasons} Σεζόν</span>` : ''}
         </div>
         ${genres.length ? `<div class="hero-genres">${genres.map(g => `<span class="genre-tag">${g}</span>`).join('')}</div>` : ''}
         ${desc ? `<p class="hero-desc">${desc}</p>` : ''}
         <div class="hero-actions">
-          <a href="${pageUrl('watch.html', { series: entry.slug, season: 1, ep: 1 })}" class="btn-primary">
-            ${ICONS.play} Δείτε Τώρα
-          </a>
-          <a href="${pageUrl('series.html', { id: entry.slug })}" class="btn-secondary">
-            ${ICONS.info} Περισσότερα
-          </a>
+          <a href="${pageUrl('watch.html', { series: entry.slug, season: 1, ep: 1 })}" class="btn-primary">${ICONS.play} Δείτε Τώρα</a>
+          <a href="${pageUrl('series.html', { id: entry.slug })}" class="btn-secondary">${ICONS.info} Περισσότερα</a>
         </div>`;
     }
     $$('.hero-dot-btn').forEach((btn, i) => btn.classList.toggle('active', i === idx));
@@ -941,18 +860,45 @@ class HomepageController {
 }
 
 /* ══════════════════════════════════════════════════════════
-   STAR RATING WIDGET
+   STAR RATING WIDGET  v3.1
+   ─────────────────────────────────────────────────────────
+   FIXES vs v3.0:
+   ① Instant visual feedback on click (no re-render needed)
+   ② setRating errors are caught and shown to user
+   ③ Community average loaded async (doesn't block render)
+   ④ onSeriesRatingsSnapshot keeps average live (cleans up
+      old subscriptions stored on container._ratingUnsub)
    ══════════════════════════════════════════════════════════ */
 function renderStarRating(container, slug, currentRating = 0) {
+  const safeSlug = slug.replace(/[^a-zA-Z0-9_-]/g, '_');
+
   container.innerHTML = `
     <div class="star-rating" data-slug="${slug}">
       ${[1,2,3,4,5].map(n => `
-        <button class="star-btn${n <= currentRating ? ' active' : ''}" data-star="${n}" title="${n} αστέρ${n===1?'ι':'ια'}" type="button">
+        <button class="star-btn${n <= currentRating ? ' active' : ''}" data-star="${n}"
+                title="${n} αστέρ${n===1?'ι':'ια'}" type="button">
           ${ICONS.star}
         </button>`).join('')}
-      <span class="star-label">${currentRating ? `${currentRating}/5` : 'Αξιολόγησε'}</span>
+      <span class="star-label" id="starLabel-${safeSlug}">${currentRating ? `${currentRating}/5` : 'Αξιολόγησε'}</span>
+      <span class="star-avg-badge" id="starAvg-${safeSlug}"></span>
     </div>`;
 
+  /* ── Load community average asynchronously ── */
+  fb.getAverageRating(slug).then(({ avg, count }) => {
+    const el = document.getElementById(`starAvg-${safeSlug}`);
+    if (el && count > 0) el.textContent = `· Μ.Ο. ${avg}★ (${count})`;
+  }).catch(() => {});
+
+  /* ── Subscribe to live average updates ── */
+  if (container._ratingUnsub) {
+    try { container._ratingUnsub(); } catch (_) {}
+  }
+  container._ratingUnsub = fb.onSeriesRatingsSnapshot(slug, ({ avg, count }) => {
+    const el = document.getElementById(`starAvg-${safeSlug}`);
+    if (el) el.textContent = count > 0 ? `· Μ.Ο. ${avg}★ (${count})` : '';
+  });
+
+  /* ── Event listeners ── */
   container.querySelectorAll('.star-btn').forEach(btn => {
     btn.addEventListener('mouseover', () => {
       const n = +btn.dataset.star;
@@ -964,17 +910,33 @@ function renderStarRating(container, slug, currentRating = 0) {
     btn.addEventListener('click', async () => {
       if (!_currentUser) { toast('Συνδεθείτε για να αξιολογήσετε.', 'info'); return; }
       const stars = +btn.dataset.star;
+
+      /* Instant UI feedback — update stars and label immediately */
+      container.querySelectorAll('.star-btn').forEach((b, i) => {
+        b.classList.toggle('active', i < stars);
+        b.classList.remove('hover');
+      });
+      const label = document.getElementById(`starLabel-${safeSlug}`);
+      if (label) label.textContent = `${stars}/5`;
+
       try {
         await fb.setRating(_currentUser.uid, slug, stars);
-        renderStarRating(container, slug, stars);
         toast(`Αξιολόγηση: ${stars}/5 ★`, 'success');
-      } catch (e) { toast('Σφάλμα αξιολόγησης.', 'error'); }
+      } catch (e) {
+        console.error('[Rating] setRating failed:', e);
+        toast('Σφάλμα αξιολόγησης: ' + (e.message || 'άγνωστο σφάλμα'), 'error');
+        /* Revert on failure */
+        container.querySelectorAll('.star-btn').forEach((b, i) => {
+          b.classList.toggle('active', i < currentRating);
+        });
+        if (label) label.textContent = currentRating ? `${currentRating}/5` : 'Αξιολόγησε';
+      }
     });
   });
 }
 
 /* ══════════════════════════════════════════════════════════
-   COMMENTS WIDGET — now with avatars
+   COMMENTS WIDGET
    ══════════════════════════════════════════════════════════ */
 function _commentAvatar(c) {
   const initial = (c.username?.[0] ?? '?').toUpperCase();
@@ -1015,7 +977,6 @@ async function renderComments(container, slug) {
   container.innerHTML = `
     <div class="comments-section">
       <h3 class="comments-title">💬 Σχόλια${comments.length ? ` <span class="count-badge">${comments.length}</span>` : ''}</h3>
-
       ${isLoggedIn
         ? `<div class="comment-input-wrap" id="commentInputWrap">
             <textarea id="commentText" placeholder="Γράψτε ένα σχόλιο…" rows="3" class="comment-textarea" maxlength="2000"></textarea>
@@ -1025,7 +986,6 @@ async function renderComments(container, slug) {
             <p>Πρέπει να <button class="comment-login-link" id="commentLoginBtn" type="button">συνδεθείτε</button> για να σχολιάσετε.</p>
           </div>`
       }
-
       <div class="comments-list">${listHtml}</div>
     </div>`;
 
@@ -1053,11 +1013,8 @@ async function renderComments(container, slug) {
     if (!text) { toast('Γράψτε κάτι πρώτα.', 'info'); return; }
     if (!_currentUser) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
     try {
-      const username = _currentProfile?.username
-        ?? _currentUser.displayName
-        ?? _currentUser.email?.split('@')[0]
-        ?? 'Ανώνυμος';
-      const avatar = _currentProfile?.avatar ?? _currentUser.photoURL ?? null;
+      const username = _currentProfile?.username ?? _currentUser.displayName ?? _currentUser.email?.split('@')[0] ?? 'Ανώνυμος';
+      const avatar   = _currentProfile?.avatar ?? _currentUser.photoURL ?? null;
       await fb.postComment(slug, _currentUser.uid, username, text, avatar);
       container.querySelector('#commentText').value = '';
       await renderComments(container, slug);
@@ -1067,11 +1024,11 @@ async function renderComments(container, slug) {
 }
 
 /* ══════════════════════════════════════════════════════════
-   SERIES PAGE CONTROLLER — now with Watchlist + Seen
+   SERIES PAGE CONTROLLER
    ══════════════════════════════════════════════════════════ */
 class SeriesController {
   constructor() {
-    this._dm = new DataManager();
+    this._dm           = new DataManager();
     this._authListener = null;
   }
 
@@ -1133,7 +1090,6 @@ class SeriesController {
     const overviewEl = $('#seriesOverview');
     if (overviewEl) overviewEl.textContent = entry.overview || 'Δεν υπάρχει διαθέσιμη περιγραφή.';
 
-    /* ── CTA buttons: Watch + Back + Favorites + Watchlist + Seen ── */
     const ctaEl = $('#seriesCta');
     if (ctaEl) {
       ctaEl.innerHTML = `
@@ -1160,11 +1116,10 @@ class SeriesController {
       renderStarRating(ratingWrap, slug, current);
     }
 
-    /* ── Update button states from profile ── */
     const updateUserBtns = async () => {
-      const favBtn  = $('#favBtn');
-      const watchBtn= $('#watchlistBtn');
-      const seenBtn = $('#seenBtn');
+      const favBtn   = $('#favBtn');
+      const watchBtn = $('#watchlistBtn');
+      const seenBtn  = $('#seenBtn');
       const fl = $('#favLabel');
       const wl = $('#watchlistLabel');
       const sl = $('#seenLabel');
@@ -1190,10 +1145,7 @@ class SeriesController {
       } catch (_) {}
     };
 
-    /* Remove prior listener if re-rendering (defensive) */
-    if (this._authListener) {
-      document.removeEventListener('authStateChanged', this._authListener);
-    }
+    if (this._authListener) document.removeEventListener('authStateChanged', this._authListener);
     this._authListener = updateUserBtns;
     document.addEventListener('authStateChanged', updateUserBtns);
     await updateUserBtns();
@@ -1243,10 +1195,10 @@ class SeriesController {
       container.innerHTML = '<p style="color:var(--text-3)">Δεν βρέθηκαν επεισόδια.</p>';
       return;
     }
-    const bySeason  = {};
+    const bySeason   = {};
     episodes.forEach(ep => { (bySeason[ep.season] = bySeason[ep.season] || []).push(ep); });
-    const seasons   = Object.keys(bySeason).map(Number).sort((a, b) => a - b);
-    let activeSeason= seasons[0];
+    const seasons    = Object.keys(bySeason).map(Number).sort((a, b) => a - b);
+    let activeSeason = seasons[0];
 
     const renderTabs = () => seasons.map(s =>
       `<button class="season-tab${s === activeSeason ? ' active' : ''}" data-season="${s}" type="button">Σεζόν ${s}</button>`
@@ -1279,7 +1231,7 @@ class SeriesController {
 }
 
 /* ══════════════════════════════════════════════════════════
-   WATCH PAGE CONTROLLER  (unchanged)
+   WATCH PAGE CONTROLLER
    ══════════════════════════════════════════════════════════ */
 class WatchController {
   constructor() {
@@ -1317,10 +1269,8 @@ class WatchController {
   }
 
   _renderMeta() {
-    const titleEl = $('#watchTitle');
-    if (titleEl) titleEl.textContent = this._entry.title;
-    const badgeEl = $('#watchEpBadge');
-    if (badgeEl) badgeEl.textContent = `S${this._season} E${this._ep}`;
+    const titleEl = $('#watchTitle');   if (titleEl) titleEl.textContent = this._entry.title;
+    const badgeEl = $('#watchEpBadge'); if (badgeEl) badgeEl.textContent = `S${this._season} E${this._ep}`;
     const backLink = $('#watchSeriesLink');
     if (backLink) {
       backLink.href      = pageUrl('series.html', { id: this._slug });
@@ -1332,11 +1282,7 @@ class WatchController {
     const wrapper = $('#playerWrapper');
     if (!wrapper) return;
     if (!this._activePlayer || !this._players[this._activePlayer]) {
-      wrapper.innerHTML = `
-        <div class="player-loading">
-          <div style="font-size:2.5rem;margin-bottom:.5rem">🎬</div>
-          <p>Δεν υπάρχει διαθέσιμος player για αυτό το επεισόδιο.</p>
-        </div>`;
+      wrapper.innerHTML = `<div class="player-loading"><div style="font-size:2.5rem;margin-bottom:.5rem">🎬</div><p>Δεν υπάρχει διαθέσιμος player για αυτό το επεισόδιο.</p></div>`;
       return;
     }
     wrapper.innerHTML = `
@@ -1368,12 +1314,11 @@ class WatchController {
     if (selectEl) {
       const bySeason = {};
       (this._entry.data.episodes ?? []).forEach(e => (bySeason[e.season] = bySeason[e.season] || []).push(e));
-      selectEl.innerHTML = Object.keys(bySeason).sort((a,b)=>a-b).map(s =>
+      selectEl.innerHTML = Object.keys(bySeason).sort((a,b) => a-b).map(s =>
         `<optgroup label="Σεζόν ${s}">
           ${bySeason[s].map(e =>
-            `<option value="${e.season}|${e.ep}" ${e.season===this._season && e.ep===this._ep ? 'selected' : ''}>
-              S${e.season} E${e.ep}
-            </option>`).join('')}
+            `<option value="${e.season}|${e.ep}" ${e.season===this._season && e.ep===this._ep ? 'selected' : ''}>S${e.season} E${e.ep}</option>`
+          ).join('')}
         </optgroup>`
       ).join('');
       selectEl.addEventListener('change', () => {
@@ -1435,7 +1380,14 @@ class WatchController {
 }
 
 /* ══════════════════════════════════════════════════════════
-   PROFILE PAGE CONTROLLER — with Seen tab + Edit profile
+   PROFILE PAGE CONTROLLER  v3.1
+   ─────────────────────────────────────────────────────────
+   FIXES vs v3.0:
+   ① ensureUserDoc called FIRST (not as fallback after null)
+     — guarantees doc exists before any DOM update
+   ② Entire auth body wrapped in try/catch with console.error
+     — any exception is visible in DevTools
+   ③ Synthetic profile fallback kept as last resort
    ══════════════════════════════════════════════════════════ */
 class ProfileController {
   constructor() {
@@ -1450,6 +1402,7 @@ class ProfileController {
 
     fb.onAuth(async (user) => {
       const main = $('#profileMain');
+
       if (!user) {
         const heroEl = $('#profileHero');
         if (heroEl) heroEl.style.display = 'none';
@@ -1466,95 +1419,106 @@ class ProfileController {
         return;
       }
 
-      _currentUser    = user;
-      _currentProfile = await fb.getUserProfile(user.uid);
+      /* ── Authenticated path — all wrapped in try/catch ── */
+      try {
+        _currentUser = user;
 
-      /* ── Self-heal: if the Firestore user doc is missing (legacy
-            accounts, or a race where the doc wasn't created on
-            registration), auto-create it and re-fetch. Last resort:
-            synthesize a minimal in-memory profile from the Firebase
-            user so the UI never gets stuck in skeleton state. ── */
-      if (!_currentProfile) {
+        /* Step 1: ensure the Firestore user doc EXISTS before reading */
         try {
           await fb.ensureUserDoc(user);
-          _currentProfile = await fb.getUserProfile(user.uid);
         } catch (e) {
-          console.warn('[Profile] ensureUserDoc fallback failed:', e.message);
+          console.warn('[ProfileController] ensureUserDoc failed (may already exist):', e.message);
         }
-      }
-      if (!_currentProfile) {
-        _currentProfile = {
-          uid:       user.uid,
-          username:  user.displayName || user.email?.split('@')[0] || 'Χρήστης',
-          email:     user.email,
-          avatar:    user.photoURL || null,
-          favorites: [],
-          watchlist: [],
-          watched:   [],
-          ratings:   {},
-        };
-      }
-      const profile = _currentProfile;
 
-      document.title = `${profile.username} — Προφίλ`;
+        /* Step 2: fetch the profile */
+        _currentProfile = await fb.getUserProfile(user.uid);
 
-      /* ── Hero ── */
-      const avatarEl    = $('#profileAvatar');
-      const avatarImg   = $('#profileAvatarImg');
-      const usernameEl  = $('#profileUsername');
-      const emailEl     = $('#profileEmail');
-
-      const initial = (profile.username?.[0] ?? user.email?.[0] ?? '?').toUpperCase();
-      if (avatarEl) avatarEl.textContent = initial;
-      if (avatarImg) {
-        const url = profile.avatar || user.photoURL;
-        if (url) {
-          avatarImg.src = url;
-          avatarImg.hidden = false;
-          if (avatarEl) avatarEl.style.display = 'none';
-          avatarImg.onerror = () => {
-            avatarImg.hidden = true;
-            if (avatarEl) avatarEl.style.display = '';
+        /* Step 3: last-resort synthetic fallback */
+        if (!_currentProfile) {
+          console.warn('[ProfileController] getUserProfile returned null — using synthetic profile');
+          _currentProfile = {
+            uid:       user.uid,
+            username:  user.displayName || user.email?.split('@')[0] || 'Χρήστης',
+            email:     user.email,
+            avatar:    user.photoURL || null,
+            favorites: [],
+            watchlist: [],
+            watched:   [],
+            ratings:   {},
           };
-        } else {
-          avatarImg.hidden = true;
-          if (avatarEl) avatarEl.style.display = '';
         }
+
+        const profile = _currentProfile;
+
+        /* Step 4: update page title */
+        document.title = `${profile.username} — Προφίλ`;
+
+        /* Step 5: update hero DOM elements */
+        const avatarEl   = $('#profileAvatar');
+        const avatarImg  = $('#profileAvatarImg');
+        const usernameEl = $('#profileUsername');
+        const emailEl    = $('#profileEmail');
+
+        const initial = (profile.username?.[0] ?? user.email?.[0] ?? '?').toUpperCase();
+
+        if (avatarEl) {
+          avatarEl.textContent   = initial;
+          avatarEl.style.display = '';
+        }
+        if (avatarImg) {
+          const url = profile.avatar || user.photoURL || null;
+          if (url) {
+            avatarImg.src    = url;
+            avatarImg.hidden = false;
+            if (avatarEl) avatarEl.style.display = 'none';
+            avatarImg.onerror = () => {
+              avatarImg.hidden = true;
+              if (avatarEl) avatarEl.style.display = '';
+            };
+          } else {
+            avatarImg.hidden = true;
+          }
+        }
+        if (usernameEl) usernameEl.textContent = profile.username || 'Χρήστης';
+        if (emailEl)    emailEl.textContent    = user.email || '';
+
+        /* Step 6: stats bar */
+        const statsEl = $('#profileStats');
+        if (statsEl) {
+          const favC   = (profile.favorites ?? []).length;
+          const watchC = (profile.watchlist ?? []).length;
+          const seenC  = (profile.watched   ?? []).length;
+          const rateC  = Object.keys(profile.ratings ?? {}).length;
+          statsEl.innerHTML = `
+            <div class="profile-stat"><span class="profile-stat-num">${favC}</span><span class="profile-stat-label">Αγαπημένα</span></div>
+            <div class="profile-stat"><span class="profile-stat-num">${watchC}</span><span class="profile-stat-label">Watchlist</span></div>
+            <div class="profile-stat"><span class="profile-stat-num">${seenC}</span><span class="profile-stat-label">Έχω δει</span></div>
+            <div class="profile-stat"><span class="profile-stat-num">${rateC}</span><span class="profile-stat-label">Αξιολογήσεις</span></div>
+          `;
+        }
+
+        /* Step 7: tab content */
+        const allEntries = await this._dm.loadAll();
+        const bySlug     = Object.fromEntries(allEntries.map(e => [e.slug, e]));
+
+        this._renderList('#favoritesGrid', '#favCount', profile.favorites ?? [], bySlug,
+          '❤️', 'Δεν υπάρχουν αγαπημένα ακόμα.',
+          `<a href="./index.html" class="btn-secondary" style="display:inline-flex;margin-top:.5rem">Εξερεύνηση σειρών</a>`);
+
+        this._renderList('#watchlistGrid', '#watchlistCount', profile.watchlist ?? [], bySlug,
+          '📌', 'Η watchlist σας είναι άδεια.', '');
+
+        this._renderList('#seenGrid', '#seenCount', profile.watched ?? [], bySlug,
+          '✓', 'Δεν έχετε σημειώσει καμία σειρά ως "Έχω δει".', '');
+
+        this._renderRatings('#ratingsGrid', '#ratingsCount', profile.ratings ?? {}, bySlug);
+
+        this._renderCommentsTab('#commentsGrid', '#commentsCount', user.uid);
+
+      } catch (err) {
+        console.error('[ProfileController] Fatal error loading profile:', err);
+        toast('Σφάλμα φόρτωσης προφίλ. Ανανεώστε τη σελίδα.', 'error');
       }
-      if (usernameEl) usernameEl.textContent = profile.username;
-      if (emailEl)    emailEl.textContent    = user.email;
-
-      /* ── Stats bar ── */
-      const statsEl = $('#profileStats');
-      if (statsEl) {
-        const favC   = (profile.favorites ?? []).length;
-        const watchC = (profile.watchlist ?? []).length;
-        const seenC  = (profile.watched   ?? []).length;
-        const rateC  = Object.keys(profile.ratings ?? {}).length;
-        statsEl.innerHTML = `
-          <div class="profile-stat"><span class="profile-stat-num">${favC}</span><span class="profile-stat-label">Αγαπημένα</span></div>
-          <div class="profile-stat"><span class="profile-stat-num">${watchC}</span><span class="profile-stat-label">Watchlist</span></div>
-          <div class="profile-stat"><span class="profile-stat-num">${seenC}</span><span class="profile-stat-label">Έχω δει</span></div>
-          <div class="profile-stat"><span class="profile-stat-num">${rateC}</span><span class="profile-stat-label">Αξιολογήσεις</span></div>
-        `;
-      }
-
-      const allEntries = await this._dm.loadAll();
-      const bySlug     = Object.fromEntries(allEntries.map(e => [e.slug, e]));
-
-      this._renderList('#favoritesGrid', '#favCount', profile.favorites ?? [], bySlug,
-        '❤️', 'Δεν υπάρχουν αγαπημένα ακόμα.',
-        `<a href="./index.html" class="btn-secondary" style="display:inline-flex;margin-top:.5rem">Εξερεύνηση σειρών</a>`);
-
-      this._renderList('#watchlistGrid', '#watchlistCount', profile.watchlist ?? [], bySlug,
-        '📌', 'Η watchlist σας είναι άδεια.', '');
-
-      this._renderList('#seenGrid', '#seenCount', profile.watched ?? [], bySlug,
-        '✓', 'Δεν έχετε σημειώσει καμία σειρά ως "Έχω δει".', '');
-
-      this._renderRatings('#ratingsGrid', '#ratingsCount', profile.ratings ?? {}, bySlug);
-
-      this._renderCommentsTab('#commentsGrid', '#commentsCount', user.uid);
     });
   }
 
@@ -1578,7 +1542,6 @@ class ProfileController {
     }
   }
 
-  /* ── Edit profile modal ── */
   _initEdit() {
     const editBtn = $('#profileEditBtn');
     if (!editBtn) return;
@@ -1602,7 +1565,6 @@ class ProfileController {
                  value="${escapeHtml(_currentProfile.avatar ?? '')}">
 
           <p id="editError" class="auth-error" style="display:none"></p>
-
           <button id="editSave" class="auth-submit-btn" type="button">Αποθήκευση</button>
         </div>`;
       document.body.appendChild(overlay);
@@ -1616,21 +1578,11 @@ class ProfileController {
         const avatar   = overlay.querySelector('#editAvatar').value.trim();
         const errEl    = overlay.querySelector('#editError');
 
-        if (!username) {
-          errEl.textContent = 'Το ψευδώνυμο είναι υποχρεωτικό.';
-          errEl.style.display = 'block';
-          return;
-        }
-        if (username.length < 2 || username.length > 40) {
-          errEl.textContent = 'Το ψευδώνυμο πρέπει να έχει 2–40 χαρακτήρες.';
-          errEl.style.display = 'block';
-          return;
-        }
+        if (!username) { errEl.textContent = 'Το ψευδώνυμο είναι υποχρεωτικό.'; errEl.style.display = 'block'; return; }
+        if (username.length < 2 || username.length > 40) { errEl.textContent = 'Το ψευδώνυμο πρέπει να έχει 2–40 χαρακτήρες.'; errEl.style.display = 'block'; return; }
+
         try {
-          await fb.updateUserProfile(_currentUser.uid, {
-            username,
-            avatar: avatar || null,
-          });
+          await fb.updateUserProfile(_currentUser.uid, { username, avatar: avatar || null });
           toast('Το προφίλ ενημερώθηκε!', 'success');
           close();
           setTimeout(() => location.reload(), 400);
@@ -1666,7 +1618,7 @@ class ProfileController {
   }
 
   _renderRatings(gridSel, countSel, ratings, bySlug) {
-    const countEl = $(countSel);
+    const countEl    = $(countSel);
     const ratedSlugs = Object.keys(ratings);
     if (countEl) countEl.textContent = ratedSlugs.length;
     const el = $(gridSel);
@@ -1676,8 +1628,8 @@ class ProfileController {
       return;
     }
     const items = ratedSlugs.map(slug => {
-      const entry = bySlug[slug];
-      const stars = ratings[slug];
+      const entry  = bySlug[slug];
+      const stars  = ratings[slug];
       if (!entry) return '';
       const poster = entry.tmdb?.poster ?? entry._posterFallback ?? null;
       return `
@@ -1748,15 +1700,12 @@ async function router() {
           <p style="font-size:2rem;margin-bottom:.5rem">⚠️</p>
           <p style="font-size:1rem;margin-bottom:.5rem">Παρουσιάστηκε σφάλμα κατά τη φόρτωση.</p>
           <p style="font-size:.85rem">Ανανεώστε τη σελίδα ή επικοινωνήστε με τον διαχειριστή.</p>
-          <button onclick="location.reload()" style="margin-top:1rem;padding:.6rem 1.5rem;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer">
-            Ανανέωση
-          </button>
+          <button onclick="location.reload()" style="margin-top:1rem;padding:.6rem 1.5rem;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer">Ανανέωση</button>
         </div>`;
     }
   }
 }
 
-/* ── DOMContentLoaded guard: avoids race with deferred/module script timing ── */
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', router, { once: true });
 } else {
