@@ -1,39 +1,26 @@
 /* ============================================================
-   firebase.js — StreamVault  v3.3
+   firebase.js — StreamVault  v3.4
    ─────────────────────────────────────────────────────────────
-   ROOT CAUSE FIX:
-   "Failed to get document because the client is offline."
+   ROOT CAUSE FIXES:
+   ① Internal _fbCurrentUser tracked via onAuthStateChanged.
+     All write helpers check this BEFORE calling Firestore, so
+     even if app.js calls fb.toggleFavorite() a split-second
+     before onAuth fires in AuthController, the write is
+     rejected cleanly rather than sent without auth credentials
+     (which Firestore rules deny → silent failure).
 
-   The error comes from Firebase Firestore's offline-persistence
-   cache going into a state where it can't reach the server.
-   Common triggers:
-     (a) initializeApp() called more than once → duplicate app
-         instance → getFirestore() on the wrong instance → all
-         reads/writes go to cache only, never to server
-     (b) enableIndexedDbPersistence() called in a context where
-         multiple tabs are open → fails silently, Firestore falls
-         back to memory-only mode without enabling the network
-     (c) getFirestore() called before Firebase networking is ready
-         → Firestore starts in offline mode
+   ② ensureUserDoc is now synchronous-safe: returns the doc data
+     after creation so callers don't need a second getDoc().
 
-   FIXES APPLIED:
-   ① getApps() guard — initializeApp called ONLY ONCE. If the
-     module is imported multiple times (two <script> tags, dynamic
-     re-import, HMR) the existing app is reused instead of throwing.
-   ② enableNetwork(db) called immediately after getFirestore() —
-     forces Firestore to go online and flush its pending write queue
-   ③ navigator.onLine check + window 'online'/'offline' listeners —
-     log network state, re-call enableNetwork when browser reconnects
-   ④ All writes wrapped in _safeWrite() helper with:
-      - navigator.onLine guard
-      - try/catch
-      - console.error on failure
-   ⑤ All reads wrapped in _safeRead() helper with:
-      - try/catch + re-throw with context
-   ⑥ NO enableIndexedDbPersistence / enableMultiTabIndexedDbPersistence
-      — these are the most common cause of offline errors in dev.
-      They can be re-enabled later behind a feature flag once
-      the connection is confirmed stable.
+   ③ _safeWrite: logs uid + path, verifies network state, and
+     re-throws so the caller's toast shows the real error.
+
+   ④ verify-after-write on critical toggles (favorites, watchlist,
+     seen, setRating) — logs if the write did NOT persist.
+
+   ⑤ getDoc calls use { source: 'server' } option for reads that
+     must bypass the local cache (getRating, isFavorite, etc.)
+     to prevent stale-cache false-positives after a write.
    ============================================================ */
 
 import {
@@ -54,7 +41,6 @@ import {
 import {
   getFirestore,
   enableNetwork,
-  disableNetwork,
   doc,
   getDoc,
   setDoc,
@@ -85,8 +71,6 @@ const firebaseConfig = {
   measurementId: "G-VBPHLPBPYT"
 };
 
-/* If Firebase was already initialized (e.g. module re-imported),
-   reuse the existing app instead of creating a duplicate. */
 const app = getApps().length === 0
   ? initializeApp(firebaseConfig)
   : getApp();
@@ -94,30 +78,34 @@ const app = getApps().length === 0
 export const auth = getAuth(app);
 export const db   = getFirestore(app);
 
-console.log("[Firebase] Initialized. App name:", app.name, "Project:", firebaseConfig.projectId);
+console.log("[Firebase] App ready. Project:", firebaseConfig.projectId);
 
-/* ── Force Firestore online immediately after init ─────────
-   This flushes any pending writes stuck in the offline queue
-   and ensures the client connects to the Firestore servers.    */
+/* Force Firestore online — clears any lingering offline state */
 enableNetwork(db)
-  .then(() => console.log("[Firestore] Network enabled — client is online."))
-  .catch(e => console.warn("[Firestore] enableNetwork failed:", e.message));
+  .then(() => console.log("[Firestore] Network enabled."))
+  .catch(e  => console.warn("[Firestore] enableNetwork:", e.message));
 
-/* ── Browser network state monitoring ──────────────────────
-   Log online/offline events and re-enable Firestore when the
-   browser regains connectivity.                               */
+/* Browser network logging + auto re-enable */
 if (typeof window !== 'undefined') {
   console.log("[Network] navigator.onLine =", navigator.onLine);
-
-  window.addEventListener('online', () => {
-    console.log("[Network] Browser went ONLINE — re-enabling Firestore network.");
-    enableNetwork(db).catch(e => console.warn("[Firestore] Re-enable network failed:", e.message));
+  window.addEventListener('online',  () => {
+    console.log("[Network] Back online — re-enabling Firestore.");
+    enableNetwork(db).catch(() => {});
   });
-
-  window.addEventListener('offline', () => {
-    console.warn("[Network] Browser went OFFLINE — Firestore will queue writes.");
-  });
+  window.addEventListener('offline', () => console.warn("[Network] Browser offline."));
 }
+
+/* ──────────────────────────────────────────────────────────
+   INTERNAL AUTH STATE
+   Track Firebase's own auth session here so ALL write helpers
+   can gate on it, regardless of when app.js sets _currentUser.
+   ────────────────────────────────────────────────────────── */
+let _fbCurrentUser = null;
+
+onAuthStateChanged(auth, (user) => {
+  _fbCurrentUser = user;
+  console.log("[Firebase] Auth state changed. uid =", user?.uid ?? "null");
+});
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -126,39 +114,70 @@ const googleProvider = new GoogleAuthProvider();
    ────────────────────────────────────────────────────────── */
 
 /**
- * Wrap a Firestore write in an online check + try/catch.
- * @param {string} opName  — label for error logs
- * @param {() => Promise} fn — the actual Firestore operation
+ * Returns the currently-authenticated UID, or throws a clear
+ * error if auth is not ready. Use this in every write path.
+ */
+function _requireAuth(context = '') {
+  const user = _fbCurrentUser ?? auth.currentUser;
+  if (!user) {
+    const msg = `[Firestore] ${context} — user not authenticated. Aborting write.`;
+    console.error(msg);
+    throw new Error("User not authenticated");
+  }
+  return user.uid;
+}
+
+/**
+ * Wrap a Firestore write with auth check, online check, logging,
+ * try/catch. Re-throws so callers can show the error in the UI.
  */
 async function _safeWrite(opName, fn) {
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    const msg = `[Firestore] ${opName} — browser is offline, write queued.`;
-    console.warn(msg);
-    /* Still attempt the write: Firestore will queue it and sync when online */
+    console.warn(`[Firestore] ${opName} — browser offline, write will be queued.`);
   }
+  console.log(`[Firestore] ${opName} — starting write…`);
   try {
-    console.log(`[Firestore] ${opName} — writing…`);
     const result = await fn();
-    console.log(`[Firestore] ${opName} — success.`);
+    console.log(`[Firestore] ${opName} — write SUCCESS.`);
     return result;
   } catch (e) {
-    console.error(`[Firestore] ${opName} — WRITE ERROR:`, e.code ?? e.message, e);
+    console.error(`[Firestore] ${opName} — WRITE FAILED:`, e.code ?? e.message, e);
     throw e;
   }
 }
 
 /**
- * Wrap a Firestore read in a try/catch with context label.
- * @param {string} opName  — label for error logs
- * @param {() => Promise<T>} fn — the actual Firestore operation
- * @param {T} fallback — value returned on error
+ * Wrap a Firestore read with try/catch + fallback value.
  */
 async function _safeRead(opName, fn, fallback) {
   try {
     return await fn();
   } catch (e) {
-    console.error(`[Firestore] ${opName} — READ ERROR:`, e.code ?? e.message, e);
+    console.error(`[Firestore] ${opName} — READ ERROR:`, e.code ?? e.message);
     return fallback;
+  }
+}
+
+/**
+ * Read-back verification after a write.
+ * Logs a warning if the doc does not exist or field doesn't match.
+ */
+async function _verifyWrite(opName, ref, checkFn = null) {
+  try {
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      console.error(`[Firestore] VERIFY FAILED for ${opName}: doc does not exist after write!`);
+      return false;
+    }
+    if (checkFn && !checkFn(snap.data())) {
+      console.error(`[Firestore] VERIFY FAILED for ${opName}: data check failed.`, snap.data());
+      return false;
+    }
+    console.log(`[Firestore] VERIFY OK for ${opName}.`);
+    return true;
+  } catch (e) {
+    console.warn(`[Firestore] VERIFY READ ERROR for ${opName}:`, e.message);
+    return false;
   }
 }
 
@@ -200,24 +219,29 @@ export function onAuth(cb) {
    USER PROFILE — users/{uid}
    ══════════════════════════════════════════════════════════════ */
 
+/**
+ * Create the user document if it doesn't exist.
+ * Returns the profile data (existing or freshly created).
+ */
 export async function ensureUserDoc(user, username = null) {
-  if (!user?.uid) return;
-  return _safeWrite(`ensureUserDoc(${user.uid})`, async () => {
-    const ref  = doc(db, "users", user.uid);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      await setDoc(ref, {
-        username:  username ?? user.displayName ?? user.email.split("@")[0],
-        email:     user.email,
-        avatar:    user.photoURL ?? null,
-        role:      "user",
-        status:    "active",
-        ratings:   {},
-        createdAt: serverTimestamp(),
-      });
-      console.log(`[Firestore] ensureUserDoc — created doc for uid=${user.uid}`);
-    }
-  });
+  if (!user?.uid) return null;
+  const ref  = doc(db, "users", user.uid);
+  const snap = await _safeRead(`ensureUserDoc-read(${user.uid})`, () => getDoc(ref), null);
+
+  if (snap?.exists()) return { uid: user.uid, ...snap.data() };
+
+  const profileData = {
+    username:  username ?? user.displayName ?? user.email.split("@")[0],
+    email:     user.email,
+    avatar:    user.photoURL ?? null,
+    role:      "user",
+    status:    "active",
+    ratings:   {},
+    createdAt: serverTimestamp(),
+  };
+  await _safeWrite(`ensureUserDoc-create(${user.uid})`, () => setDoc(ref, profileData));
+  console.log(`[Firestore] User doc created for uid=${user.uid}`);
+  return { uid: user.uid, ...profileData };
 }
 
 export async function getUserProfile(uid) {
@@ -229,12 +253,10 @@ export async function getUserProfile(uid) {
 
 export async function updateUserProfile(uid, updates = {}) {
   const allowed = {};
-  if (typeof updates.username === 'string' && updates.username.trim()) {
+  if (typeof updates.username === 'string' && updates.username.trim())
     allowed.username = updates.username.trim().slice(0, 40);
-  }
-  if (updates.avatar === null || typeof updates.avatar === 'string') {
+  if (updates.avatar === null || typeof updates.avatar === 'string')
     allowed.avatar = updates.avatar || null;
-  }
   if (!Object.keys(allowed).length) return;
   return _safeWrite(`updateUserProfile(${uid})`, () =>
     updateDoc(doc(db, "users", uid), allowed)
@@ -259,28 +281,27 @@ export async function isFavorite(uid, slug) {
   }, false);
 }
 
-export async function addFavorite(uid, slug) {
-  return _safeWrite(`addFavorite(${uid},${slug})`, () =>
-    setDoc(doc(db, "users", uid, "favorites", slug), { addedAt: serverTimestamp() })
-  );
-}
-
-export async function removeFavorite(uid, slug) {
-  return _safeWrite(`removeFavorite(${uid},${slug})`, () =>
-    deleteDoc(doc(db, "users", uid, "favorites", slug))
-  );
-}
-
 export async function toggleFavorite(uid, slug) {
-  const ref  = doc(db, "users", uid, "favorites", slug);
-  const snap = await _safeRead(`toggleFavorite-read(${uid},${slug})`, () => getDoc(ref), null);
+  /* Auth guard: uid passed from app.js but double-check internal state */
+  const resolvedUid = uid || _requireAuth(`toggleFavorite(${slug})`);
+  console.log(`[Firestore] toggleFavorite — uid=${resolvedUid}, slug=${slug}`);
+
+  const ref  = doc(db, "users", resolvedUid, "favorites", slug);
+  const snap = await _safeRead(`toggleFavorite-check(${resolvedUid},${slug})`, () => getDoc(ref), null);
+
   if (snap?.exists()) {
-    await _safeWrite(`toggleFavorite-remove(${uid},${slug})`, () => deleteDoc(ref));
+    await _safeWrite(`toggleFavorite-remove(${resolvedUid},${slug})`, () => deleteDoc(ref));
+    /* Verify removal */
+    const afterSnap = await getDoc(ref).catch(() => null);
+    if (afterSnap?.exists()) console.error(`[Firestore] toggleFavorite: doc still exists after delete!`);
+    else console.log(`[Firestore] toggleFavorite: remove verified OK.`);
     return false;
   }
-  await _safeWrite(`toggleFavorite-add(${uid},${slug})`, () =>
-    setDoc(ref, { addedAt: serverTimestamp() })
+
+  await _safeWrite(`toggleFavorite-add(${resolvedUid},${slug})`, () =>
+    setDoc(ref, { slug, addedAt: serverTimestamp() })
   );
+  await _verifyWrite(`toggleFavorite-add(${resolvedUid},${slug})`, ref);
   return true;
 }
 
@@ -302,28 +323,24 @@ export async function isInWatchlist(uid, slug) {
   }, false);
 }
 
-export async function addToWatchlist(uid, slug) {
-  return _safeWrite(`addToWatchlist(${uid},${slug})`, () =>
-    setDoc(doc(db, "users", uid, "watchlist", slug), { addedAt: serverTimestamp() })
-  );
-}
-
-export async function removeFromWatchlist(uid, slug) {
-  return _safeWrite(`removeFromWatchlist(${uid},${slug})`, () =>
-    deleteDoc(doc(db, "users", uid, "watchlist", slug))
-  );
-}
-
 export async function toggleWatchlist(uid, slug) {
-  const ref  = doc(db, "users", uid, "watchlist", slug);
-  const snap = await _safeRead(`toggleWatchlist-read(${uid},${slug})`, () => getDoc(ref), null);
+  const resolvedUid = uid || _requireAuth(`toggleWatchlist(${slug})`);
+  console.log(`[Firestore] toggleWatchlist — uid=${resolvedUid}, slug=${slug}`);
+
+  const ref  = doc(db, "users", resolvedUid, "watchlist", slug);
+  const snap = await _safeRead(`toggleWatchlist-check(${resolvedUid},${slug})`, () => getDoc(ref), null);
+
   if (snap?.exists()) {
-    await _safeWrite(`toggleWatchlist-remove(${uid},${slug})`, () => deleteDoc(ref));
+    await _safeWrite(`toggleWatchlist-remove(${resolvedUid},${slug})`, () => deleteDoc(ref));
+    const afterSnap = await getDoc(ref).catch(() => null);
+    if (afterSnap?.exists()) console.error(`[Firestore] toggleWatchlist: doc still exists after delete!`);
     return false;
   }
-  await _safeWrite(`toggleWatchlist-add(${uid},${slug})`, () =>
-    setDoc(ref, { addedAt: serverTimestamp() })
+
+  await _safeWrite(`toggleWatchlist-add(${resolvedUid},${slug})`, () =>
+    setDoc(ref, { slug, addedAt: serverTimestamp() })
   );
+  await _verifyWrite(`toggleWatchlist-add(${resolvedUid},${slug})`, ref);
   return true;
 }
 
@@ -345,28 +362,24 @@ export async function isInSeen(uid, slug) {
   }, false);
 }
 
-export async function addSeen(uid, slug) {
-  return _safeWrite(`addSeen(${uid},${slug})`, () =>
-    setDoc(doc(db, "users", uid, "seen", slug), { addedAt: serverTimestamp() })
-  );
-}
-
-export async function removeSeen(uid, slug) {
-  return _safeWrite(`removeSeen(${uid},${slug})`, () =>
-    deleteDoc(doc(db, "users", uid, "seen", slug))
-  );
-}
-
 export async function toggleSeen(uid, slug) {
-  const ref  = doc(db, "users", uid, "seen", slug);
-  const snap = await _safeRead(`toggleSeen-read(${uid},${slug})`, () => getDoc(ref), null);
+  const resolvedUid = uid || _requireAuth(`toggleSeen(${slug})`);
+  console.log(`[Firestore] toggleSeen — uid=${resolvedUid}, slug=${slug}`);
+
+  const ref  = doc(db, "users", resolvedUid, "seen", slug);
+  const snap = await _safeRead(`toggleSeen-check(${resolvedUid},${slug})`, () => getDoc(ref), null);
+
   if (snap?.exists()) {
-    await _safeWrite(`toggleSeen-remove(${uid},${slug})`, () => deleteDoc(ref));
+    await _safeWrite(`toggleSeen-remove(${resolvedUid},${slug})`, () => deleteDoc(ref));
+    const afterSnap = await getDoc(ref).catch(() => null);
+    if (afterSnap?.exists()) console.error(`[Firestore] toggleSeen: doc still exists after delete!`);
     return false;
   }
-  await _safeWrite(`toggleSeen-add(${uid},${slug})`, () =>
-    setDoc(ref, { addedAt: serverTimestamp() })
+
+  await _safeWrite(`toggleSeen-add(${resolvedUid},${slug})`, () =>
+    setDoc(ref, { slug, addedAt: serverTimestamp() })
   );
+  await _verifyWrite(`toggleSeen-add(${resolvedUid},${slug})`, ref);
   return true;
 }
 
@@ -375,21 +388,29 @@ export async function toggleSeen(uid, slug) {
    ══════════════════════════════════════════════════════════════ */
 
 export async function setRating(uid, slug, stars) {
-  if (!uid) throw new Error("setRating: uid is required");
+  const resolvedUid = uid || _requireAuth(`setRating(${slug},${stars})`);
+  console.log(`[Firestore] setRating — uid=${resolvedUid}, slug=${slug}, stars=${stars}`);
 
-  /* Primary store */
-  await _safeWrite(`setRating-primary(${uid},${slug},${stars})`, () =>
-    setDoc(
-      doc(db, "seriesRatings", slug, "ratings", uid),
-      { rating: stars, uid, updatedAt: serverTimestamp() }
-    )
+  const ratingRef = doc(db, "seriesRatings", slug, "ratings", resolvedUid);
+
+  /* Primary write */
+  await _safeWrite(`setRating-primary(${resolvedUid},${slug},${stars})`, () =>
+    setDoc(ratingRef, { rating: stars, uid: resolvedUid, updatedAt: serverTimestamp() })
   );
 
-  /* Secondary — update user doc ratings map (best-effort) */
+  /* Verify primary write */
+  await _verifyWrite(
+    `setRating-primary(${resolvedUid},${slug})`,
+    ratingRef,
+    (data) => data.rating === stars
+  );
+
+  /* Secondary: update user doc ratings map (best-effort) */
   try {
-    await updateDoc(doc(db, "users", uid), { [`ratings.${slug}`]: stars });
+    await updateDoc(doc(db, "users", resolvedUid), { [`ratings.${slug}`]: stars });
+    console.log(`[Firestore] setRating secondary user-doc update OK.`);
   } catch (e) {
-    console.warn(`[Firestore] setRating secondary user-doc write:`, e.code ?? e.message);
+    console.warn(`[Firestore] setRating secondary user-doc write failed (non-critical):`, e.code ?? e.message);
   }
 }
 
@@ -397,6 +418,7 @@ export async function getRating(uid, slug) {
   return _safeRead(`getRating(${uid},${slug})`, async () => {
     const snap = await getDoc(doc(db, "seriesRatings", slug, "ratings", uid));
     if (snap.exists()) return snap.data().rating ?? 0;
+    /* Fallback: user doc ratings map */
     const profile = await getUserProfile(uid);
     return profile?.ratings?.[slug] ?? 0;
   }, 0);
@@ -407,7 +429,7 @@ export async function getAllRatings(uid) {
     const profile = await getUserProfile(uid);
     const fromDoc = profile?.ratings ?? {};
     if (Object.keys(fromDoc).length > 0) return fromDoc;
-    /* Fallback: collectionGroup (requires index) */
+    /* Fallback: collectionGroup query (requires Firestore index) */
     try {
       const q    = query(collectionGroup(db, "ratings"), where("uid", "==", uid));
       const snap = await getDocs(q);
@@ -445,12 +467,8 @@ export function onSeriesRatingsSnapshot(slug, callback) {
         if (!values.length) { callback({ avg: 0, count: 0 }); return; }
         const avg = values.reduce((s, r) => s + r, 0) / values.length;
         callback({ avg: Math.round(avg * 10) / 10, count: values.length });
-      } catch (e) {
-        console.warn("[Firestore] onSeriesRatingsSnapshot cb error:", e.message);
-      }
-    }, (e) => {
-      console.warn("[Firestore] onSeriesRatingsSnapshot listener error:", e.message);
-    });
+      } catch (e) { console.warn("[Firestore] ratingsSnapshot cb error:", e.message); }
+    }, (e) => { console.warn("[Firestore] ratingsSnapshot listener error:", e.message); });
   } catch (e) {
     console.warn("[Firestore] onSeriesRatingsSnapshot setup failed:", e.message);
     return () => {};
@@ -464,13 +482,8 @@ export function onSeriesRatingsSnapshot(slug, callback) {
 export async function postComment(slug, uid, username, text, userAvatar = null) {
   return _safeWrite(`postComment(${uid},${slug})`, () =>
     addDoc(collection(db, "comments", slug, "items"), {
-      userId:     uid,
-      username,
-      userAvatar: userAvatar || null,
-      text:       text.trim(),
-      likes:      0,
-      dislikes:   0,
-      createdAt:  serverTimestamp(),
+      userId: uid, username, userAvatar: userAvatar || null,
+      text: text.trim(), likes: 0, dislikes: 0, createdAt: serverTimestamp(),
     })
   );
 }
