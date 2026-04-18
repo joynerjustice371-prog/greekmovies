@@ -3,8 +3,6 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // ── Users ─────────────────────────────────────────────────
-    // Users can read/write their OWN document.
-    // Admins can read all user documents.
     match /users/{userId} {
       allow read: if request.auth != null
                   && (request.auth.uid == userId
@@ -18,19 +16,28 @@ service cloud.firestore {
 
       allow update: if request.auth != null
                     && request.auth.uid == userId
-                    // Users cannot change their own role or status
                     && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role','status']))
-                    // Admins can change role/status
                     || (request.auth != null
                         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
 
-      allow delete: if false; // Never delete user docs directly
+      allow delete: if false;
+    }
+
+    // ── Series Ratings ─────────────────────────────────────────
+    // Structure: seriesRatings/{seriesId}/ratings/{uid}
+    // Anyone can read (to compute averages).
+    // Authenticated users can only write their own rating doc.
+    match /seriesRatings/{seriesId}/ratings/{uid} {
+      allow read:  if true;
+      allow write: if request.auth != null
+                   && request.auth.uid == uid
+                   && request.resource.data.keys().hasAll(['rating', 'updatedAt'])
+                   && request.resource.data.rating is int
+                   && request.resource.data.rating >= 1
+                   && request.resource.data.rating <= 5;
     }
 
     // ── Comments ───────────────────────────────────────────────
-    // Anyone can read comments.
-    // Authenticated non-banned users can post comments.
-    // Users can only delete their own comments. Admins can delete any.
     match /comments/{seriesSlug}/items/{commentId} {
       allow read: if true;
 
@@ -42,7 +49,6 @@ service cloud.firestore {
                     && request.resource.data.text.size() <= 2000;
 
       allow update: if request.auth != null
-                    // Only allow updating likes/dislikes counters
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes','dislikes']);
 
       allow delete: if request.auth != null
