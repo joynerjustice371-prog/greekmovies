@@ -1958,3 +1958,249 @@ body { animation: pageIn 0.4s ease forwards; }
   letter-spacing: .04em;
   line-height: 1;
 }
+
+/* ==========================================================
+   v4.0 — Genres / Networks / Rules Pages
+   ========================================================== */
+
+/* Page headers used by genres/networks/rules pages */
+.page-header-wrap { padding-top: calc(var(--nav-h, 70px) + 1rem); }
+.page-header {
+  max-width: 1400px;
+  margin: 0 auto 1.5rem;
+  padding: 2rem 4vw 1rem;
+  text-align: center;
+}
+.page-header h1 {
+  font-family: var(--font-display, 'Bebas Neue'), sans-serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: .04em;
+  margin: 0 0 .4rem;
+  color: var(--text-1);
+}
+.page-subtitle {
+  color: var(--text-3);
+  font-size: 1rem;
+  margin: 0 0 .5rem;
+}
+.page-count {
+  display: inline-block;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: .95rem;
+  padding: .2rem .8rem;
+  background: var(--accent-dim, rgba(229,9,20,.1));
+  border-radius: 20px;
+  margin-top: .5rem;
+}
+
+/* ─── Genre chips ─── */
+.genres-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: center;
+  padding: 0 4vw 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.genre-chip {
+  padding: .45rem 1rem;
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 500;
+  background: var(--bg-surface, #1a1a1a);
+  color: var(--text-2);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.genre-chip:hover {
+  background: var(--bg-surface-hover, #242424);
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+.genre-chip.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+#genresResults {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 4vw 4rem;
+}
+
+/* ─── Network list / cards ─── */
+.network-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 1rem;
+  padding: 0 4vw 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.network-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  padding: 1.3rem 1rem;
+  background: var(--bg-surface, #1a1a1a);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+  min-height: 150px;
+  text-align: center;
+}
+.network-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  background: var(--bg-surface-hover, #242424);
+}
+.network-logo,
+.network-logo-placeholder {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+}
+.network-logo-placeholder svg {
+  width: 48px;
+  height: 48px;
+}
+.network-name {
+  font-weight: 600;
+  font-size: .95rem;
+  color: var(--text-1);
+  line-height: 1.2;
+}
+.network-count {
+  font-size: .75rem;
+  color: var(--text-4);
+}
+
+/* ─── Network detail view ─── */
+.network-results {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 4vw 4rem;
+}
+.network-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  padding: 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--border, #2a2a2a);
+  margin-bottom: 1.5rem;
+}
+.network-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .85rem;
+}
+.network-back-btn svg { width: 14px; height: 14px; }
+.network-detail-title {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  font-family: var(--font-display, 'Bebas Neue'), sans-serif;
+  font-size: 2rem;
+  letter-spacing: .04em;
+  margin: 0;
+  color: var(--text-1);
+}
+.network-detail-title svg {
+  width: 32px;
+  height: 32px;
+  color: var(--text-3);
+}
+.network-detail-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+.network-detail-count {
+  margin-left: auto;
+  color: var(--accent);
+  font-weight: 600;
+  padding: .3rem .9rem;
+  background: var(--accent-dim, rgba(229,9,20,.1));
+  border-radius: 20px;
+  font-size: .85rem;
+}
+
+/* ─── Rules page ─── */
+.rules-page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: calc(var(--nav-h, 70px) + 2rem) 4vw 4rem;
+}
+.rules-section {
+  margin-bottom: 2rem;
+  padding: 1.75rem 1.75rem 1.5rem;
+  background: var(--bg-surface, #1a1a1a);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 10px;
+}
+.rules-section h2 {
+  font-family: var(--font-display, 'Bebas Neue'), sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: .04em;
+  color: var(--accent);
+  margin: 0 0 1rem;
+  padding-bottom: .6rem;
+  border-bottom: 1px solid var(--border, #2a2a2a);
+}
+.rules-section ol,
+.rules-section ul {
+  padding-left: 1.4rem;
+  line-height: 1.8;
+  color: var(--text-2);
+  margin: 0;
+}
+.rules-section li { margin-bottom: .4rem; }
+.rules-section li::marker { color: var(--accent); font-weight: 600; }
+.rules-section strong { color: var(--text-1); }
+.rules-footer {
+  margin-top: 2rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-surface-hover, #242424);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  font-size: .88rem;
+  color: var(--text-3);
+}
+.rules-footer p { margin: 0 0 .5rem; }
+.rules-footer p:last-child { margin-bottom: 0; }
+
+/* ─── SR only ─── */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── Responsive: more compact nav on mobile ─── */
+@media (max-width: 720px) {
+  .nav-links { gap: .4rem; font-size: .8rem; }
+  .nav-links .nav-link { padding: .4rem .5rem; }
+  .network-list { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .network-detail-title { font-size: 1.4rem; }
+  .page-header h1 { font-size: 2rem; }
+}
