@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Παρακολούθηση — StreamVault">
+  <meta name="description" content="Παρακολούθηση επεισοδίου — StreamVault">
   <title>StreamVault — Παρακολούθηση</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,103 +12,50 @@
 </head>
 <body data-page="watch">
 
-  <!-- ── Navigation ─────────────────────────────────────────── -->
-  <nav class="nav scrolled" id="navbar">
+  <nav class="nav" id="navbar" aria-label="Κύρια πλοήγηση">
     <div class="nav-logo">
       <a href="./index.html">STREAM<span>VAULT</span></a>
     </div>
     <div class="nav-links">
-      <a href="./index.html" class="nav-link">Αρχική Σελίδα</a>
+      <a href="./index.html"    class="nav-link" data-nav="home">Αρχική Σελίδα</a>
+      <a href="./genres.html"   class="nav-link" data-nav="genres">Είδος Ταινίας</a>
+      <a href="./networks.html" class="nav-link" data-nav="networks">Network</a>
+      <a href="./rules.html"    class="nav-link" data-nav="rules">Κανόνες</a>
     </div>
     <div class="nav-actions" id="nav-actions">
-      <a href="./index.html" class="btn-icon" aria-label="Επιστροφή στην αρχική">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
+      <a href="#" id="watchSeriesLink" class="btn-icon" aria-label="Πίσω στα επεισόδια">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </a>
-      <!-- Auth injected by AuthController -->
     </div>
   </nav>
 
-  <!-- ── Watch Page ─────────────────────────────────────────── -->
-  <div class="watch-page">
+  <section class="watch-header">
+    <h1 class="watch-title" id="watchTitle">Φόρτωση…</h1>
+    <div class="watch-ep-badge" id="watchEpBadge">—</div>
+  </section>
 
-    <!-- Player -->
+  <section class="watch-player-section">
     <div class="player-wrapper" id="playerWrapper">
-      <div class="player-loading" id="playerLoading">
-        <div class="spinner"></div>
-        <span>Φόρτωση player…</span>
-      </div>
+      <div class="player-loading"><div class="spinner"></div><span>Φόρτωση player…</span></div>
     </div>
+  </section>
 
-    <!-- Player Controls Bar -->
-    <div class="watch-controls">
-      <div class="watch-controls-inner">
-
-        <span class="controls-label">Server</span>
-        <div class="player-btns" id="playerBtns">
-          <div class="skeleton" style="width:80px;height:32px;border-radius:6px"></div>
-          <div class="skeleton" style="width:80px;height:32px;border-radius:6px"></div>
-        </div>
-
-        <div class="controls-divider" aria-hidden="true"></div>
-
-        <span class="controls-label">Επεισόδιο</span>
-        <select id="episodeSelect" class="episode-select" aria-label="Επιλογή επεισοδίου">
-          <option>Φόρτωση…</option>
-        </select>
-
-        <div class="nav-ep-btns">
-          <button class="nav-ep-btn" id="prevEpBtn" aria-label="Προηγούμενο επεισόδιο" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            Προηγ.
-          </button>
-          <button class="nav-ep-btn" id="nextEpBtn" aria-label="Επόμενο επεισόδιο" disabled>
-            Επόμ.
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </button>
-        </div>
-
-      </div>
+  <section class="watch-controls">
+    <div class="player-selectors">
+      <label for="episodeSelect" class="sr-only">Επιλογή επεισοδίου</label>
+      <select id="episodeSelect" class="episode-select" aria-label="Επιλογή επεισοδίου"></select>
+      <div class="player-btns" id="playerBtns" aria-label="Επιλογή player"></div>
     </div>
-
-    <!-- Watch Meta -->
-    <div class="watch-meta">
-      <h1 class="watch-title" id="watchTitle">
-        <span class="skeleton" style="width:200px;height:28px;display:inline-block;border-radius:4px"></span>
-      </h1>
-      <span class="watch-ep-badge" id="watchEpBadge">S1 E1</span>
-      <a href="./series.html" class="watch-series-link" id="watchSeriesLink" aria-label="Επιστροφή στα επεισόδια">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
-        Όλα τα Επεισόδια
-      </a>
+    <div class="ep-navigation">
+      <button id="prevEpBtn" class="btn-secondary" type="button">← Προηγούμενο</button>
+      <button id="nextEpBtn" class="btn-secondary" type="button">Επόμενο →</button>
     </div>
+  </section>
 
-    <!-- All Episodes Panel -->
-    <div class="all-episodes-panel" id="allEpisodesPanel">
-      <h3>Επεισόδια</h3>
-      <div class="episodes-grid">
-        <div class="skeleton" style="height:68px;border-radius:8px"></div>
-        <div class="skeleton" style="height:68px;border-radius:8px"></div>
-        <div class="skeleton" style="height:68px;border-radius:8px"></div>
-        <div class="skeleton" style="height:68px;border-radius:8px"></div>
-      </div>
-    </div>
+  <section class="all-episodes-section" id="allEpisodesPanel" aria-label="Όλα τα επεισόδια"></section>
 
-  </div>
-
-  <!-- ── Footer ─────────────────────────────────────────────── -->
   <footer class="footer">
-    <p>
-      Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a>
-      &nbsp;·&nbsp; StreamVault
-    </p>
+    <p>Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a> &nbsp;·&nbsp; StreamVault</p>
   </footer>
 
   <script type="module" src="./assets/js/app.js"></script>
