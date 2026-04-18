@@ -10,7 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
-<body data-page="watch">
+<!-- watch-page class adds padding-top: var(--nav-h) so content sits below the fixed nav -->
+<body data-page="watch" class="watch-page">
 
   <nav class="nav" id="navbar" aria-label="Κύρια πλοήγηση">
     <div class="nav-logo">
@@ -23,35 +24,55 @@
       <a href="./rules.html"    class="nav-link" data-nav="rules">Κανόνες</a>
     </div>
     <div class="nav-actions" id="nav-actions">
-      <a href="#" id="watchSeriesLink" class="btn-icon" aria-label="Πίσω στα επεισόδια">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      <!-- watchSeriesLink injected by WatchController._renderMeta() -->
+      <a href="#" id="watchSeriesLink" class="watch-series-link" aria-label="Πίσω στα επεισόδια" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
+        Επιστροφή
       </a>
     </div>
   </nav>
 
-  <section class="watch-header">
+  <!-- Title + episode badge — .watch-meta matches CSS -->
+  <div class="watch-meta">
     <h1 class="watch-title" id="watchTitle">Φόρτωση…</h1>
-    <div class="watch-ep-badge" id="watchEpBadge">—</div>
-  </section>
+    <span class="watch-ep-badge" id="watchEpBadge">—</span>
+  </div>
 
-  <section class="watch-player-section">
-    <div class="player-wrapper" id="playerWrapper">
-      <div class="player-loading"><div class="spinner"></div><span>Φόρτωση player…</span></div>
+  <!-- Player — .player-wrapper matches CSS with aspect-ratio 16/9 -->
+  <div class="player-wrapper" id="playerWrapper">
+    <div class="player-loading">
+      <div class="spinner"></div>
+      <span>Φόρτωση player…</span>
     </div>
-  </section>
+  </div>
 
-  <section class="watch-controls">
-    <div class="player-selectors">
+  <!-- Controls bar — .watch-controls + .watch-controls-inner matches CSS -->
+  <div class="watch-controls">
+    <div class="watch-controls-inner">
+      <span class="controls-label">Επεισόδιο</span>
       <label for="episodeSelect" class="sr-only">Επιλογή επεισοδίου</label>
       <select id="episodeSelect" class="episode-select" aria-label="Επιλογή επεισοδίου"></select>
-      <div class="player-btns" id="playerBtns" aria-label="Επιλογή player"></div>
-    </div>
-    <div class="ep-navigation">
-      <button id="prevEpBtn" class="btn-secondary" type="button">← Προηγούμενο</button>
-      <button id="nextEpBtn" class="btn-secondary" type="button">Επόμενο →</button>
-    </div>
-  </section>
 
+      <div class="controls-divider" aria-hidden="true"></div>
+
+      <span class="controls-label">Player</span>
+      <div class="player-btns" id="playerBtns" aria-label="Επιλογή player"></div>
+
+      <!-- .nav-ep-btns + .nav-ep-btn match CSS for prev/next buttons -->
+      <div class="nav-ep-btns">
+        <button id="prevEpBtn" class="nav-ep-btn" type="button">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          Προηγούμενο
+        </button>
+        <button id="nextEpBtn" class="nav-ep-btn" type="button">
+          Επόμενο
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- All episodes for current season — .all-episodes-section matches CSS -->
   <section class="all-episodes-section" id="allEpisodesPanel" aria-label="Όλα τα επεισόδια"></section>
 
   <footer class="footer">
