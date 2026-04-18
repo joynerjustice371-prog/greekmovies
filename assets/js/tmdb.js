@@ -1,14 +1,14 @@
 /* ============================================================
-   tmdb.js — TMDB API Client
+   tmdb.js — TMDB API Client  v4.0
    Greek-first with en-US fallback
-   All calls wrapped in try/catch — safe to use with invalid key
+   Exposes: networks (with logos), production_companies,
+            origin_country — needed by Network + Genre systems
    ============================================================ */
 
-const TMDB_API_KEY  = "f6aeb62fa60713990edbc2894a8d1d5d";
+const TMDB_API_KEY  = "YOUR_TMDB_API_KEY";
 const TMDB_BASE     = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p";
 
-/* ── Timeout helper ──────────────────────────────────────── */
 function withTimeout(promise, ms, fallback = null) {
   return Promise.race([
     promise,
@@ -17,18 +17,16 @@ function withTimeout(promise, ms, fallback = null) {
 }
 
 export const IMG = {
-  poster:   (path) => path ? `${TMDB_IMG_BASE}/w500${path}`     : null,
-  posterLg: (path) => path ? `${TMDB_IMG_BASE}/w780${path}`     : null,
-  backdrop: (path) => path ? `${TMDB_IMG_BASE}/original${path}` : null,
-  thumb:    (path) => path ? `${TMDB_IMG_BASE}/w300${path}`     : null,
+  poster:   (p) => p ? `${TMDB_IMG_BASE}/w500${p}`     : null,
+  posterLg: (p) => p ? `${TMDB_IMG_BASE}/w780${p}`     : null,
+  backdrop: (p) => p ? `${TMDB_IMG_BASE}/original${p}` : null,
+  thumb:    (p) => p ? `${TMDB_IMG_BASE}/w300${p}`     : null,
+  logo:     (p) => p ? `${TMDB_IMG_BASE}/w185${p}`     : null,
 };
 
 export class TMDBClient {
-  constructor() {
-    this._cache = new Map();
-  }
+  constructor() { this._cache = new Map(); }
 
-  /* ── Fetch TV details by ID — Greek first, en-US fallback ── */
   async fetchById(id) {
     const key = `id:${id}`;
     if (this._cache.has(key)) return this._cache.get(key);
@@ -42,15 +40,14 @@ export class TMDBClient {
       const grData = await res.json();
 
       let enData = null;
-      const needsFallback = !grData.name?.trim() || !grData.overview?.trim();
-      if (needsFallback) {
+      if (!grData.name?.trim() || !grData.overview?.trim()) {
         try {
           const resEn = await withTimeout(
             fetch(`${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`),
             4000
           );
           if (resEn?.ok) enData = await resEn.json();
-        } catch (_) { /* silent */ }
+        } catch (_) {}
       }
 
       const normalized = this._normalize(grData, enData);
@@ -62,7 +59,6 @@ export class TMDBClient {
     }
   }
 
-  /* ── Search by title ────────────────────────────────────── */
   async searchByTitle(title) {
     const key = `search:${title.toLowerCase()}`;
     if (this._cache.has(key)) return this._cache.get(key);
@@ -74,12 +70,7 @@ export class TMDBClient {
       );
       if (!res || !res.ok) throw new Error(res ? `TMDB search ${res.status}` : "Timeout");
       const data = await res.json();
-
-      if (!data.results?.length) {
-        console.warn(`[TMDB] No results for "${title}"`);
-        return null;
-      }
-
+      if (!data.results?.length) return null;
       const best = data.results.reduce((a, b) => (b.popularity > a.popularity ? b : a));
       const full = await this.fetchById(best.id);
       this._cache.set(key, full);
@@ -90,19 +81,15 @@ export class TMDBClient {
     }
   }
 
-  /* ── Smart resolver: ID first, search fallback ─────────── */
   async getDetails(seriesEntry) {
     if (seriesEntry.tmdb_id) {
       const result = await this.fetchById(seriesEntry.tmdb_id);
       if (result) return result;
     }
-    if (seriesEntry.title_fallback) {
-      return this.searchByTitle(seriesEntry.title_fallback);
-    }
+    if (seriesEntry.title_fallback) return this.searchByTitle(seriesEntry.title_fallback);
     return null;
   }
 
-  /* ── Normalize: Greek with en-US fallback ───────────────── */
   _normalize(gr, en = null) {
     const title    = gr.name?.trim()     || en?.name?.trim()     || gr.original_name || "Unknown";
     const overview = gr.overview?.trim() || en?.overview?.trim() || "";
@@ -122,12 +109,23 @@ export class TMDBClient {
       seasons:       gr.number_of_seasons  ?? null,
       episodes:      gr.number_of_episodes ?? null,
       status:        gr.status             ?? null,
-      networks:      (gr.networks ?? []).map(n => n.name),
-      language:      gr.original_language  ?? null,
+      /* Networks now include id + logo for Network page */
+      networks: (gr.networks ?? []).map(n => ({
+        id:   n.id,
+        name: n.name,
+        logo: IMG.logo(n.logo_path),
+      })),
+      /* Production companies (useful for movies or missing-network fallback) */
+      productionCompanies: (gr.production_companies ?? []).map(c => ({
+        id:   c.id,
+        name: c.name,
+        logo: IMG.logo(c.logo_path),
+      })),
+      originCountry: gr.origin_country ?? [],
+      language:      gr.original_language ?? null,
     };
   }
 
-  /* ── Batch resolve — ALWAYS returns array ────────────────── */
   async batchResolve(entries) {
     try {
       const results = await Promise.allSettled(
@@ -135,12 +133,9 @@ export class TMDBClient {
           this.getDetails(data).then(tmdb => ({ slug, data, tmdb }))
         )
       );
-      return results
-        .filter(r => r.status === "fulfilled")
-        .map(r => r.value);
+      return results.filter(r => r.status === "fulfilled").map(r => r.value);
     } catch (err) {
       console.warn("[TMDB] batchResolve failed:", err.message);
-      // Return entries with null tmdb — still renders from local data
       return entries.map(({ slug, data }) => ({ slug, data, tmdb: null }));
     }
   }
@@ -148,5 +143,4 @@ export class TMDBClient {
   cacheSize() { return this._cache.size; }
 }
 
-/* Singleton */
 export const tmdb = new TMDBClient();
