@@ -35,6 +35,7 @@ function _createFirebaseStubs() {
     logout:            _notAvail,
     onAuth:            (cb) => { cb(null); return () => {}; },
     getUserProfile:    async () => null,
+    ensureUserDoc:     async () => {},
     updateUserProfile: _notAvail,
     toggleFavorite:    _notAvail,
     toggleWatchlist:   _notAvail,
@@ -1467,8 +1468,33 @@ class ProfileController {
 
       _currentUser    = user;
       _currentProfile = await fb.getUserProfile(user.uid);
-      const profile   = _currentProfile;
-      if (!profile) return;
+
+      /* ── Self-heal: if the Firestore user doc is missing (legacy
+            accounts, or a race where the doc wasn't created on
+            registration), auto-create it and re-fetch. Last resort:
+            synthesize a minimal in-memory profile from the Firebase
+            user so the UI never gets stuck in skeleton state. ── */
+      if (!_currentProfile) {
+        try {
+          await fb.ensureUserDoc(user);
+          _currentProfile = await fb.getUserProfile(user.uid);
+        } catch (e) {
+          console.warn('[Profile] ensureUserDoc fallback failed:', e.message);
+        }
+      }
+      if (!_currentProfile) {
+        _currentProfile = {
+          uid:       user.uid,
+          username:  user.displayName || user.email?.split('@')[0] || 'Χρήστης',
+          email:     user.email,
+          avatar:    user.photoURL || null,
+          favorites: [],
+          watchlist: [],
+          watched:   [],
+          ratings:   {},
+        };
+      }
+      const profile = _currentProfile;
 
       document.title = `${profile.username} — Προφίλ`;
 
