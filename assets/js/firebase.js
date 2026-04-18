@@ -119,7 +119,8 @@ async function _verifyWrite(opName, ref, checkFn = null) {
    ══════════════════════════════════════════════════════════════ */
 export async function loginWithGoogle() {
   const r = await signInWithPopup(auth, googleProvider);
-  await ensureUserDoc(r.user);
+  /* Swallow ensureUserDoc errors — Firestore failure must NOT prevent modal closing */
+  try { await ensureUserDoc(r.user); } catch (e) { console.warn('[Firebase] loginWithGoogle ensureUserDoc:', e.message); }
   return r.user;
 }
 
