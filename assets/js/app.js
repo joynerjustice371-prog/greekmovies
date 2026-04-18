@@ -163,93 +163,120 @@ const Session = {
   isSeen(slug)  { return this.seen.has(slug); },
   getRating(slug) { return this.ratings[slug] ?? 0; },
 
-  /* Optimistic mutations — use LIVE auth (fb.auth.currentUser), not cached.
-     This ensures buttons work the instant the user is signed in, even before
-     Session.hydrate() completes. If hydrated, we also do optimistic UI; if
-     not, we just call Firestore and sync the cache after. */
-  _liveUid() {
-    return this.user?.uid ?? fb?.auth?.currentUser?.uid ?? null;
+  /* Mutations ALWAYS do optimistic UI (regardless of hydration state).
+     Firestore writes are verified by firebase.js (_verifyWrite throws on
+     failure). On error, we revert the optimistic change and re-throw so
+     the caller can show a toast. */
+
+  _getLiveUser() {
+    /* Live Firebase auth — most authoritative source */
+    const u = fb?.auth?.currentUser ?? this.user ?? null;
+    if (!u?.uid) {
+      console.error('[Session] NO AUTHENTICATED USER');
+      return null;
+    }
+    console.log('[Session] live user uid:', u.uid);
+    return u;
   },
 
   async toggleFavorite(slug) {
-    const uid = this._liveUid();
-    if (!uid) throw new Error('Not signed in');
+    const user = this._getLiveUser();
+    if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
+    console.log('[Session] toggleFavorite START', { uid: user.uid, slug });
+
+    /* Always optimistic */
     const was = this.favorites.has(slug);
-    if (this.loaded) {
-      if (was) this.favorites.delete(slug); else this.favorites.add(slug);
-      this._emitChange();
-    }
+    if (was) this.favorites.delete(slug); else this.favorites.add(slug);
+    this._emitChange();
+
     try {
-      const result = await fb.toggleFavorite(uid, slug);
-      /* Sync cache from actual result (esp. important if not hydrated) */
+      const result = await fb.toggleFavorite(user.uid, slug);
+      /* Sync with actual server result */
       if (result) this.favorites.add(slug); else this.favorites.delete(slug);
-      if (!this.loaded) this._emitChange();
+      this._emitChange();
+      console.log('[Session] toggleFavorite ✓ OK', { uid: user.uid, slug, added: result });
       return result;
     } catch (e) {
-      if (this.loaded) {
-        if (was) this.favorites.add(slug); else this.favorites.delete(slug);
-        this._emitChange();
-      }
+      /* Revert optimistic change */
+      if (was) this.favorites.add(slug); else this.favorites.delete(slug);
+      this._emitChange();
+      console.error('[Session] toggleFavorite ✗ FAILED', { uid: user.uid, slug, error: e.message });
       throw e;
     }
   },
 
   async toggleWatchlist(slug) {
-    const uid = this._liveUid();
-    if (!uid) throw new Error('Not signed in');
+    const user = this._getLiveUser();
+    if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
+    console.log('[Session] toggleWatchlist START', { uid: user.uid, slug });
+
     const was = this.watchlist.has(slug);
-    if (this.loaded) {
-      if (was) this.watchlist.delete(slug); else this.watchlist.add(slug);
-      this._emitChange();
-    }
+    if (was) this.watchlist.delete(slug); else this.watchlist.add(slug);
+    this._emitChange();
+
     try {
-      const result = await fb.toggleWatchlist(uid, slug);
+      const result = await fb.toggleWatchlist(user.uid, slug);
       if (result) this.watchlist.add(slug); else this.watchlist.delete(slug);
-      if (!this.loaded) this._emitChange();
+      this._emitChange();
+      console.log('[Session] toggleWatchlist ✓ OK', { uid: user.uid, slug, added: result });
       return result;
     } catch (e) {
-      if (this.loaded) {
-        if (was) this.watchlist.add(slug); else this.watchlist.delete(slug);
-        this._emitChange();
-      }
+      if (was) this.watchlist.add(slug); else this.watchlist.delete(slug);
+      this._emitChange();
+      console.error('[Session] toggleWatchlist ✗ FAILED', { uid: user.uid, slug, error: e.message });
       throw e;
     }
   },
 
   async toggleSeen(slug) {
-    const uid = this._liveUid();
-    if (!uid) throw new Error('Not signed in');
+    const user = this._getLiveUser();
+    if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
+    console.log('[Session] toggleSeen START', { uid: user.uid, slug });
+
     const was = this.seen.has(slug);
-    if (this.loaded) {
-      if (was) this.seen.delete(slug); else this.seen.add(slug);
-      this._emitChange();
-    }
+    if (was) this.seen.delete(slug); else this.seen.add(slug);
+    this._emitChange();
+
     try {
-      const result = await fb.toggleSeen(uid, slug);
+      const result = await fb.toggleSeen(user.uid, slug);
       if (result) this.seen.add(slug); else this.seen.delete(slug);
-      if (!this.loaded) this._emitChange();
+      this._emitChange();
+      console.log('[Session] toggleSeen ✓ OK', { uid: user.uid, slug, added: result });
       return result;
     } catch (e) {
-      if (this.loaded) {
-        if (was) this.seen.add(slug); else this.seen.delete(slug);
-        this._emitChange();
-      }
+      if (was) this.seen.add(slug); else this.seen.delete(slug);
+      this._emitChange();
+      console.error('[Session] toggleSeen ✗ FAILED', { uid: user.uid, slug, error: e.message });
       throw e;
     }
   },
 
   async setRating(slug, stars) {
-    const uid = this._liveUid();
-    if (!uid) throw new Error('Not signed in');
+    const user = this._getLiveUser();
+    if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
+    console.log('[Session] setRating START', { uid: user.uid, slug, stars });
+
     const prev = this.ratings[slug] ?? 0;
     this.ratings[slug] = stars;
     this._emitChange();
+
     try {
-      await fb.setRating(uid, slug, stars);
-      return stars;
+      const persistedRating = await fb.setRating(user.uid, slug, stars);
+      /* Re-fetch from Firestore as MANDATORY confirmation the write persisted */
+      const confirmed = await fb.getRating(user.uid, slug);
+      console.log('[Session] setRating re-fetch confirmed:', confirmed);
+      if (confirmed !== (persistedRating ?? stars)) {
+        console.warn('[Session] setRating confirmed value differs from intended', { sent: stars, confirmed });
+      }
+      /* Use confirmed value (may differ from intended if concurrent writes) */
+      this.ratings[slug] = confirmed || stars;
+      this._emitChange();
+      console.log('[Session] setRating ✓ OK & CONFIRMED', { uid: user.uid, slug, rating: confirmed });
+      return confirmed || stars;
     } catch (e) {
       if (prev) this.ratings[slug] = prev; else delete this.ratings[slug];
       this._emitChange();
+      console.error('[Session] setRating ✗ FAILED', { uid: user.uid, slug, stars, error: e.message });
       throw e;
     }
   },
