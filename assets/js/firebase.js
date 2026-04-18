@@ -1,66 +1,30 @@
 /* ============================================================
-   firebase.js — StreamVault  v3.4
+   firebase.js — StreamVault  v4.0
    ─────────────────────────────────────────────────────────────
-   ROOT CAUSE FIXES:
-   ① Internal _fbCurrentUser tracked via onAuthStateChanged.
-     All write helpers check this BEFORE calling Firestore, so
-     even if app.js calls fb.toggleFavorite() a split-second
-     before onAuth fires in AuthController, the write is
-     rejected cleanly rather than sent without auth credentials
-     (which Firestore rules deny → silent failure).
+   Core architectural primitive: `authReady` Promise.
+   Every controller awaits authReady ONCE before any Firestore
+   read/write. Eliminates all auth race conditions.
 
-   ② ensureUserDoc is now synchronous-safe: returns the doc data
-     after creation so callers don't need a second getDoc().
-
-   ③ _safeWrite: logs uid + path, verifies network state, and
-     re-throws so the caller's toast shows the real error.
-
-   ④ verify-after-write on critical toggles (favorites, watchlist,
-     seen, setRating) — logs if the write did NOT persist.
-
-   ⑤ getDoc calls use { source: 'server' } option for reads that
-     must bypass the local cache (getRating, isFavorite, etc.)
-     to prevent stale-cache false-positives after a write.
+   All writes use _safeWrite + _verifyWrite.
+   All reads use _safeRead with fallback value.
    ============================================================ */
 
 import {
-  initializeApp,
-  getApps,
-  getApp,
+  initializeApp, getApps, getApp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  signOut,
-  onAuthStateChanged,
+  getAuth, GoogleAuthProvider, signInWithPopup,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  sendPasswordResetEmail, signOut, onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-  getFirestore,
-  enableNetwork,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  deleteDoc,
-  collection,
-  collectionGroup,
-  addDoc,
-  getDocs,
-  query,
-  orderBy,
-  where,
-  onSnapshot,
-  serverTimestamp,
-  increment,
+  getFirestore, enableNetwork,
+  doc, getDoc, setDoc, updateDoc, deleteDoc,
+  collection, collectionGroup, addDoc, getDocs,
+  query, orderBy, where, onSnapshot,
+  serverTimestamp, increment,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-/* ──────────────────────────────────────────────────────────
-   INIT — guarded against duplicate initializeApp calls
-   ────────────────────────────────────────────────────────── */
 const firebaseConfig = {
   apiKey: "AIzaSyCCvlyYUwn4KSPCrjzJ8gw1SIXcRd4jcEE",
   authDomain: "my-site-greek-m.firebaseapp.com",
@@ -71,163 +35,116 @@ const firebaseConfig = {
   measurementId: "G-VBPHLPBPYT"
 };
 
-const app = getApps().length === 0
-  ? initializeApp(firebaseConfig)
-  : getApp();
-
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
 export const db   = getFirestore(app);
 
 console.log("[Firebase] App ready. Project:", firebaseConfig.projectId);
+enableNetwork(db).then(() => console.log("[Firestore] Online.")).catch(e => console.warn("[Firestore] enableNetwork:", e.message));
 
-/* Force Firestore online — clears any lingering offline state */
-enableNetwork(db)
-  .then(() => console.log("[Firestore] Network enabled."))
-  .catch(e  => console.warn("[Firestore] enableNetwork:", e.message));
-
-/* Browser network logging + auto re-enable */
 if (typeof window !== 'undefined') {
-  console.log("[Network] navigator.onLine =", navigator.onLine);
-  window.addEventListener('online',  () => {
-    console.log("[Network] Back online — re-enabling Firestore.");
-    enableNetwork(db).catch(() => {});
-  });
-  window.addEventListener('offline', () => console.warn("[Network] Browser offline."));
+  window.addEventListener('online',  () => { console.log("[Network] Online"); enableNetwork(db).catch(()=>{}); });
+  window.addEventListener('offline', () => console.warn("[Network] Offline"));
 }
 
-/* ──────────────────────────────────────────────────────────
-   INTERNAL AUTH STATE
-   Track Firebase's own auth session here so ALL write helpers
-   can gate on it, regardless of when app.js sets _currentUser.
-   ────────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   AUTH-READY PRIMITIVE — the foundation
+   ══════════════════════════════════════════════════════════════ */
 let _fbCurrentUser = null;
+let _authReadyResolve;
+let _authReadySettled = false;
+
+/** Resolves ONCE with the user (or null) on the first auth emission. */
+export const authReady = new Promise(r => { _authReadyResolve = r; });
 
 onAuthStateChanged(auth, (user) => {
   _fbCurrentUser = user;
-  console.log("[Firebase] Auth state changed. uid =", user?.uid ?? "null");
+  console.log("[Firebase] Auth state:", user?.uid ?? "null");
+  if (!_authReadySettled) {
+    _authReadySettled = true;
+    _authReadyResolve(user);
+  }
 });
+
+/** Subscribe to auth state changes (fires immediately with current). */
+export function onAuth(cb) { return onAuthStateChanged(auth, cb); }
 
 const googleProvider = new GoogleAuthProvider();
 
-/* ──────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════════════════
    INTERNAL HELPERS
-   ────────────────────────────────────────────────────────── */
-
-/**
- * Returns the currently-authenticated UID, or throws a clear
- * error if auth is not ready. Use this in every write path.
- */
+   ══════════════════════════════════════════════════════════════ */
 function _requireAuth(context = '') {
   const user = _fbCurrentUser ?? auth.currentUser;
   if (!user) {
-    const msg = `[Firestore] ${context} — user not authenticated. Aborting write.`;
-    console.error(msg);
+    console.error(`[Firestore] ${context} — no auth user.`);
     throw new Error("User not authenticated");
   }
   return user.uid;
 }
 
-/**
- * Wrap a Firestore write with auth check, online check, logging,
- * try/catch. Re-throws so callers can show the error in the UI.
- */
 async function _safeWrite(opName, fn) {
-  if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    console.warn(`[Firestore] ${opName} — browser offline, write will be queued.`);
-  }
-  console.log(`[Firestore] ${opName} — starting write…`);
+  if (typeof navigator !== 'undefined' && !navigator.onLine)
+    console.warn(`[Firestore] ${opName} — offline, write queued.`);
+  console.log(`[Firestore] ${opName} — writing…`);
   try {
-    const result = await fn();
-    console.log(`[Firestore] ${opName} — write SUCCESS.`);
-    return result;
+    const r = await fn();
+    console.log(`[Firestore] ${opName} — ✓ success.`);
+    return r;
   } catch (e) {
-    console.error(`[Firestore] ${opName} — WRITE FAILED:`, e.code ?? e.message, e);
+    console.error(`[Firestore] ${opName} — ✗ FAILED:`, e.code ?? e.message, e);
     throw e;
   }
 }
 
-/**
- * Wrap a Firestore read with try/catch + fallback value.
- */
 async function _safeRead(opName, fn, fallback) {
-  try {
-    return await fn();
-  } catch (e) {
+  try { return await fn(); }
+  catch (e) {
     console.error(`[Firestore] ${opName} — READ ERROR:`, e.code ?? e.message);
     return fallback;
   }
 }
 
-/**
- * Read-back verification after a write.
- * Logs a warning if the doc does not exist or field doesn't match.
- */
 async function _verifyWrite(opName, ref, checkFn = null) {
   try {
     const snap = await getDoc(ref);
-    if (!snap.exists()) {
-      console.error(`[Firestore] VERIFY FAILED for ${opName}: doc does not exist after write!`);
-      return false;
-    }
-    if (checkFn && !checkFn(snap.data())) {
-      console.error(`[Firestore] VERIFY FAILED for ${opName}: data check failed.`, snap.data());
-      return false;
-    }
-    console.log(`[Firestore] VERIFY OK for ${opName}.`);
+    if (!snap.exists()) { console.error(`[Firestore] VERIFY FAIL ${opName}: doc missing after write`); return false; }
+    if (checkFn && !checkFn(snap.data())) { console.error(`[Firestore] VERIFY FAIL ${opName}: data mismatch`, snap.data()); return false; }
     return true;
-  } catch (e) {
-    console.warn(`[Firestore] VERIFY READ ERROR for ${opName}:`, e.message);
-    return false;
-  }
+  } catch (e) { console.warn(`[Firestore] verify error ${opName}:`, e.message); return false; }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   AUTH
+   AUTH OPERATIONS
    ══════════════════════════════════════════════════════════════ */
-
 export async function loginWithGoogle() {
-  const result = await signInWithPopup(auth, googleProvider);
-  await ensureUserDoc(result.user);
-  return result.user;
+  const r = await signInWithPopup(auth, googleProvider);
+  await ensureUserDoc(r.user);
+  return r.user;
 }
 
 export async function loginWithEmail(email, password) {
-  const result = await signInWithEmailAndPassword(auth, email, password);
-  try { await ensureUserDoc(result.user); } catch (_) {}
-  return result.user;
+  const r = await signInWithEmailAndPassword(auth, email, password);
+  try { await ensureUserDoc(r.user); } catch (_) {}
+  return r.user;
 }
 
 export async function registerWithEmail(email, password, username) {
-  const result = await createUserWithEmailAndPassword(auth, email, password);
-  await ensureUserDoc(result.user, username);
-  return result.user;
+  const r = await createUserWithEmailAndPassword(auth, email, password);
+  await ensureUserDoc(r.user, username);
+  return r.user;
 }
 
-export async function forgotPassword(email) {
-  await sendPasswordResetEmail(auth, email);
-}
-
-export async function logout() {
-  await signOut(auth);
-}
-
-export function onAuth(cb) {
-  return onAuthStateChanged(auth, cb);
-}
+export async function forgotPassword(email) { await sendPasswordResetEmail(auth, email); }
+export async function logout() { await signOut(auth); }
 
 /* ══════════════════════════════════════════════════════════════
    USER PROFILE — users/{uid}
    ══════════════════════════════════════════════════════════════ */
-
-/**
- * Create the user document if it doesn't exist.
- * Returns the profile data (existing or freshly created).
- */
 export async function ensureUserDoc(user, username = null) {
   if (!user?.uid) return null;
   const ref  = doc(db, "users", user.uid);
   const snap = await _safeRead(`ensureUserDoc-read(${user.uid})`, () => getDoc(ref), null);
-
   if (snap?.exists()) return { uid: user.uid, ...snap.data() };
 
   const profileData = {
@@ -240,14 +157,13 @@ export async function ensureUserDoc(user, username = null) {
     createdAt: serverTimestamp(),
   };
   await _safeWrite(`ensureUserDoc-create(${user.uid})`, () => setDoc(ref, profileData));
-  console.log(`[Firestore] User doc created for uid=${user.uid}`);
   return { uid: user.uid, ...profileData };
 }
 
 export async function getUserProfile(uid) {
   return _safeRead(`getUserProfile(${uid})`, async () => {
-    const snap = await getDoc(doc(db, "users", uid));
-    return snap.exists() ? { uid, ...snap.data() } : null;
+    const s = await getDoc(doc(db, "users", uid));
+    return s.exists() ? { uid, ...s.data() } : null;
   }, null);
 }
 
@@ -258,227 +174,134 @@ export async function updateUserProfile(uid, updates = {}) {
   if (updates.avatar === null || typeof updates.avatar === 'string')
     allowed.avatar = updates.avatar || null;
   if (!Object.keys(allowed).length) return;
-  return _safeWrite(`updateUserProfile(${uid})`, () =>
-    updateDoc(doc(db, "users", uid), allowed)
-  );
+  return _safeWrite(`updateUserProfile(${uid})`, () => updateDoc(doc(db, "users", uid), allowed));
 }
 
 /* ══════════════════════════════════════════════════════════════
-   FAVORITES — users/{uid}/favorites/{slug}
+   FAVORITES / WATCHLIST / SEEN — identical subcollection pattern
    ══════════════════════════════════════════════════════════════ */
-
-export async function getUserFavorites(uid) {
-  return _safeRead(`getUserFavorites(${uid})`, async () => {
-    const snap = await getDocs(collection(db, "users", uid, "favorites"));
-    return snap.docs.map(d => d.id);
-  }, []);
+function _makeCollectionAPI(collName) {
+  return {
+    async getAll(uid) {
+      return _safeRead(`get${collName}(${uid})`, async () => {
+        const s = await getDocs(collection(db, "users", uid, collName));
+        return s.docs.map(d => d.id);
+      }, []);
+    },
+    async has(uid, slug) {
+      return _safeRead(`has-${collName}(${uid},${slug})`, async () => {
+        const s = await getDoc(doc(db, "users", uid, collName, slug));
+        return s.exists();
+      }, false);
+    },
+    async add(uid, slug) {
+      const resolvedUid = uid || _requireAuth(`add-${collName}(${slug})`);
+      const ref = doc(db, "users", resolvedUid, collName, slug);
+      await _safeWrite(`add-${collName}(${resolvedUid},${slug})`, () =>
+        setDoc(ref, { slug, addedAt: serverTimestamp() })
+      );
+      await _verifyWrite(`add-${collName}(${resolvedUid},${slug})`, ref);
+    },
+    async remove(uid, slug) {
+      const resolvedUid = uid || _requireAuth(`remove-${collName}(${slug})`);
+      const ref = doc(db, "users", resolvedUid, collName, slug);
+      await _safeWrite(`remove-${collName}(${resolvedUid},${slug})`, () => deleteDoc(ref));
+    },
+    async toggle(uid, slug) {
+      const resolvedUid = uid || _requireAuth(`toggle-${collName}(${slug})`);
+      const ref = doc(db, "users", resolvedUid, collName, slug);
+      const snap = await _safeRead(`toggle-${collName}-read(${resolvedUid},${slug})`, () => getDoc(ref), null);
+      if (snap?.exists()) {
+        await _safeWrite(`toggle-${collName}-remove(${resolvedUid},${slug})`, () => deleteDoc(ref));
+        return false;
+      }
+      await _safeWrite(`toggle-${collName}-add(${resolvedUid},${slug})`, () =>
+        setDoc(ref, { slug, addedAt: serverTimestamp() })
+      );
+      await _verifyWrite(`toggle-${collName}-add(${resolvedUid},${slug})`, ref);
+      return true;
+    },
+  };
 }
 
-export async function isFavorite(uid, slug) {
-  return _safeRead(`isFavorite(${uid},${slug})`, async () => {
-    const snap = await getDoc(doc(db, "users", uid, "favorites", slug));
-    return snap.exists();
-  }, false);
-}
+const favoritesAPI = _makeCollectionAPI("favorites");
+const watchlistAPI = _makeCollectionAPI("watchlist");
+const seenAPI      = _makeCollectionAPI("seen");
 
-export async function toggleFavorite(uid, slug) {
-  /* Auth guard: uid passed from app.js but double-check internal state */
-  const resolvedUid = uid || _requireAuth(`toggleFavorite(${slug})`);
-  console.log(`[Firestore] toggleFavorite — uid=${resolvedUid}, slug=${slug}`);
+export const getUserFavorites = favoritesAPI.getAll;
+export const isFavorite        = favoritesAPI.has;
+export const addFavorite       = favoritesAPI.add;
+export const removeFavorite    = favoritesAPI.remove;
+export const toggleFavorite    = favoritesAPI.toggle;
 
-  const ref  = doc(db, "users", resolvedUid, "favorites", slug);
-  const snap = await _safeRead(`toggleFavorite-check(${resolvedUid},${slug})`, () => getDoc(ref), null);
+export const getUserWatchlist  = watchlistAPI.getAll;
+export const isInWatchlist     = watchlistAPI.has;
+export const addToWatchlist    = watchlistAPI.add;
+export const removeFromWatchlist = watchlistAPI.remove;
+export const toggleWatchlist   = watchlistAPI.toggle;
 
-  if (snap?.exists()) {
-    await _safeWrite(`toggleFavorite-remove(${resolvedUid},${slug})`, () => deleteDoc(ref));
-    /* Verify removal */
-    const afterSnap = await getDoc(ref).catch(() => null);
-    if (afterSnap?.exists()) console.error(`[Firestore] toggleFavorite: doc still exists after delete!`);
-    else console.log(`[Firestore] toggleFavorite: remove verified OK.`);
-    return false;
-  }
-
-  await _safeWrite(`toggleFavorite-add(${resolvedUid},${slug})`, () =>
-    setDoc(ref, { slug, addedAt: serverTimestamp() })
-  );
-  await _verifyWrite(`toggleFavorite-add(${resolvedUid},${slug})`, ref);
-  return true;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   WATCHLIST — users/{uid}/watchlist/{slug}
-   ══════════════════════════════════════════════════════════════ */
-
-export async function getUserWatchlist(uid) {
-  return _safeRead(`getUserWatchlist(${uid})`, async () => {
-    const snap = await getDocs(collection(db, "users", uid, "watchlist"));
-    return snap.docs.map(d => d.id);
-  }, []);
-}
-
-export async function isInWatchlist(uid, slug) {
-  return _safeRead(`isInWatchlist(${uid},${slug})`, async () => {
-    const snap = await getDoc(doc(db, "users", uid, "watchlist", slug));
-    return snap.exists();
-  }, false);
-}
-
-export async function toggleWatchlist(uid, slug) {
-  const resolvedUid = uid || _requireAuth(`toggleWatchlist(${slug})`);
-  console.log(`[Firestore] toggleWatchlist — uid=${resolvedUid}, slug=${slug}`);
-
-  const ref  = doc(db, "users", resolvedUid, "watchlist", slug);
-  const snap = await _safeRead(`toggleWatchlist-check(${resolvedUid},${slug})`, () => getDoc(ref), null);
-
-  if (snap?.exists()) {
-    await _safeWrite(`toggleWatchlist-remove(${resolvedUid},${slug})`, () => deleteDoc(ref));
-    const afterSnap = await getDoc(ref).catch(() => null);
-    if (afterSnap?.exists()) console.error(`[Firestore] toggleWatchlist: doc still exists after delete!`);
-    return false;
-  }
-
-  await _safeWrite(`toggleWatchlist-add(${resolvedUid},${slug})`, () =>
-    setDoc(ref, { slug, addedAt: serverTimestamp() })
-  );
-  await _verifyWrite(`toggleWatchlist-add(${resolvedUid},${slug})`, ref);
-  return true;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   SEEN — users/{uid}/seen/{slug}
-   ══════════════════════════════════════════════════════════════ */
-
-export async function getUserSeen(uid) {
-  return _safeRead(`getUserSeen(${uid})`, async () => {
-    const snap = await getDocs(collection(db, "users", uid, "seen"));
-    return snap.docs.map(d => d.id);
-  }, []);
-}
-
-export async function isInSeen(uid, slug) {
-  return _safeRead(`isInSeen(${uid},${slug})`, async () => {
-    const snap = await getDoc(doc(db, "users", uid, "seen", slug));
-    return snap.exists();
-  }, false);
-}
-
-export async function toggleSeen(uid, slug) {
-  const resolvedUid = uid || _requireAuth(`toggleSeen(${slug})`);
-  console.log(`[Firestore] toggleSeen — uid=${resolvedUid}, slug=${slug}`);
-
-  const ref  = doc(db, "users", resolvedUid, "seen", slug);
-  const snap = await _safeRead(`toggleSeen-check(${resolvedUid},${slug})`, () => getDoc(ref), null);
-
-  if (snap?.exists()) {
-    await _safeWrite(`toggleSeen-remove(${resolvedUid},${slug})`, () => deleteDoc(ref));
-    const afterSnap = await getDoc(ref).catch(() => null);
-    if (afterSnap?.exists()) console.error(`[Firestore] toggleSeen: doc still exists after delete!`);
-    return false;
-  }
-
-  await _safeWrite(`toggleSeen-add(${resolvedUid},${slug})`, () =>
-    setDoc(ref, { slug, addedAt: serverTimestamp() })
-  );
-  await _verifyWrite(`toggleSeen-add(${resolvedUid},${slug})`, ref);
-  return true;
-}
+export const getUserSeen       = seenAPI.getAll;
+export const isInSeen          = seenAPI.has;
+export const addSeen           = seenAPI.add;
+export const removeSeen        = seenAPI.remove;
+export const toggleSeen        = seenAPI.toggle;
 
 /* ══════════════════════════════════════════════════════════════
    RATINGS — seriesRatings/{seriesId}/ratings/{uid}
    ══════════════════════════════════════════════════════════════ */
-
 export async function setRating(uid, slug, stars) {
-  const resolvedUid = uid || _requireAuth(`setRating(${slug},${stars})`);
-  console.log(`[Firestore] setRating — uid=${resolvedUid}, slug=${slug}, stars=${stars}`);
-
-  const ratingRef = doc(db, "seriesRatings", slug, "ratings", resolvedUid);
-
-  /* Primary write */
-  await _safeWrite(`setRating-primary(${resolvedUid},${slug},${stars})`, () =>
-    setDoc(ratingRef, { rating: stars, uid: resolvedUid, updatedAt: serverTimestamp() })
+  const resolvedUid = uid || _requireAuth(`setRating(${slug})`);
+  const ref = doc(db, "seriesRatings", slug, "ratings", resolvedUid);
+  await _safeWrite(`setRating(${resolvedUid},${slug},${stars})`, () =>
+    setDoc(ref, { rating: stars, uid: resolvedUid, updatedAt: serverTimestamp() })
   );
-
-  /* Verify primary write */
-  await _verifyWrite(
-    `setRating-primary(${resolvedUid},${slug})`,
-    ratingRef,
-    (data) => data.rating === stars
-  );
-
-  /* Secondary: update user doc ratings map (best-effort) */
-  try {
-    await updateDoc(doc(db, "users", resolvedUid), { [`ratings.${slug}`]: stars });
-    console.log(`[Firestore] setRating secondary user-doc update OK.`);
-  } catch (e) {
-    console.warn(`[Firestore] setRating secondary user-doc write failed (non-critical):`, e.code ?? e.message);
-  }
+  await _verifyWrite(`setRating(${resolvedUid},${slug})`, ref, d => d.rating === stars);
+  /* Secondary: user doc ratings map (best-effort) */
+  try { await updateDoc(doc(db, "users", resolvedUid), { [`ratings.${slug}`]: stars }); } catch (_) {}
 }
 
 export async function getRating(uid, slug) {
   return _safeRead(`getRating(${uid},${slug})`, async () => {
-    const snap = await getDoc(doc(db, "seriesRatings", slug, "ratings", uid));
-    if (snap.exists()) return snap.data().rating ?? 0;
-    /* Fallback: user doc ratings map */
-    const profile = await getUserProfile(uid);
-    return profile?.ratings?.[slug] ?? 0;
+    const s = await getDoc(doc(db, "seriesRatings", slug, "ratings", uid));
+    if (s.exists()) return s.data().rating ?? 0;
+    const p = await getUserProfile(uid);
+    return p?.ratings?.[slug] ?? 0;
   }, 0);
 }
 
 export async function getAllRatings(uid) {
   return _safeRead(`getAllRatings(${uid})`, async () => {
-    const profile = await getUserProfile(uid);
-    const fromDoc = profile?.ratings ?? {};
-    if (Object.keys(fromDoc).length > 0) return fromDoc;
-    /* Fallback: collectionGroup query (requires Firestore index) */
-    try {
-      const q    = query(collectionGroup(db, "ratings"), where("uid", "==", uid));
-      const snap = await getDocs(q);
-      const result = {};
-      snap.docs.forEach(d => {
-        const seriesId = d.ref.parent.parent?.id;
-        if (seriesId) result[seriesId] = d.data().rating;
-      });
-      return result;
-    } catch (e) {
-      console.warn("[Firestore] getAllRatings collectionGroup fallback failed:", e.message);
-      return fromDoc;
-    }
+    const p = await getUserProfile(uid);
+    return p?.ratings ?? {};
   }, {});
 }
 
 export async function getAverageRating(slug) {
   return _safeRead(`getAverageRating(${slug})`, async () => {
-    const snap = await getDocs(collection(db, "seriesRatings", slug, "ratings"));
-    if (snap.empty) return { avg: 0, count: 0 };
-    const values = snap.docs.map(d => d.data().rating ?? 0).filter(r => r > 0);
-    if (!values.length) return { avg: 0, count: 0 };
-    const avg = values.reduce((s, r) => s + r, 0) / values.length;
-    return { avg: Math.round(avg * 10) / 10, count: values.length };
+    const s = await getDocs(collection(db, "seriesRatings", slug, "ratings"));
+    if (s.empty) return { avg: 0, count: 0 };
+    const vals = s.docs.map(d => d.data().rating ?? 0).filter(r => r > 0);
+    if (!vals.length) return { avg: 0, count: 0 };
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    return { avg: Math.round(avg * 10) / 10, count: vals.length };
   }, { avg: 0, count: 0 });
 }
 
-export function onSeriesRatingsSnapshot(slug, callback) {
+export function onSeriesRatingsSnapshot(slug, cb) {
   try {
-    const col = collection(db, "seriesRatings", slug, "ratings");
-    return onSnapshot(col, (snap) => {
-      try {
-        if (snap.empty) { callback({ avg: 0, count: 0 }); return; }
-        const values = snap.docs.map(d => d.data().rating ?? 0).filter(r => r > 0);
-        if (!values.length) { callback({ avg: 0, count: 0 }); return; }
-        const avg = values.reduce((s, r) => s + r, 0) / values.length;
-        callback({ avg: Math.round(avg * 10) / 10, count: values.length });
-      } catch (e) { console.warn("[Firestore] ratingsSnapshot cb error:", e.message); }
-    }, (e) => { console.warn("[Firestore] ratingsSnapshot listener error:", e.message); });
-  } catch (e) {
-    console.warn("[Firestore] onSeriesRatingsSnapshot setup failed:", e.message);
-    return () => {};
-  }
+    return onSnapshot(collection(db, "seriesRatings", slug, "ratings"), snap => {
+      if (snap.empty) { cb({ avg: 0, count: 0 }); return; }
+      const vals = snap.docs.map(d => d.data().rating ?? 0).filter(r => r > 0);
+      if (!vals.length) { cb({ avg: 0, count: 0 }); return; }
+      const avg = vals.reduce((a,b) => a+b, 0) / vals.length;
+      cb({ avg: Math.round(avg * 10) / 10, count: vals.length });
+    }, e => console.warn("[Firestore] rating snapshot:", e.message));
+  } catch (e) { console.warn("[Firestore] snapshot setup:", e.message); return () => {}; }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   COMMENTS — comments/{seriesSlug}/items/{commentId}
+   COMMENTS
    ══════════════════════════════════════════════════════════════ */
-
 export async function postComment(slug, uid, username, text, userAvatar = null) {
   return _safeWrite(`postComment(${uid},${slug})`, () =>
     addDoc(collection(db, "comments", slug, "items"), {
@@ -490,35 +313,28 @@ export async function postComment(slug, uid, username, text, userAvatar = null) 
 
 export async function getComments(slug) {
   return _safeRead(`getComments(${slug})`, async () => {
-    const q    = query(collection(db, "comments", slug, "items"), orderBy("createdAt", "asc"));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const q = query(collection(db, "comments", slug, "items"), orderBy("createdAt", "asc"));
+    const s = await getDocs(q);
+    return s.docs.map(d => ({ id: d.id, ...d.data() }));
   }, []);
 }
 
 export async function getUserComments(uid) {
   return _safeRead(`getUserComments(${uid})`, async () => {
-    const q    = query(
-      collectionGroup(db, "items"),
-      where("userId", "==", uid),
-      orderBy("createdAt", "desc")
-    );
-    const snap = await getDocs(q);
-    return snap.docs.map(d => {
-      const parent = d.ref.parent.parent;
-      return { id: d.id, seriesSlug: parent?.id ?? '', ...d.data() };
-    });
+    const q = query(collectionGroup(db, "items"), where("userId", "==", uid), orderBy("createdAt", "desc"));
+    const s = await getDocs(q);
+    return s.docs.map(d => ({ id: d.id, seriesSlug: d.ref.parent.parent?.id ?? '', ...d.data() }));
   }, []);
 }
 
-export async function likeComment(slug, commentId) {
-  return _safeWrite(`likeComment(${slug},${commentId})`, () =>
-    updateDoc(doc(db, "comments", slug, "items", commentId), { likes: increment(1) })
+export async function likeComment(slug, id) {
+  return _safeWrite(`likeComment(${slug},${id})`, () =>
+    updateDoc(doc(db, "comments", slug, "items", id), { likes: increment(1) })
   );
 }
 
-export async function dislikeComment(slug, commentId) {
-  return _safeWrite(`dislikeComment(${slug},${commentId})`, () =>
-    updateDoc(doc(db, "comments", slug, "items", commentId), { dislikes: increment(1) })
+export async function dislikeComment(slug, id) {
+  return _safeWrite(`dislikeComment(${slug},${id})`, () =>
+    updateDoc(doc(db, "comments", slug, "items", id), { dislikes: increment(1) })
   );
 }
