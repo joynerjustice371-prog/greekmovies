@@ -963,11 +963,18 @@ class SeriesController {
         <button id="seenBtn"      class="btn-secondary user-action-btn" type="button">${ICONS.check}    <span id="seenLabel">Έχω δει</span></button>`;
     }
 
+    /* ── Star rating: load after auth is known, re-render on auth change ──
+       BUG FIX: _currentUser is null when _render() first runs because
+       onAuthStateChanged hasn't fired yet. The first render shows 0 stars.
+       updateRating() is called immediately AND on authStateChanged so the
+       persisted rating loads correctly after auth settles. ── */
     const ratingWrap = $('#seriesRatingWrap');
-    if (ratingWrap) {
-      const current = _currentUser ? await fb.getRating(_currentUser.uid, slug).catch(() => 0) : 0;
+    const updateRating = async () => {
+      if (!ratingWrap) return;
+      const uid     = _currentUser?.uid ?? null;
+      const current = uid ? await fb.getRating(uid, slug).catch(() => 0) : 0;
       renderStarRating(ratingWrap, slug, current);
-    }
+    };
 
     /* ── Button state: 3 parallel single-doc reads (no full profile read) ── */
     const updateUserBtns = async () => {
@@ -1004,9 +1011,14 @@ class SeriesController {
     };
 
     if (this._authListener) document.removeEventListener('authStateChanged', this._authListener);
-    this._authListener = updateUserBtns;
-    document.addEventListener('authStateChanged', updateUserBtns);
-    await updateUserBtns();
+    /* Combined auth handler: re-run both btn states AND star rating on auth change */
+    const onAuthReady = async () => {
+      await Promise.all([updateUserBtns(), updateRating()]);
+    };
+    this._authListener = onAuthReady;
+    document.addEventListener('authStateChanged', onAuthReady);
+    /* Run immediately — _currentUser may already be set if auth fired before render */
+    await onAuthReady();
 
     $('#favBtn')?.addEventListener('click', async () => {
       if (!_currentUser) { toast('Συνδεθείτε για να αποθηκεύσετε αγαπημένα.', 'info'); return; }
@@ -1237,8 +1249,11 @@ class ProfileController {
         _currentUser = user;
         const uid    = user.uid;
 
-        /* Ensure user doc exists (non-blocking, ignore errors) */
-        fb.ensureUserDoc(user).catch(e => console.warn('[Profile] ensureUserDoc:', e.message));
+        /* Ensure user doc exists BEFORE parallel reads — must be awaited so
+           getUserProfile() in the same Promise.all does not race against
+           doc creation and return null on first login. */
+        try { await fb.ensureUserDoc(user); }
+        catch (e) { console.warn('[Profile] ensureUserDoc:', e.message); }
 
         /* ── Phase 1: parallel Firestore reads + local series data ── */
         const [profile, favSlugs, watchSlugs, seenSlugs, ratings, localEntries] =
