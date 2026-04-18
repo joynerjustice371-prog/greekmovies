@@ -84,15 +84,21 @@ function _requireAuth(context = '') {
 }
 
 async function _safeWrite(opName, fn) {
-  if (typeof navigator !== 'undefined' && !navigator.onLine)
-    console.warn(`[Firestore] ${opName} — offline, write queued.`);
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    console.warn(`[Firestore] ${opName} — OFFLINE, write will be queued.`);
+  }
   console.log(`[Firestore] ${opName} — writing…`);
   try {
     const r = await fn();
-    console.log(`[Firestore] ${opName} — ✓ success.`);
+    console.log(`[Firestore] ${opName} — ✓ write call resolved.`);
     return r;
   } catch (e) {
-    console.error(`[Firestore] ${opName} — ✗ FAILED:`, e.code ?? e.message, e);
+    const code = e.code ?? 'unknown';
+    console.error(`[Firestore] ${opName} — ✗ WRITE FAILED:`, code, e.message);
+    if (code === 'permission-denied') {
+      console.error(`[Firestore] PERMISSION DENIED — check Firestore rules for this path. User not authorized.`);
+      throw new Error(`Δεν έχετε δικαίωμα για αυτή την ενέργεια (permission-denied).`);
+    }
     throw e;
   }
 }
@@ -105,13 +111,36 @@ async function _safeRead(opName, fn, fallback) {
   }
 }
 
+/**
+ * MANDATORY write verification — reads back and THROWS if not persisted.
+ * Proves the write actually committed to the server, not just cache.
+ */
 async function _verifyWrite(opName, ref, checkFn = null) {
-  try {
-    const snap = await getDoc(ref);
-    if (!snap.exists()) { console.error(`[Firestore] VERIFY FAIL ${opName}: doc missing after write`); return false; }
-    if (checkFn && !checkFn(snap.data())) { console.error(`[Firestore] VERIFY FAIL ${opName}: data mismatch`, snap.data()); return false; }
-    return true;
-  } catch (e) { console.warn(`[Firestore] verify error ${opName}:`, e.message); return false; }
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    console.error(`[Firestore] ${opName} — ✗ VERIFY FAILED: doc does not exist after write!`);
+    throw new Error(`Η εγγραφή δεν αποθηκεύτηκε (${opName}).`);
+  }
+  if (checkFn && !checkFn(snap.data())) {
+    console.error(`[Firestore] ${opName} — ✗ VERIFY FAILED: data mismatch`, snap.data());
+    throw new Error(`Η εγγραφή έγινε αλλά με λάθος δεδομένα (${opName}).`);
+  }
+  console.log(`[Firestore] ${opName} — ✓ VERIFIED (read-back OK)`);
+  return true;
+}
+
+/**
+ * MANDATORY: returns the currently authenticated user or throws a clear
+ * error. Use before every write operation.
+ */
+function _requireUser(context = '') {
+  const user = auth.currentUser ?? _fbCurrentUser;
+  if (!user?.uid) {
+    console.error(`[Firestore] ${context} — NO AUTHENTICATED USER. Aborting write.`);
+    throw new Error('Πρέπει να είστε συνδεδεμένοι.');
+  }
+  console.log(`[Firestore] ${context} — auth user:`, user.uid);
+  return user;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -196,31 +225,65 @@ function _makeCollectionAPI(collName) {
       }, false);
     },
     async add(uid, slug) {
-      const resolvedUid = uid || _requireAuth(`add-${collName}(${slug})`);
-      const ref = doc(db, "users", resolvedUid, collName, slug);
-      await _safeWrite(`add-${collName}(${resolvedUid},${slug})`, () =>
+      /* Enforce auth from live Firebase SDK, ignore passed uid if different */
+      const user = _requireUser(`add-${collName}(${slug})`);
+      const authedUid = user.uid;
+      const path = `users/${authedUid}/${collName}/${slug}`;
+      const ref  = doc(db, "users", authedUid, collName, slug);
+      console.log(`[Firestore] add-${collName} PATH:`, path);
+      await _safeWrite(`add-${collName}(${authedUid},${slug})`, () =>
         setDoc(ref, { slug, addedAt: serverTimestamp() })
       );
-      await _verifyWrite(`add-${collName}(${resolvedUid},${slug})`, ref);
+      /* Mandatory verify — throws if not persisted */
+      await _verifyWrite(`add-${collName}(${authedUid},${slug})`, ref);
     },
     async remove(uid, slug) {
-      const resolvedUid = uid || _requireAuth(`remove-${collName}(${slug})`);
-      const ref = doc(db, "users", resolvedUid, collName, slug);
-      await _safeWrite(`remove-${collName}(${resolvedUid},${slug})`, () => deleteDoc(ref));
+      const user = _requireUser(`remove-${collName}(${slug})`);
+      const authedUid = user.uid;
+      const path = `users/${authedUid}/${collName}/${slug}`;
+      const ref  = doc(db, "users", authedUid, collName, slug);
+      console.log(`[Firestore] remove-${collName} PATH:`, path);
+      await _safeWrite(`remove-${collName}(${authedUid},${slug})`, () => deleteDoc(ref));
+      /* Verify removal */
+      const after = await getDoc(ref);
+      if (after.exists()) {
+        console.error(`[Firestore] remove-${collName} VERIFY FAILED: doc still exists after delete`);
+        throw new Error(`Η διαγραφή απέτυχε (${collName}).`);
+      }
+      console.log(`[Firestore] remove-${collName} VERIFY OK — doc deleted`);
     },
     async toggle(uid, slug) {
-      const resolvedUid = uid || _requireAuth(`toggle-${collName}(${slug})`);
-      const ref = doc(db, "users", resolvedUid, collName, slug);
-      const snap = await _safeRead(`toggle-${collName}-read(${resolvedUid},${slug})`, () => getDoc(ref), null);
-      if (snap?.exists()) {
-        await _safeWrite(`toggle-${collName}-remove(${resolvedUid},${slug})`, () => deleteDoc(ref));
+      const user = _requireUser(`toggle-${collName}(${slug})`);
+      const authedUid = user.uid;
+      const path = `users/${authedUid}/${collName}/${slug}`;
+      const ref  = doc(db, "users", authedUid, collName, slug);
+      console.log(`[Firestore] toggle-${collName} PATH:`, path);
+
+      /* Read current state */
+      const snap = await getDoc(ref).catch(e => {
+        console.error(`[Firestore] toggle-${collName} pre-read failed:`, e.code ?? e.message);
+        throw e;
+      });
+
+      if (snap.exists()) {
+        /* Currently present → remove */
+        await _safeWrite(`toggle-${collName}-remove(${authedUid},${slug})`, () => deleteDoc(ref));
+        const after = await getDoc(ref);
+        if (after.exists()) {
+          console.error(`[Firestore] toggle-${collName} VERIFY FAILED: doc still exists`);
+          throw new Error(`Η διαγραφή απέτυχε.`);
+        }
+        console.log(`[Firestore] toggle-${collName} REMOVED & VERIFIED`);
         return false;
+      } else {
+        /* Not present → add */
+        await _safeWrite(`toggle-${collName}-add(${authedUid},${slug})`, () =>
+          setDoc(ref, { slug, addedAt: serverTimestamp() })
+        );
+        await _verifyWrite(`toggle-${collName}-add(${authedUid},${slug})`, ref,
+                           d => d.slug === slug);
+        return true;
       }
-      await _safeWrite(`toggle-${collName}-add(${resolvedUid},${slug})`, () =>
-        setDoc(ref, { slug, addedAt: serverTimestamp() })
-      );
-      await _verifyWrite(`toggle-${collName}-add(${resolvedUid},${slug})`, ref);
-      return true;
     },
   };
 }
@@ -251,14 +314,46 @@ export const toggleSeen        = seenAPI.toggle;
    RATINGS — seriesRatings/{seriesId}/ratings/{uid}
    ══════════════════════════════════════════════════════════════ */
 export async function setRating(uid, slug, stars) {
-  const resolvedUid = uid || _requireAuth(`setRating(${slug})`);
-  const ref = doc(db, "seriesRatings", slug, "ratings", resolvedUid);
-  await _safeWrite(`setRating(${resolvedUid},${slug},${stars})`, () =>
-    setDoc(ref, { rating: stars, uid: resolvedUid, updatedAt: serverTimestamp() })
+  /* Enforce live auth (uid param ignored if it doesn't match live user) */
+  const user = _requireUser(`setRating(${slug})`);
+  const authedUid = user.uid;
+
+  /* Explicit integer coercion — Firestore rule requires "rating is int".
+     JS number 5 is fine, but we defensively round to be safe. */
+  const ratingInt = Math.round(Number(stars));
+  if (!Number.isInteger(ratingInt) || ratingInt < 1 || ratingInt > 5) {
+    console.error(`[Firestore] setRating INVALID: rating must be int 1-5, got ${stars}`);
+    throw new Error(`Μη έγκυρη αξιολόγηση: ${stars}`);
+  }
+
+  const path = `seriesRatings/${slug}/ratings/${authedUid}`;
+  const ref  = doc(db, "seriesRatings", slug, "ratings", authedUid);
+  console.log(`[Firestore] setRating PATH: ${path} RATING: ${ratingInt}`);
+
+  /* Primary write — this is the canonical store for ratings */
+  await _safeWrite(`setRating(${authedUid},${slug},${ratingInt})`, () =>
+    setDoc(ref, {
+      rating:    ratingInt,
+      uid:       authedUid,
+      updatedAt: serverTimestamp(),
+    })
   );
-  await _verifyWrite(`setRating(${resolvedUid},${slug})`, ref, d => d.rating === stars);
-  /* Secondary: user doc ratings map (best-effort) */
-  try { await updateDoc(doc(db, "users", resolvedUid), { [`ratings.${slug}`]: stars }); } catch (_) {}
+
+  /* MANDATORY verify — reads back and throws if not persisted */
+  await _verifyWrite(`setRating(${authedUid},${slug})`, ref,
+                     d => d.rating === ratingInt);
+
+  /* Secondary: mirror to user doc ratings map (for profile tab aggregation).
+     Best-effort — a failure here is NON-CRITICAL because seriesRatings is
+     the primary store. */
+  try {
+    await updateDoc(doc(db, "users", authedUid), { [`ratings.${slug}`]: ratingInt });
+    console.log(`[Firestore] setRating secondary user-doc update OK`);
+  } catch (e) {
+    console.warn(`[Firestore] setRating secondary update FAILED (non-critical):`, e.code ?? e.message);
+  }
+
+  return ratingInt;
 }
 
 export async function getRating(uid, slug) {
