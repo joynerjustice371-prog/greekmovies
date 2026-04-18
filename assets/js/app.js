@@ -15,6 +15,7 @@
    ============================================================ */
 
 import { tmdb } from './tmdb.js';
+import { initAuthManager, getCurrentUser } from './authManager.js';
 
 /* ═══════════════════════════════════════════════════════════
    FIREBASE — dynamic import with fallback stubs
@@ -255,6 +256,12 @@ class AuthController {
 
     AuthController._authUnsub = fb.onAuth(async (user) => {
       if (user) {
+        /* Close any open auth modal immediately on sign-in (fallback for cases
+           where the modal's own close handler fails, e.g. ensureUserDoc error) */
+        if (this._modal) {
+          try { this._modal.remove(); } catch (_) {}
+          this._modal = null;
+        }
         /* Phase 1: immediate paint from Firebase user */
         const quickName = user.displayName || user.email?.split('@')[0] || '?';
         this._setLoggedIn(quickName, user.photoURL ?? null);
@@ -952,7 +959,11 @@ class SeriesController {
   async init() {
     initNavScroll();
     new AuthController().init();
-    await fb.authReady;   // guarantee auth settled before first UI state
+    const _authUser = await fb.authReady; // wait for Firebase auth token
+    /* DESYNC FIX: authReady resolves before Session.hydrate() completes.
+       Hydrate here so Session.user/.favorites/.watchlist/.seen are populated
+       before _render() runs syncBtns() / syncRating(). */
+    if (_authUser) await Session.hydrate(_authUser);
 
     const slug = new URLSearchParams(window.location.search).get('id');
     if (!slug) { window.location.href = pageUrl('index.html'); return; }
@@ -1082,7 +1093,9 @@ class WatchController {
   async init() {
     initNavScroll();
     new AuthController().init();
-    await fb.authReady;
+    const _authUser2 = await fb.authReady;
+    /* DESYNC FIX: same as SeriesController — hydrate before page renders */
+    if (_authUser2) await Session.hydrate(_authUser2);
     const p = new URLSearchParams(window.location.search);
     this._slug = p.get('series'); this._season = +(p.get('season') ?? 1); this._ep = +(p.get('ep') ?? 1);
     if (!this._slug) { window.location.href = pageUrl('index.html'); return; }
@@ -1100,8 +1113,13 @@ class WatchController {
   _renderMeta() {
     const t = $('#watchTitle'); if (t) t.textContent = this._entry.title;
     const b = $('#watchEpBadge'); if (b) b.textContent = `S${this._season} E${this._ep}`;
+    /* watchSeriesLink is in nav-actions in watch.html — reveal and populate it */
     const bl = $('#watchSeriesLink');
-    if (bl) { bl.href = pageUrl('series.html', { id: this._slug }); bl.innerHTML = `${ICONS.back} Όλα τα Επεισόδια`; }
+    if (bl) {
+      bl.href = pageUrl('series.html', { id: this._slug });
+      bl.style.display = '';
+      bl.innerHTML = `${ICONS.back} Όλα τα Επεισόδια`;
+    }
   }
 
   _renderPlayer() {
@@ -1169,7 +1187,7 @@ class WatchController {
    PROFILE PAGE — reads ONLY from Session cache → <1s load
    ══════════════════════════════════════════════════════════ */
 class ProfileController {
-  constructor() { this._dm = new DataManager(); }
+  constructor() { this._dm = new DataManager(); this._sessionChangedBound = false; }
 
   async init() {
     initNavScroll();
@@ -1177,30 +1195,78 @@ class ProfileController {
     this._initTabs();
     this._initEdit();
 
+    /* Initial auth state */
     const user = await fb.authReady;
-    if (!user) { this._renderLoggedOut(); return; }
+    if (!user) {
+      this._renderLoggedOut();
+    } else {
+      /* DESYNC FIX: wait for hydration so Session.user is populated */
+      await Session.hydrate(user);
+      await this._render();
+    }
 
-    /* Wait for Session to hydrate — it's started by AuthController */
-    await Session.hydrate(user);
-    await this._render();
-    /* Re-render on cache mutations */
-    document.addEventListener('sessionChanged', () => this._render());
+    /* Re-render on session data mutations (favorites toggled, etc.) */
+    if (!this._sessionChangedBound) {
+      this._sessionChangedBound = true;
+      document.addEventListener('sessionChanged', () => { if (Session.user) this._render(); });
+
+      /* Handle auth changes AFTER initial page load:
+         - User was NOT logged in when page loaded → logs in → render profile
+         - User was logged in → logs out → show login prompt
+         Uses authStateChanged (fired by AuthController) to avoid duplicate
+         onAuthStateChanged listeners. */
+      document.addEventListener('authStateChanged', async (e) => {
+        const evtUser = e.detail?.user;
+        if (!evtUser) {
+          this._renderLoggedOut();
+        } else if (!Session.loaded || Session.user?.uid !== evtUser.uid) {
+          /* User just logged in (or switched accounts) */
+          this._showProfileUI();
+          await Session.hydrate(evtUser);
+          await this._render();
+        }
+      });
+    }
   }
 
+  /* Shows the login prompt WITHOUT destroying the profile DOM.
+     Hides profile sections and inserts a login overlay. */
   _renderLoggedOut() {
-    const main = $('#profileMain');
     const hero = $('#profileHero');
-    if (hero) hero.style.display = 'none';
-    if (main) main.innerHTML = `
-      <div class="profile-login-prompt">
-        <div style="font-size:3rem;margin-bottom:1rem">🔐</div>
-        <h2>Καλωσήρθατε!</h2>
-        <p>Συνδεθείτε για να δείτε τα αγαπημένα σας, τη watchlist, τα "Έχω δει" και τις αξιολογήσεις σας.</p>
-        <button class="btn-primary" id="profileLoginBtn" type="button" style="margin:0 auto">Σύνδεση / Εγγραφή</button>
-      </div>`;
-    main?.querySelector('#profileLoginBtn')?.addEventListener('click', () =>
+    const tabs = document.querySelector('.profile-tabs');
+    const stats = $('#profileStats');
+    if (hero)  hero.style.display  = 'none';
+    if (tabs)  tabs.style.display  = 'none';
+    if (stats) stats.style.display = 'none';
+    $$('.profile-panel').forEach(p => { p.style.display = 'none'; });
+
+    const main = $('#profileMain');
+    if (!main || main.querySelector('.profile-login-prompt')) return;
+
+    const div = document.createElement('div');
+    div.className = 'profile-login-prompt';
+    div.innerHTML = `
+      <div style="font-size:3rem;margin-bottom:1rem">🔐</div>
+      <h2>Καλωσήρθατε!</h2>
+      <p>Συνδεθείτε για να δείτε τα αγαπημένα σας, τη watchlist, τα "Έχω δει" και τις αξιολογήσεις σας.</p>
+      <button class="btn-primary" id="profileLoginBtn" type="button" style="margin:0 auto">Σύνδεση / Εγγραφή</button>`;
+    main.prepend(div);
+    main.querySelector('#profileLoginBtn')?.addEventListener('click', () =>
       document.dispatchEvent(new CustomEvent('openAuthModal'))
     );
+  }
+
+  /* Removes the login overlay and restores hidden profile DOM elements. */
+  _showProfileUI() {
+    const hero = $('#profileHero');
+    const tabs = document.querySelector('.profile-tabs');
+    const stats = $('#profileStats');
+    const prompt = document.querySelector('.profile-login-prompt');
+    prompt?.remove();
+    if (hero)  hero.style.display  = '';
+    if (tabs)  tabs.style.display  = '';
+    if (stats) stats.style.display = '';
+    $$('.profile-panel').forEach(p => { p.style.display = ''; });
   }
 
   async _render() {
@@ -1502,6 +1568,8 @@ class NetworksController {
    ══════════════════════════════════════════════════════════ */
 async function router() {
   fb = await loadFirebase();
+  /* Initialize central auth manager so getCurrentUser() works globally */
+  initAuthManager(fb, Session);
   const page = document.body.dataset.page;
   try {
     switch (page) {
