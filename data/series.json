@@ -1,853 +1,186 @@
 {
-  "to-soi-soy": {
-    "tmdb_id": 81887,
-    "title": "Το Σόι Σου",
-    "channel": "Alpha",
-    "featured": false,
-    "created_at": 1776462974,
-    "year": "2014",
-    "overview": "Η Λυδία και ο Σάββας είναι παντρεμένοι περίπου δέκα χρόνια και έχουν δημιουργήσει την οικογένειά τους μιας και έχουν δύο υπέροχες κόρες, την Σάντρα και την Χαρά. Κάθε Κυριακή κάνουν το συνηθισμένο κυριακάτικο τραπέζι μαζί με τους γονείς τους οι οποίοι τις περισσότερες φορές έρχονται σε συγκρούσεις λόγω των συνήθειών του καθενός. Εκτός όμως από τους τσακωμούς, κατά τη διάρκειά τους συγκεκριμένα, γίνονται διάφορες πλάκες. Άλλες φορές υπάρχει αγάπη μεταξύ τους παρά τους καθημερινούς καβγάδες τους, που γίνονται συνήθως για ασήμαντα και ταυτόχρονα αστεία γεγονότα. Τα νεύρα της Αλεξάνδρας κάθε φορά ενθουσιάζουν τους πάντες καθώς και η «μανία» της Χαρούλας για το φαγητό και η αγάπη των δύο μαμάδων προς τα παιδιά τους που φαίνεται πάντα όταν βρίσκονται μεταξύ τους. Σε όλα τους τα επεισόδια μας εκπλήσσουν και μας κάνουν να τους αγαπήσουμε περισσότερο.",
-    "genres": [
-      "Κωμωδία"
-    ],
-    "keywords": [
-      "Το Σόι Σου",
-      "Το Σόι Σου επεισόδια",
-      "Το Σόι Σου online",
-      "Το Σόι Σου δωρεάν",
-      "Το Σόι Σου 2014",
-      "Το Σόι Σου Alpha",
-      "Ελληνικές σειρές",
-      "Σειρές Alpha"
-    ],
-    "search_terms": "Το Σόι Σου επεισόδια online δωρεάν Alpha Ελληνικές σειρές",
+  "breaking-bad": {
+    "tmdb_id": 1396,
+    "title": "Breaking Bad",
+    "title_fallback": "Breaking Bad",
+    "overview": "Ένας καθηγητής χημείας στη Νέα Μεξικό, αφού διαγνωστεί με καρκίνο του πνεύμονα, αρχίζει να παράγει μεθαμφεταμίνη για να εξασφαλίσει οικονομικά την οικογένειά του.",
+    "genres": ["Δράμα", "Αστυνομική"],
+    "year": "2008",
+    "channel": "AMC",
+    "featured": true,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg",
     "episodes": [
-      {
-        "season": 1,
-        "ep": 1,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-g8vbqimb6ik3.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 2,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-ugac2g1qt5sl.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 3,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-i8ezm3mxbkop.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 4,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-qljn4eec2p4m.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 5,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-4470pjf9o9wx.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 6,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-vkkeqvxipd28.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 7,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-u2sblfir4eif.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 8,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-61slc353cba6.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 9,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-oxx30ysmrw53.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 10,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-j0866wsh101p.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 11,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-5qqpuqja1lrj.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 12,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-5cayfgeda148.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 13,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-7ggajelrwka3.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 14,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-5u5rjbyf5lvs.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 15,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-fjgs273vvkqy.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 16,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-999ucvo6ak32.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 17,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-kae9fwb5l0nv.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 18,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-a1t1c38mcjcg.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 19,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-6uymjqiwt7vl.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 20,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-slte375brrek.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 21,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-l3yxvpt62lnp.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 22,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-a2ji0vpbepko.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 23,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-x9deqcsh7iw7.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 24,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-9gripc3qij7v.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 25,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-1ekzlgjs7tgg.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 26,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-8x66j7ye6rjn.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 27,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-o7tcjhsehkme.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 28,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-bx8rtdxb6yo8.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 29,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-k71hz5qmvlxp.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 30,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-9huf80tny02c.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 31,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-7025x7rop8qq.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 32,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-i1vwa8gvc1ec.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 33,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-riwtwgp1h4my.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 34,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-1taa49l46aqe.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 35,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-hm67cm8c08w9.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 36,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-fzke97bu6acf.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 37,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-5ks4ofp8zpq1.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 38,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-vfhlv22lv1se.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 39,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-ubrxp20pkf1d.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 40,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-6nsko8o5cq2u.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 41,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-wh5trgbkw3we.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 42,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-mffc3673v7xq.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 43,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-wy1d9lfmf0bo.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 44,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-y0mc75equ613.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 45,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-budxhey9tg02.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 46,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-le92886dfmvn.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 47,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-xhckl5ngvrjk.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 48,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-nm1p8p4y7zft.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 49,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-15l4gwkc80kx.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 50,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-c7u5bu880wg3.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 51,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-nukqrcy5b1h0.html"
-        }
-      },
-      {
-        "season": 1,
-        "ep": 52,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-gfo7zrd5h1od.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 1,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-bmiixzs4adbk.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 2,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-wju63w79l60f.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 3,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-dhcbn3o5g6wf.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 4,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-mb51hlowzkka.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 5,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-r1krrbzp9l4x.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 6,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-aul52jlrzl3m.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 7,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-5t44psz5ioyp.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 8,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-81zlgo6d3z21.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 9,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-wmlp98i5s1gt.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 10,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-31as882fv0wp.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 11,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-1d7pweo16nfo.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 12,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-0abcco4q5xqx.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 13,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-5sc1662eriaq.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 14,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-0cgamm2k06gl.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 15,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-z0094z99vzep.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 16,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-ty7sc0tvh1d3.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 17,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-zrh2uiko18dx.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 18,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-t7aj01n7rtq0.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 19,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-hlujtvhuvxdp.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 20,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-q4oc33s0tvmi.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 21,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-jch9eatrqg4l.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 22,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-qudg40n4b7qi.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 23,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-pb9kqhghpbrh.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 24,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-yef85r394mtp.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 25,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-8br1xvvfkbqy.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 26,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-pjgqb2ws1law.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 27,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-i81qeigmxtmu.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 28,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-x9fs6kzsl06a.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 29,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-7aav715w8tdc.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 30,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-ocvbpfm76paz.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 31,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-kblpnnsj45dh.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 32,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-uxacrs1up693.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 33,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-thwg3gcs1fc0.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 34,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-qhf5kbxpry3k.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 35,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-186y9gyg16pt.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 36,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-sfa5kbcb7ln9.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 37,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-rq4ehp04hcuy.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 38,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-bl3osb2m74e8.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 39,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-ifh9s1zosxhc.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 40,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-6m4o5939ehin.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 41,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-qx52smrttb9s.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 42,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-e2jmrn69uf3u.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 43,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-i5oue5xmt24i.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 44,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-759iipsps54b.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 45,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-40z87e6upb77.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 46,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-rb3a0vhucgn6.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 47,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-1w7q9e4m9wcz.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 48,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-yfhch9e8wjk1.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 49,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-8egc5r7qnzm9.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 50,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-1pegl1efuwpo.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 51,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-z6kgafihllfx.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 52,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-a03nm05o7um5.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 53,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-y7z3oxog4yzx.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 54,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-tz2z007t1z9o.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 55,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-zosgih49vij2.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 56,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-yfdonlx57xe7.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 57,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-r8d2g3o6xbg9.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 58,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-x9wr8kexxnxv.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 59,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-utxp6u41i2lo.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 60,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-fyz9fg2af1or.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 61,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-soj0vstyf10i.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 62,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-wy59a06a6t5o.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 63,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-h2vq0xhxmd53.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 64,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-yr5eerdtst1r.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 65,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-tstnj301yqe4.html"
-        }
-      },
-      {
-        "season": 2,
-        "ep": 66,
-        "players": {
-          "Vidmoly": "https://vidmoly.biz/embed-uyfbhdpwm4vc.html"
-        }
-      }
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1396/1/1", "2Embed": "https://www.2embed.cc/embedtv/1396&s=1&e=1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1396/1/2", "2Embed": "https://www.2embed.cc/embedtv/1396&s=1&e=2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1396/1/3" } },
+      { "season": 1, "ep": 4, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1396/1/4" } },
+      { "season": 2, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1396/2/1", "2Embed": "https://www.2embed.cc/embedtv/1396&s=2&e=1" } },
+      { "season": 2, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1396/2/2" } },
+      { "season": 2, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1396/2/3" } }
+    ]
+  },
+  "game-of-thrones": {
+    "tmdb_id": 1399,
+    "title": "Game of Thrones",
+    "title_fallback": "Game of Thrones",
+    "overview": "Επτά ευγενείς οίκοι παλεύουν για τον έλεγχο του Σιδερένιου Θρόνου των Επτά Βασιλείων. Στο μεταξύ, ξυπνά μια αρχαία εχθρότητα από τον Βορρά.",
+    "genres": ["Φαντασία", "Δράμα", "Περιπέτεια"],
+    "year": "2011",
+    "channel": "HBO",
+    "featured": true,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/1XS1oqL89opfnbLl8WnZY1O1uJx.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/suopoADq0k8YZr4dQXcU6zuQELs.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1399/1/1", "2Embed": "https://www.2embed.cc/embedtv/1399&s=1&e=1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1399/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1399/1/3" } },
+      { "season": 2, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1399/2/1" } },
+      { "season": 2, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/1399/2/2" } }
+    ]
+  },
+  "stranger-things": {
+    "tmdb_id": 66732,
+    "title": "Stranger Things",
+    "title_fallback": "Stranger Things",
+    "overview": "Όταν ένα αγόρι εξαφανίζεται, η μικρή πόλη Hawkins αποκαλύπτει μυστήρια που εμπλέκουν μυστικά πειράματα, τρομακτικές υπερφυσικές δυνάμεις και ένα κοριτσάκι.",
+    "genres": ["Τρόμος", "Επιστημονική Φαντασία", "Δράμα"],
+    "year": "2016",
+    "channel": "Netflix",
+    "featured": true,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/49WJfeN0moxb9IPfGn8AIqMGskD.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/rcA17r3hfHtRrk3Xs3hXrgGeSGT.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/66732/1/1", "2Embed": "https://www.2embed.cc/embedtv/66732&s=1&e=1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/66732/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/66732/1/3" } },
+      { "season": 2, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/66732/2/1" } },
+      { "season": 2, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/66732/2/2" } }
+    ]
+  },
+  "the-last-of-us": {
+    "tmdb_id": 100088,
+    "title": "The Last of Us",
+    "title_fallback": "The Last of Us",
+    "overview": "Σε έναν κόσμο μετά την αποκάλυψη, ο Joel πρέπει να μεταφέρει την έφηβη Ellie μέσα από τις Ηνωμένες Πολιτείες. Ένα ταξίδι επιβίωσης, αγάπης και θυσίας.",
+    "genres": ["Δράμα", "Τρόμος", "Περιπέτεια"],
+    "year": "2023",
+    "channel": "HBO",
+    "featured": true,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/uKvVjHNqB5VmOrdxqAt2F7J78ED.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/uDgy6hyPd7ipXOeKAf5MBBn9hLs.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/100088/1/1", "2Embed": "https://www.2embed.cc/embedtv/100088&s=1&e=1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/100088/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/100088/1/3" } },
+      { "season": 1, "ep": 4, "players": { "VidSrc": "https://vidsrc.to/embed/tv/100088/1/4" } }
+    ]
+  },
+  "peaky-blinders": {
+    "tmdb_id": 60574,
+    "title": "Peaky Blinders",
+    "title_fallback": "Peaky Blinders",
+    "overview": "Μια οικογένεια εγκληματιών από το Μπέρμιγχαμ της Αγγλίας μετά τον Α' Παγκόσμιο Πόλεμο. Ο Τόμι Σέλμπι χτίζει αυτοκρατορία ενώ αντιμετωπίζει εχθρούς από παντού.",
+    "genres": ["Δράμα", "Αστυνομική", "Ιστορική"],
+    "year": "2013",
+    "channel": "BBC",
+    "featured": false,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/vUUqzWa2LnHIVqkaKVlVGkPaQca.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/wiE9doxiLwq3WCGamCIIXsujlp9.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/60574/1/1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/60574/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/60574/1/3" } },
+      { "season": 2, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/60574/2/1" } }
+    ]
+  },
+  "dark": {
+    "tmdb_id": 70523,
+    "title": "Dark",
+    "title_fallback": "Dark",
+    "overview": "Τέσσερις οικογένειες σε μια γερμανική πόλη ανακαλύπτουν μια σύνδεση μεταξύ παρελθόντος, παρόντος και μέλλοντος μέσα από μια σπηλιά που ταξιδεύει στον χρόνο.",
+    "genres": ["Επιστημονική Φαντασία", "Μυστήριο", "Δράμα"],
+    "year": "2017",
+    "channel": "Netflix",
+    "featured": false,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/apbrbWs8M9lyOpJYU5WXrpFbk1Z.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/zjQoLkSEMPdMsqkRqfPHjnkEJFr.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/70523/1/1", "2Embed": "https://www.2embed.cc/embedtv/70523&s=1&e=1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/70523/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/70523/1/3" } }
+    ]
+  },
+  "money-heist": {
+    "tmdb_id": 71446,
+    "title": "La Casa de Papel",
+    "title_fallback": "Money Heist",
+    "overview": "Ένας επιδέξιος εγκληματίας στρατολογεί οκτώ κλέφτες με εξαιρετικές δεξιότητες για να εκτελέσουν μια αδύνατη ληστεία στο Εθνικό Νομισματοκοπείο της Ισπανίας.",
+    "genres": ["Αστυνομική", "Δράμα", "Θρίλερ"],
+    "year": "2017",
+    "channel": "Netflix",
+    "featured": false,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/reEMJA1uzscCbkpeRJeTT2bjqUp.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/gFk9lMKs58aQOg9jUEkfnbmQqEI.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/71446/1/1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/71446/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/71446/1/3" } },
+      { "season": 2, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/71446/2/1" } }
+    ]
+  },
+  "chernobyl": {
+    "tmdb_id": 87108,
+    "title": "Chernobyl",
+    "title_fallback": "Chernobyl",
+    "overview": "Η αληθινή ιστορία της πυρηνικής καταστροφής στο Τσέρνομπιλ το 1986 και των ηρώων που ρίσκαραν τη ζωή τους για να αποκαλύψουν την αλήθεια.",
+    "genres": ["Ιστορική", "Δράμα", "Θρίλερ"],
+    "year": "2019",
+    "channel": "HBO",
+    "featured": false,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/hlLXt2tOPT6RRnjiUmoxyG1LTFi.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/pZv5kqSqFHgSBFLaH6OvM6Mf6bQ.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/87108/1/1", "2Embed": "https://www.2embed.cc/embedtv/87108&s=1&e=1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/87108/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/87108/1/3" } },
+      { "season": 1, "ep": 4, "players": { "VidSrc": "https://vidsrc.to/embed/tv/87108/1/4" } },
+      { "season": 1, "ep": 5, "players": { "VidSrc": "https://vidsrc.to/embed/tv/87108/1/5" } }
+    ]
+  },
+  "the-office": {
+    "title": "The Office",
+    "title_fallback": "The Office",
+    "tmdb_id": 2316,
+    "overview": "Ένα mockumentary που παρακολουθεί τους υπαλλήλους ενός γραφείου μιας μέτριας εταιρείας χαρτικών στη Σκράντον της Πενσυλβάνια.",
+    "genres": ["Κωμωδία"],
+    "year": "2005",
+    "channel": "NBC",
+    "featured": false,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/qWnJzyZhyy74gjpSjIXWmuk0ifX.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/t1aYDwDCqGXQBpDH8MhpqNhEhqF.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/2316/1/1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/2316/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/2316/1/3" } }
+    ]
+  },
+  "better-call-saul": {
+    "tmdb_id": 60059,
+    "title": "Better Call Saul",
+    "title_fallback": "Better Call Saul",
+    "overview": "Η ιστορία του δικηγόρου Τζίμι ΜακΓκιλ πριν γίνει ο αδίστακτος δικηγόρος Σωλ Γκούντμαν. Προκίμιουμ του Breaking Bad.",
+    "genres": ["Αστυνομική", "Δράμα"],
+    "year": "2015",
+    "channel": "AMC",
+    "featured": false,
+    "poster_fallback": "https://image.tmdb.org/t/p/w500/fC2HDm5t0kR9lud87wkEB2qQalc.jpg",
+    "backdrop_fallback": "https://image.tmdb.org/t/p/original/33NpSF8QVJeNDh2kZWqJlNIJhSc.jpg",
+    "episodes": [
+      { "season": 1, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/60059/1/1", "2Embed": "https://www.2embed.cc/embedtv/60059&s=1&e=1" } },
+      { "season": 1, "ep": 2, "players": { "VidSrc": "https://vidsrc.to/embed/tv/60059/1/2" } },
+      { "season": 1, "ep": 3, "players": { "VidSrc": "https://vidsrc.to/embed/tv/60059/1/3" } },
+      { "season": 2, "ep": 1, "players": { "VidSrc": "https://vidsrc.to/embed/tv/60059/2/1" } }
     ]
   }
 }
