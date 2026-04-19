@@ -105,17 +105,17 @@ async function _safeWrite(opName, fn) {
   }
 }
 
-async function _safeRead(opName, fn, fallback) {
-  try { return await fn(); }
-  catch (e) {
-    /* FIX 5: distinguish transient offline from real errors */
+async function _safeRead(opName, fn) {
+  try {
+    return await fn();
+  } catch (e) {
     const isOffline = e.code === 'unavailable' || (e.message ?? '').includes('offline');
     if (isOffline) {
-      console.warn(`[Firestore] ${opName} — offline (returning fallback; will sync when online)`);
+      console.warn(`[Firestore] ${opName} — offline / unavailable.`);
     } else {
       console.error(`[Firestore] ${opName} — error:`, e.code ?? e.message);
     }
-    return fallback;
+    throw e;
   }
 }
 
@@ -192,8 +192,8 @@ export async function logout() { await signOut(auth); }
 export async function ensureUserDoc(user, username = null) {
   if (!user?.uid) return null;
   const ref  = doc(db, "users", user.uid);
-  const snap = await _safeRead(`ensureUserDoc-read(${user.uid})`, () => getDoc(ref), null);
-  if (snap?.exists()) return { uid: user.uid, ...snap.data() };
+  const snap = await _safeRead(`ensureUserDoc-read(${user.uid})`, () => getDoc(ref));
+  if (snap.exists()) return { uid: user.uid, ...snap.data() };
 
   const profileData = {
     username:  username ?? user.displayName ?? user.email.split("@")[0],
@@ -212,7 +212,7 @@ export async function getUserProfile(uid) {
   return _safeRead(`getUserProfile(${uid})`, async () => {
     const s = await getDoc(doc(db, "users", uid));
     return s.exists() ? { uid, ...s.data() } : null;
-  }, null);
+  });
 }
 
 export async function updateUserProfile(uid, updates = {}) {
@@ -234,13 +234,13 @@ function _makeCollectionAPI(collName) {
       return _safeRead(`get${collName}(${uid})`, async () => {
         const s = await getDocs(collection(db, "users", uid, collName));
         return s.docs.map(d => d.id);
-      }, []);
+      });
     },
     async has(uid, slug) {
       return _safeRead(`has-${collName}(${uid},${slug})`, async () => {
         const s = await getDoc(doc(db, "users", uid, collName, slug));
         return s.exists();
-      }, false);
+      });
     },
     async add(uid, slug) {
       /* Enforce auth from live Firebase SDK, ignore passed uid if different */
@@ -360,33 +360,29 @@ export async function setRating(uid, slug, stars) {
   await _verifyWrite(`setRating(${authedUid},${slug})`, ref,
                      d => d.rating === ratingInt);
 
-  /* Secondary: mirror to user doc ratings map (for profile tab aggregation).
-     Best-effort — a failure here is NON-CRITICAL because seriesRatings is
-     the primary store. */
-  try {
-    await updateDoc(doc(db, "users", authedUid), { [`ratings.${slug}`]: ratingInt });
-    console.log(`[Firestore] setRating secondary user-doc update OK`);
-  } catch (e) {
-    console.warn(`[Firestore] setRating secondary update FAILED (non-critical):`, e.code ?? e.message);
-  }
-
   return ratingInt;
 }
 
 export async function getRating(uid, slug) {
   return _safeRead(`getRating(${uid},${slug})`, async () => {
     const s = await getDoc(doc(db, "seriesRatings", slug, "ratings", uid));
-    if (s.exists()) return s.data().rating ?? 0;
-    const p = await getUserProfile(uid);
-    return p?.ratings?.[slug] ?? 0;
-  }, 0);
+    return s.exists() ? (s.data().rating ?? 0) : 0;
+  });
 }
 
 export async function getAllRatings(uid) {
   return _safeRead(`getAllRatings(${uid})`, async () => {
-    const p = await getUserProfile(uid);
-    return p?.ratings ?? {};
-  }, {});
+    const q = query(collectionGroup(db, "ratings"), where("uid", "==", uid));
+    const s = await getDocs(q);
+    return s.docs.reduce((acc, d) => {
+      const seriesSlug = d.ref.parent.parent?.id;
+      const rating = d.data().rating;
+      if (seriesSlug && Number.isInteger(rating) && rating >= 1 && rating <= 5) {
+        acc[seriesSlug] = rating;
+      }
+      return acc;
+    }, {});
+  });
 }
 
 export async function getAverageRating(slug) {
@@ -397,7 +393,7 @@ export async function getAverageRating(slug) {
     if (!vals.length) return { avg: 0, count: 0 };
     const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
     return { avg: Math.round(avg * 10) / 10, count: vals.length };
-  }, { avg: 0, count: 0 });
+  });
 }
 
 export function onSeriesRatingsSnapshot(slug, cb) {
@@ -429,7 +425,7 @@ export async function getComments(slug) {
     const q = query(collection(db, "comments", slug, "items"), orderBy("createdAt", "asc"));
     const s = await getDocs(q);
     return s.docs.map(d => ({ id: d.id, ...d.data() }));
-  }, []);
+  });
 }
 
 export async function getUserComments(uid) {
@@ -437,7 +433,7 @@ export async function getUserComments(uid) {
     const q = query(collectionGroup(db, "items"), where("userId", "==", uid), orderBy("createdAt", "desc"));
     const s = await getDocs(q);
     return s.docs.map(d => ({ id: d.id, seriesSlug: d.ref.parent.parent?.id ?? '', ...d.data() }));
-  }, []);
+  });
 }
 
 export async function likeComment(slug, id) {
