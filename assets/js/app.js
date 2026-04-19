@@ -108,6 +108,8 @@ const Session = {
   seen:      new Set(),
   ratings:   {},
   loaded:    false,
+  hydrating: false,
+  loadError: null,
   _loadingPromise: null,
 
   async hydrate(user) {
@@ -116,6 +118,8 @@ const Session = {
     if (this._loadingPromise) return this._loadingPromise;
 
     this._loadingPromise = (async () => {
+      this.hydrating = true;
+      this.loadError = null;
       try {
         /* FIX E: ensureUserDoc errors are non-fatal — profile page must render
            even if the user doc creation fails (e.g. transient offline). */
@@ -131,6 +135,8 @@ const Session = {
           fb.getUserSeen(user.uid),
           fb.getAllRatings(user.uid),
         ]);
+        const liveUid = fb?.auth?.currentUser?.uid ?? null;
+        if (liveUid !== user.uid) return;
         this.user      = user;
         this.profile   = profile ?? {
           uid:      user.uid,
@@ -143,22 +149,25 @@ const Session = {
         this.seen      = new Set(seen);
         this.ratings   = ratings ?? {};
         this.loaded    = true;
+        this.loadError = null;
         console.log('[Session] Hydrated.', {
           favs: favs.length, watch: watch.length, seen: seen.length,
           ratings: Object.keys(ratings ?? {}).length,
         });
       } catch (e) {
         /* Even on unexpected error: set minimal user so ProfileController renders */
-        console.error('[Session] hydrate error (using fallback profile):', e.message);
+        console.error('[Session] hydrate error:', e.message);
         this.user    = user;
         this.profile = this.profile ?? {
           uid: user.uid, username: user.displayName || user.email?.split('@')[0] || 'Χρήστης',
           email: user.email, avatar: user.photoURL || null,
         };
-        this.loaded = true;
+        this.loaded = false;
+        this.loadError = e;
+        throw e;
       } finally {
+        this.hydrating = false;
         this._loadingPromise = null;
-        /* FIX E: ALWAYS emit sessionChanged so ProfileController._render() fires */
         this._emitChange();
       }
     })();
@@ -173,6 +182,8 @@ const Session = {
     this.seen.clear();
     this.ratings = {};
     this.loaded = false;
+    this.hydrating = false;
+    this.loadError = null;
     this._loadingPromise = null;
   },
 
@@ -181,6 +192,18 @@ const Session = {
   isWatch(slug) { return this.watchlist.has(slug); },
   isSeen(slug)  { return this.seen.has(slug); },
   getRating(slug) { return this.ratings[slug] ?? 0; },
+  isReadyFor(uid) { return !!uid && this.loaded && this.user?.uid === uid; },
+
+  async ensureHydrated() {
+    const user = this._getLiveUser();
+    if (!user) throw new Error('Ξ ΟΞ­Ο€ΞµΞΉ Ξ½Ξ± ΞµΞ―ΟƒΟ„Ξµ ΟƒΟ…Ξ½Ξ΄ΞµΞ΄ΞµΞΌΞ­Ξ½ΞΏΞΉ.');
+    if (this.loaded && this.user?.uid === user.uid) return;
+    if (this._loadingPromise) {
+      await this._loadingPromise;
+      return;
+    }
+    await this.hydrate(user);
+  },
 
   /* Mutations ALWAYS do optimistic UI (regardless of hydration state).
      Firestore writes are verified by firebase.js (_verifyWrite throws on
@@ -199,6 +222,7 @@ const Session = {
   },
 
   async toggleFavorite(slug) {
+    await this.ensureHydrated();
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleFavorite START', { uid: user.uid, slug });
@@ -228,6 +252,7 @@ const Session = {
   },
 
   async toggleWatchlist(slug) {
+    await this.ensureHydrated();
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleWatchlist START', { uid: user.uid, slug });
@@ -254,6 +279,7 @@ const Session = {
   },
 
   async toggleSeen(slug) {
+    await this.ensureHydrated();
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleSeen START', { uid: user.uid, slug });
@@ -280,6 +306,7 @@ const Session = {
   },
 
   async setRating(slug, stars) {
+    await this.ensureHydrated();
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] setRating START', { uid: user.uid, slug, stars });
@@ -925,6 +952,11 @@ class HomepageController {
 function renderStarRating(container, slug) {
   const safe = slug.replace(/[^a-zA-Z0-9_-]/g, '_');
   const current = Session.getRating(slug);
+  const liveUid = fb?.auth?.currentUser?.uid ?? Session.user?.uid ?? null;
+  const canRate = !liveUid || Session.isReadyFor(liveUid);
+  const label = liveUid
+    ? (canRate ? (current ? `${current}/5` : 'Ξ‘ΞΎΞΉΞΏΞ»ΟΞ³Ξ·ΟƒΞµ') : 'Ξ¦ΟΟΟ„Ο‰ΟƒΞ·β€¦')
+    : (current ? `${current}/5` : 'Ξ‘ΞΎΞΉΞΏΞ»ΟΞ³Ξ·ΟƒΞµ');
   container.innerHTML = `
     <div class="star-rating" data-slug="${escapeHtml(slug)}">
       ${[1,2,3,4,5].map(n => `
@@ -932,6 +964,12 @@ function renderStarRating(container, slug) {
       <span class="star-label" id="starLabel-${safe}">${current ? `${current}/5` : 'Αξιολόγησε'}</span>
       <span class="star-avg-badge" id="starAvg-${safe}"></span>
     </div>`;
+
+  const starLabel = document.getElementById(`starLabel-${safe}`);
+  if (starLabel) starLabel.textContent = label;
+  container.querySelectorAll('.star-btn').forEach(btn => {
+    btn.disabled = !canRate;
+  });
 
   fb.getAverageRating(slug).then(({ avg, count }) => {
     const el = document.getElementById(`starAvg-${safe}`);
@@ -946,6 +984,7 @@ function renderStarRating(container, slug) {
 
   container.querySelectorAll('.star-btn').forEach(btn => {
     btn.addEventListener('mouseover', () => {
+      if (btn.disabled) return;
       const n = +btn.dataset.star;
       container.querySelectorAll('.star-btn').forEach((b, i) => b.classList.toggle('hover', i < n));
     });
@@ -953,6 +992,7 @@ function renderStarRating(container, slug) {
       container.querySelectorAll('.star-btn').forEach(b => b.classList.remove('hover'));
     });
     btn.addEventListener('click', async () => {
+      if (btn.disabled) return;
       /* Live auth check — works even before Session.hydrate completes */
       if (!fb?.auth?.currentUser) { toast('Συνδεθείτε για να αξιολογήσετε.', 'info'); return; }
       const stars = +btn.dataset.star;
@@ -1112,6 +1152,7 @@ class SeriesController {
        Session cache provides the isFav/isWatch/isSeen lookups for active state. */
     const syncBtns = () => {
       const liveUser = fb?.auth?.currentUser ?? Session.user;
+      const ready = !liveUser || Session.isReadyFor(liveUser.uid);
       const isFav = Session.isFav(slug), isW = Session.isWatch(slug), isS = Session.isSeen(slug);
       const fl = $('#favLabel'), wl = $('#watchlistLabel'), sl = $('#seenLabel');
       if (fl) fl.textContent = liveUser ? (isFav ? '❤️ Αφαίρεση' : 'Αγαπημένα') : 'Αγαπημένα';
@@ -1120,6 +1161,9 @@ class SeriesController {
       $('#favBtn')      ?.classList.toggle('active', !!isFav && !!liveUser);
       $('#watchlistBtn')?.classList.toggle('active', !!isW   && !!liveUser);
       $('#seenBtn')     ?.classList.toggle('active', !!isS   && !!liveUser);
+      $('#favBtn')      ?.toggleAttribute('disabled', !!liveUser && !ready);
+      $('#watchlistBtn')?.toggleAttribute('disabled', !!liveUser && !ready);
+      $('#seenBtn')     ?.toggleAttribute('disabled', !!liveUser && !ready);
     };
 
     const ratingWrap = $('#seriesRatingWrap');
@@ -1325,7 +1369,16 @@ class ProfileController {
       document.addEventListener('sessionChanged', () => {
         /* FIX C: this fires after Session.hydrate() resolves — guaranteed to
            have user + favorites + watchlist + seen + ratings populated. */
-        if (Session.user) this._render();
+        if (!Session.user) return;
+        if (Session.loaded) {
+          this._showProfileUI();
+          this._render();
+          return;
+        }
+        if (Session.loadError) {
+          this._showProfileUI();
+          this._renderLoadError();
+        }
       });
     }
 
@@ -1341,7 +1394,10 @@ class ProfileController {
       if (Session.loaded && Session.user?.uid === currentUser.uid) {
         this._render();
       } else {
-        Session.hydrate(currentUser).catch(e => console.warn('[Profile] hydrate:', e.message));
+        Session.hydrate(currentUser).catch(e => {
+          console.warn('[Profile] hydrate:', e.message);
+          this._renderLoadError();
+        });
         /* sessionChanged listener above will call _render() when hydrate completes */
       }
     }
@@ -1351,6 +1407,7 @@ class ProfileController {
   _renderLoading() {
     /* Nothing to do — the HTML already has skeleton placeholders for the
        hero and stats. We just ensure the page is visible. */
+    document.querySelector('.profile-load-error')?.remove();
     const hero = $('#profileHero'); if (hero) hero.style.display = '';
     const tabs = document.querySelector('.profile-tabs'); if (tabs) tabs.style.display = '';
   }
@@ -1361,6 +1418,7 @@ class ProfileController {
     const hero = $('#profileHero');
     const tabs = document.querySelector('.profile-tabs');
     const stats = $('#profileStats');
+    document.querySelector('.profile-load-error')?.remove();
     if (hero)  hero.style.display  = 'none';
     if (tabs)  tabs.style.display  = 'none';
     if (stats) stats.style.display = 'none';
@@ -1388,16 +1446,38 @@ class ProfileController {
     const tabs = document.querySelector('.profile-tabs');
     const stats = $('#profileStats');
     const prompt = document.querySelector('.profile-login-prompt');
+    const loadError = document.querySelector('.profile-load-error');
     prompt?.remove();
+    loadError?.remove();
     if (hero)  hero.style.display  = '';
     if (tabs)  tabs.style.display  = '';
     if (stats) stats.style.display = '';
     $$('.profile-panel').forEach(p => { p.style.display = ''; });
   }
 
+  _renderLoadError() {
+    const main = $('#profileMain');
+    if (!main) return;
+    document.querySelector('.profile-load-error')?.remove();
+    const div = document.createElement('div');
+    div.className = 'profile-load-error';
+    div.innerHTML = `
+      <h2>Ξ”ΞµΞ½ ΉΟ„Ξ±Ξ½ Ξ΄Ο…Ξ½Ξ±Ο„Ξ® Ξ· Ο†ΟΟΟ„Ο‰ΟƒΞ· Ο„Ο‰Ξ½ Ξ΄ΞµΞ΄ΞΏΞΌΞ­Ξ½Ο‰Ξ½.</h2>
+      <p>Ξ”ΞΏΞΊΞΉΞΌΞ¬ΟƒΟ„Ξµ ΞΞ±Ξ½Ξ¬ Ξ³ΞΉΞ± Ξ½Ξ± Ξ±Ξ½Ξ±ΞΊΟ„Ξ·ΞΈΞΏΟΞ½ Ο„Ξ± αγαπημένα, η watchlist, τα seen και οι αξιολογήσεις σας.</p>
+      <button class="btn-primary" id="profileRetryBtn" type="button">Ξ•Ξ€Ξ±Ξ½Ξ¬Ξ»Ξ·ΟΞ·</button>`;
+    main.prepend(div);
+    main.querySelector('#profileRetryBtn')?.addEventListener('click', () => {
+      const liveUser = fb?.auth?.currentUser ?? Session.user;
+      if (!liveUser) return;
+      div.remove();
+      this._renderLoading();
+      Session.hydrate(liveUser).catch(e => console.warn('[Profile] retry hydrate:', e.message));
+    });
+  }
+
   async _render() {
     const user = Session.user;
-    if (!user) return;
+    if (!user || !Session.loaded) return;
     const p = Session.profile;
     document.title = `${p.username} — Προφίλ`;
 
