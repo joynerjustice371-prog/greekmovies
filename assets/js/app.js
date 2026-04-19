@@ -136,10 +136,9 @@ const Session = {
           fb.getAllRatings(user.uid),
         ]);
         const liveUid = fb?.auth?.currentUser?.uid ?? null;
-        /* FIX: if auth UID changed mid-hydrate, log and fall through
-           (don't silently return — sessionChanged MUST fire via finally). */
+        /* FIX: no silent return — log + fall-through so sessionChanged fires */
         if (liveUid && liveUid !== user.uid) {
-          console.warn('[Session] auth uid changed during hydrate; discarding result', { hydrateUid: user.uid, liveUid });
+          console.warn('[Session] auth uid changed mid-hydrate, discarding', { hydrateUid: user.uid, liveUid });
           return;
         }
         this.user      = user;
@@ -149,14 +148,10 @@ const Session = {
           email:    user.email,
           avatar:   user.photoURL || null,
         };
-        /* FIX: MERGE server data into existing Sets instead of REPLACING.
-           This preserves any optimistic writes the user made during the
-           hydration window (e.g. clicked ❤️ before server data arrived). */
-        (favs ?? []).forEach(s => this.favorites.add(s));
+        /* FIX: MERGE server data into existing caches — preserve optimistic writes */
+        (favs  ?? []).forEach(s => this.favorites.add(s));
         (watch ?? []).forEach(s => this.watchlist.add(s));
-        (seen ?? []).forEach(s => this.seen.add(s));
-        /* For ratings: server values take precedence ONLY for keys that
-           don't already exist in local cache (optimistic write wins). */
+        (seen  ?? []).forEach(s => this.seen.add(s));
         for (const [slug, val] of Object.entries(ratings ?? {})) {
           if (this.ratings[slug] === undefined) this.ratings[slug] = val;
         }
@@ -207,17 +202,15 @@ const Session = {
   isReadyFor(uid) { return !!uid && this.loaded && this.user?.uid === uid; },
 
   async ensureHydrated() {
-    /* Helper to ensure Session is populated. NEVER called from writes
-       (writes use live auth directly and are decoupled from hydration).
-       Used only by UI code that needs to READ cached lists. */
+    /* Non-throwing helper — writes never call this, only UI-read code */
     const user = this._getLiveUser();
-    if (!user) return;           /* silent — no user, nothing to hydrate */
+    if (!user) return;
     if (this.loaded && this.user?.uid === user.uid) return;
     if (this._loadingPromise) {
-      try { await this._loadingPromise; } catch (_) { /* non-fatal */ }
+      try { await this._loadingPromise; } catch (_) {}
       return;
     }
-    try { await this.hydrate(user); } catch (_) { /* non-fatal */ }
+    try { await this.hydrate(user); } catch (_) {}
   },
 
   /* Mutations ALWAYS do optimistic UI (regardless of hydration state).
@@ -226,19 +219,14 @@ const Session = {
      the caller can show a toast. */
 
   _getLiveUser() {
-    /* FIX: Live Firebase auth is the SINGLE source of truth for writes.
-       Never depends on this.user (Session cache) — writes must work
-       BEFORE hydration completes. */
+    /* Live Firebase auth is the ONLY source for writes — no Session fallback */
     const u = fb?.auth?.currentUser ?? null;
-    if (!u?.uid) {
-      console.error('[Session] NO AUTHENTICATED USER (live)');
-      return null;
-    }
+    if (!u?.uid) { console.error('[Session] no live auth user'); return null; }
     return u;
   },
 
   async toggleFavorite(slug) {
-    /* FIX: decoupled from hydration — writes use live Firebase auth directly */
+    /* DECOUPLED: no hydration dependency — use live auth only */
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleFavorite START', { uid: user.uid, slug });
@@ -268,7 +256,7 @@ const Session = {
   },
 
   async toggleWatchlist(slug) {
-    /* FIX: decoupled from hydration — writes use live Firebase auth directly */
+    /* DECOUPLED: no hydration dependency — use live auth only */
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleWatchlist START', { uid: user.uid, slug });
@@ -295,7 +283,7 @@ const Session = {
   },
 
   async toggleSeen(slug) {
-    /* FIX: decoupled from hydration — writes use live Firebase auth directly */
+    /* DECOUPLED: no hydration dependency — use live auth only */
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleSeen START', { uid: user.uid, slug });
@@ -322,7 +310,7 @@ const Session = {
   },
 
   async setRating(slug, stars) {
-    /* FIX: decoupled from hydration — writes use live Firebase auth directly */
+    /* DECOUPLED: no hydration dependency — use live auth only */
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] setRating START', { uid: user.uid, slug, stars });
@@ -968,24 +956,20 @@ class HomepageController {
 function renderStarRating(container, slug) {
   const safe = slug.replace(/[^a-zA-Z0-9_-]/g, '_');
   const current = Session.getRating(slug);
-  const liveUid = fb?.auth?.currentUser?.uid ?? Session.user?.uid ?? null;
-  const canRate = !liveUid || Session.isReadyFor(liveUid);
+  const liveUid = fb?.auth?.currentUser?.uid ?? null;
+  /* FIX: buttons ALWAYS clickable — no disabled state, no cursor:wait */
   const label = liveUid
-    ? (canRate ? (current ? `${current}/5` : 'Αξιολόγησε') : 'Φόρτωση…')
-    : (current ? `${current}/5` : 'Αξιολόγησε');
+    ? (current ? `${current}/5` : 'Αξιολόγησε')
+    : 'Συνδεθείτε';
   container.innerHTML = `
     <div class="star-rating" data-slug="${escapeHtml(slug)}">
       ${[1,2,3,4,5].map(n => `
         <button class="star-btn${n <= current ? ' active' : ''}" data-star="${n}" title="${n}★" type="button">${ICONS.star}</button>`).join('')}
-      <span class="star-label" id="starLabel-${safe}">${current ? `${current}/5` : 'Αξιολόγησε'}</span>
+      <span class="star-label" id="starLabel-${safe}">${label}</span>
       <span class="star-avg-badge" id="starAvg-${safe}"></span>
     </div>`;
-
-  const starLabel = document.getElementById(`starLabel-${safe}`);
-  if (starLabel) starLabel.textContent = label;
-  container.querySelectorAll('.star-btn').forEach(btn => {
-    btn.disabled = !canRate;
-  });
+  /* Ensure stars are NEVER disabled regardless of hydration state */
+  container.querySelectorAll('.star-btn').forEach(btn => { btn.disabled = false; });
 
   fb.getAverageRating(slug).then(({ avg, count }) => {
     const el = document.getElementById(`starAvg-${safe}`);
@@ -1000,7 +984,6 @@ function renderStarRating(container, slug) {
 
   container.querySelectorAll('.star-btn').forEach(btn => {
     btn.addEventListener('mouseover', () => {
-      if (btn.disabled) return;
       const n = +btn.dataset.star;
       container.querySelectorAll('.star-btn').forEach((b, i) => b.classList.toggle('hover', i < n));
     });
@@ -1008,7 +991,6 @@ function renderStarRating(container, slug) {
       container.querySelectorAll('.star-btn').forEach(b => b.classList.remove('hover'));
     });
     btn.addEventListener('click', async () => {
-      if (btn.disabled) return;
       /* Live auth check — works even before Session.hydrate completes */
       if (!fb?.auth?.currentUser) { toast('Συνδεθείτε για να αξιολογήσετε.', 'info'); return; }
       const stars = +btn.dataset.star;
@@ -1167,8 +1149,9 @@ class SeriesController {
        immediately when user signs in, even before Session hydrates.
        Session cache provides the isFav/isWatch/isSeen lookups for active state. */
     const syncBtns = () => {
-      const liveUser = fb?.auth?.currentUser ?? Session.user;
-      const ready = !liveUser || Session.isReadyFor(liveUser.uid);
+      /* FIX: buttons ALWAYS clickable — no disabled, no cursor:wait.
+         Labels reflect current Session cache state (or empty defaults). */
+      const liveUser = fb?.auth?.currentUser;
       const isFav = Session.isFav(slug), isW = Session.isWatch(slug), isS = Session.isSeen(slug);
       const fl = $('#favLabel'), wl = $('#watchlistLabel'), sl = $('#seenLabel');
       if (fl) fl.textContent = liveUser ? (isFav ? '❤️ Αφαίρεση' : 'Αγαπημένα') : 'Αγαπημένα';
@@ -1177,9 +1160,10 @@ class SeriesController {
       $('#favBtn')      ?.classList.toggle('active', !!isFav && !!liveUser);
       $('#watchlistBtn')?.classList.toggle('active', !!isW   && !!liveUser);
       $('#seenBtn')     ?.classList.toggle('active', !!isS   && !!liveUser);
-      $('#favBtn')      ?.toggleAttribute('disabled', !!liveUser && !ready);
-      $('#watchlistBtn')?.toggleAttribute('disabled', !!liveUser && !ready);
-      $('#seenBtn')     ?.toggleAttribute('disabled', !!liveUser && !ready);
+      /* NEVER disable — user can always click */
+      $('#favBtn')      ?.removeAttribute('disabled');
+      $('#watchlistBtn')?.removeAttribute('disabled');
+      $('#seenBtn')     ?.removeAttribute('disabled');
     };
 
     const ratingWrap = $('#seriesRatingWrap');
@@ -1367,19 +1351,12 @@ class ProfileController {
 
       document.addEventListener('authStateChanged', (e) => {
         const evtUser = e.detail?.user;
-        if (!evtUser) {
-          this._renderLoggedOut();
-          return;
-        }
-        /* FIX C: Show the profile UI chrome immediately.
-           If Session is already hydrated (e.g. second authStateChanged dispatch
-           that includes profile), render now. Otherwise, sessionChanged fires
-           after hydration completes and _render() is called there. */
+        if (!evtUser) { this._renderLoggedOut(); return; }
+        /* FIX: render IMMEDIATELY from live auth — hero shows nickname/email
+           without waiting for Session.hydrate(). sessionChanged later fills
+           favorites/watchlist/seen/ratings lists. */
         this._showProfileUI();
-        if (Session.user && Session.loaded) {
-          this._render();
-        }
-        /* If not yet hydrated: sessionChanged (below) handles it */
+        this._render();
       });
 
       document.addEventListener('sessionChanged', () => {
@@ -1404,17 +1381,17 @@ class ProfileController {
        at the end of hydrate(), so no explicit _render() call needed here. */
     const currentUser = fb.auth?.currentUser;
     if (currentUser) {
+      /* FIX: Render hero IMMEDIATELY from live auth (no waiting for hydrate).
+         Then kick off hydration in background — sessionChanged will re-render
+         with full favorites/watchlist/seen/ratings data once loaded. */
       this._showProfileUI();
-      /* Start hydration; sessionChanged will trigger _render() when done.
-         If already hydrated (e.g. navigating back to profile page), render now. */
-      if (Session.loaded && Session.user?.uid === currentUser.uid) {
-        this._render();
-      } else {
+      this._render();
+      if (!Session.loaded || Session.user?.uid !== currentUser.uid) {
         Session.hydrate(currentUser).catch(e => {
           console.warn('[Profile] hydrate:', e.message);
-          this._renderLoadError();
+          /* Do NOT show load error — profile hero already rendered.
+             Lists will just be empty until user interacts. */
         });
-        /* sessionChanged listener above will call _render() when hydrate completes */
       }
     }
   }
@@ -1492,9 +1469,18 @@ class ProfileController {
   }
 
   async _render() {
-    const user = Session.user;
-    if (!user || !Session.loaded) return;
-    const p = Session.profile;
+    /* FIX: Render from live Firebase auth FIRST — no dependency on Session.loaded.
+       The hero area (nickname/avatar/email) appears immediately after login. */
+    const liveUser = fb?.auth?.currentUser ?? Session.user ?? null;
+    if (!liveUser) return;
+    /* Build profile from whichever source is available, prefer Session.profile */
+    const p = Session.profile ?? {
+      uid:      liveUser.uid,
+      username: liveUser.displayName || liveUser.email?.split('@')[0] || 'Χρήστης',
+      email:    liveUser.email,
+      avatar:   liveUser.photoURL || null,
+    };
+    const user = liveUser;
     document.title = `${p.username} — Προφίλ`;
 
     const avEl = $('#profileAvatar'), imgEl = $('#profileAvatarImg');
@@ -1557,8 +1543,7 @@ class ProfileController {
   _initEdit() {
     const btn = $('#profileEditBtn'); if (!btn) return;
     btn.addEventListener('click', () => {
-      /* FIX: build fallback profile from live Firebase auth if Session
-         isn't hydrated yet — edit button must NEVER be dead. */
+      /* FIX: fallback to live Firebase auth if Session.profile is null */
       const liveUser = fb?.auth?.currentUser ?? Session.user ?? null;
       if (!liveUser) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
       const profileData = Session.profile ?? {
@@ -1567,7 +1552,6 @@ class ProfileController {
         email:    liveUser.email,
         avatar:   liveUser.photoURL || null,
       };
-      /* shadow below */
       const o = document.createElement('div');
       o.className = 'auth-overlay';
       o.innerHTML = `
@@ -1593,7 +1577,6 @@ class ProfileController {
         if (!u) { er.textContent = 'Το ψευδώνυμο είναι υποχρεωτικό.'; er.style.display = 'block'; return; }
         if (u.length < 2 || u.length > 40) { er.textContent = '2–40 χαρακτήρες.'; er.style.display = 'block'; return; }
         try {
-          /* FIX: use live auth UID, not Session.user.uid */
           await fb.updateUserProfile(liveUser.uid, { username: u, avatar: a || null });
           if (Session.profile) { Session.profile.username = u; Session.profile.avatar = a || null; }
           else Session.profile = { ...profileData, username: u, avatar: a || null };
