@@ -136,7 +136,12 @@ const Session = {
           fb.getAllRatings(user.uid),
         ]);
         const liveUid = fb?.auth?.currentUser?.uid ?? null;
-        if (liveUid !== user.uid) return;
+        /* FIX: if auth UID changed mid-hydrate, log and fall through
+           (don't silently return — sessionChanged MUST fire via finally). */
+        if (liveUid && liveUid !== user.uid) {
+          console.warn('[Session] auth uid changed during hydrate; discarding result', { hydrateUid: user.uid, liveUid });
+          return;
+        }
         this.user      = user;
         this.profile   = profile ?? {
           uid:      user.uid,
@@ -144,10 +149,17 @@ const Session = {
           email:    user.email,
           avatar:   user.photoURL || null,
         };
-        this.favorites = new Set(favs);
-        this.watchlist = new Set(watch);
-        this.seen      = new Set(seen);
-        this.ratings   = ratings ?? {};
+        /* FIX: MERGE server data into existing Sets instead of REPLACING.
+           This preserves any optimistic writes the user made during the
+           hydration window (e.g. clicked ❤️ before server data arrived). */
+        (favs ?? []).forEach(s => this.favorites.add(s));
+        (watch ?? []).forEach(s => this.watchlist.add(s));
+        (seen ?? []).forEach(s => this.seen.add(s));
+        /* For ratings: server values take precedence ONLY for keys that
+           don't already exist in local cache (optimistic write wins). */
+        for (const [slug, val] of Object.entries(ratings ?? {})) {
+          if (this.ratings[slug] === undefined) this.ratings[slug] = val;
+        }
         this.loaded    = true;
         this.loadError = null;
         console.log('[Session] Hydrated.', {
@@ -195,14 +207,17 @@ const Session = {
   isReadyFor(uid) { return !!uid && this.loaded && this.user?.uid === uid; },
 
   async ensureHydrated() {
+    /* Helper to ensure Session is populated. NEVER called from writes
+       (writes use live auth directly and are decoupled from hydration).
+       Used only by UI code that needs to READ cached lists. */
     const user = this._getLiveUser();
-    if (!user) throw new Error('Ξ ΟΞ­Ο€ΞµΞΉ Ξ½Ξ± ΞµΞ―ΟƒΟ„Ξµ ΟƒΟ…Ξ½Ξ΄ΞµΞ΄ΞµΞΌΞ­Ξ½ΞΏΞΉ.');
+    if (!user) return;           /* silent — no user, nothing to hydrate */
     if (this.loaded && this.user?.uid === user.uid) return;
     if (this._loadingPromise) {
-      await this._loadingPromise;
+      try { await this._loadingPromise; } catch (_) { /* non-fatal */ }
       return;
     }
-    await this.hydrate(user);
+    try { await this.hydrate(user); } catch (_) { /* non-fatal */ }
   },
 
   /* Mutations ALWAYS do optimistic UI (regardless of hydration state).
@@ -211,18 +226,19 @@ const Session = {
      the caller can show a toast. */
 
   _getLiveUser() {
-    /* Live Firebase auth — most authoritative source */
-    const u = fb?.auth?.currentUser ?? this.user ?? null;
+    /* FIX: Live Firebase auth is the SINGLE source of truth for writes.
+       Never depends on this.user (Session cache) — writes must work
+       BEFORE hydration completes. */
+    const u = fb?.auth?.currentUser ?? null;
     if (!u?.uid) {
-      console.error('[Session] NO AUTHENTICATED USER');
+      console.error('[Session] NO AUTHENTICATED USER (live)');
       return null;
     }
-    console.log('[Session] live user uid:', u.uid);
     return u;
   },
 
   async toggleFavorite(slug) {
-    await this.ensureHydrated();
+    /* FIX: decoupled from hydration — writes use live Firebase auth directly */
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleFavorite START', { uid: user.uid, slug });
@@ -252,7 +268,7 @@ const Session = {
   },
 
   async toggleWatchlist(slug) {
-    await this.ensureHydrated();
+    /* FIX: decoupled from hydration — writes use live Firebase auth directly */
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleWatchlist START', { uid: user.uid, slug });
@@ -279,7 +295,7 @@ const Session = {
   },
 
   async toggleSeen(slug) {
-    await this.ensureHydrated();
+    /* FIX: decoupled from hydration — writes use live Firebase auth directly */
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] toggleSeen START', { uid: user.uid, slug });
@@ -306,7 +322,7 @@ const Session = {
   },
 
   async setRating(slug, stars) {
-    await this.ensureHydrated();
+    /* FIX: decoupled from hydration — writes use live Firebase auth directly */
     const user = this._getLiveUser();
     if (!user) throw new Error('Πρέπει να είστε συνδεδεμένοι.');
     console.log('[Session] setRating START', { uid: user.uid, slug, stars });
@@ -955,8 +971,8 @@ function renderStarRating(container, slug) {
   const liveUid = fb?.auth?.currentUser?.uid ?? Session.user?.uid ?? null;
   const canRate = !liveUid || Session.isReadyFor(liveUid);
   const label = liveUid
-    ? (canRate ? (current ? `${current}/5` : 'Ξ‘ΞΎΞΉΞΏΞ»ΟΞ³Ξ·ΟƒΞµ') : 'Ξ¦ΟΟΟ„Ο‰ΟƒΞ·β€¦')
-    : (current ? `${current}/5` : 'Ξ‘ΞΎΞΉΞΏΞ»ΟΞ³Ξ·ΟƒΞµ');
+    ? (canRate ? (current ? `${current}/5` : 'Αξιολόγησε') : 'Φόρτωση…')
+    : (current ? `${current}/5` : 'Αξιολόγησε');
   container.innerHTML = `
     <div class="star-rating" data-slug="${escapeHtml(slug)}">
       ${[1,2,3,4,5].map(n => `
@@ -1462,9 +1478,9 @@ class ProfileController {
     const div = document.createElement('div');
     div.className = 'profile-load-error';
     div.innerHTML = `
-      <h2>Ξ”ΞµΞ½ ΉΟ„Ξ±Ξ½ Ξ΄Ο…Ξ½Ξ±Ο„Ξ® Ξ· Ο†ΟΟΟ„Ο‰ΟƒΞ· Ο„Ο‰Ξ½ Ξ΄ΞµΞ΄ΞΏΞΌΞ­Ξ½Ο‰Ξ½.</h2>
-      <p>Ξ”ΞΏΞΊΞΉΞΌΞ¬ΟƒΟ„Ξµ ΞΞ±Ξ½Ξ¬ Ξ³ΞΉΞ± Ξ½Ξ± Ξ±Ξ½Ξ±ΞΊΟ„Ξ·ΞΈΞΏΟΞ½ Ο„Ξ± αγαπημένα, η watchlist, τα seen και οι αξιολογήσεις σας.</p>
-      <button class="btn-primary" id="profileRetryBtn" type="button">Ξ•Ξ€Ξ±Ξ½Ξ¬Ξ»Ξ·ΟΞ·</button>`;
+      <h2>Δεν ήταν δυνατή η φόρτωση των δεδομένων.</h2>
+      <p>Δοκιμάστε ξανά για να ανακτηθούν τα αγαπημένα, η watchlist, τα seen και οι αξιολογήσεις σας.</p>
+      <button class="btn-primary" id="profileRetryBtn" type="button">Επανάληψη</button>`;
     main.prepend(div);
     main.querySelector('#profileRetryBtn')?.addEventListener('click', () => {
       const liveUser = fb?.auth?.currentUser ?? Session.user;
@@ -1541,7 +1557,17 @@ class ProfileController {
   _initEdit() {
     const btn = $('#profileEditBtn'); if (!btn) return;
     btn.addEventListener('click', () => {
-      if (!Session.user || !Session.profile) return;
+      /* FIX: build fallback profile from live Firebase auth if Session
+         isn't hydrated yet — edit button must NEVER be dead. */
+      const liveUser = fb?.auth?.currentUser ?? Session.user ?? null;
+      if (!liveUser) { toast('Συνδεθείτε πρώτα.', 'info'); return; }
+      const profileData = Session.profile ?? {
+        uid:      liveUser.uid,
+        username: liveUser.displayName || liveUser.email?.split('@')[0] || 'Χρήστης',
+        email:    liveUser.email,
+        avatar:   liveUser.photoURL || null,
+      };
+      /* shadow below */
       const o = document.createElement('div');
       o.className = 'auth-overlay';
       o.innerHTML = `
@@ -1550,9 +1576,9 @@ class ProfileController {
           <h3 class="auth-forgot-title">Επεξεργασία Προφίλ</h3>
           <p class="auth-forgot-desc">Ενημερώστε το ψευδώνυμό σας ή το URL του avatar.</p>
           <label style="font-size:.75rem;color:var(--text-4);display:block;margin-bottom:.25rem">Ψευδώνυμο</label>
-          <input id="editUsername" type="text" class="auth-input" maxlength="40" value="${escapeHtml(Session.profile.username ?? '')}">
+          <input id="editUsername" type="text" class="auth-input" maxlength="40" value="${escapeHtml(profileData.username ?? '')}">
           <label style="font-size:.75rem;color:var(--text-4);display:block;margin-bottom:.25rem;margin-top:.4rem">Avatar URL (προαιρετικό)</label>
-          <input id="editAvatar" type="url" class="auth-input" placeholder="https://..." value="${escapeHtml(Session.profile.avatar ?? '')}">
+          <input id="editAvatar" type="url" class="auth-input" placeholder="https://..." value="${escapeHtml(profileData.avatar ?? '')}">
           <p id="editError" class="auth-error" style="display:none"></p>
           <button id="editSave" class="auth-submit-btn" type="button">Αποθήκευση</button>
         </div>`;
@@ -1567,8 +1593,10 @@ class ProfileController {
         if (!u) { er.textContent = 'Το ψευδώνυμο είναι υποχρεωτικό.'; er.style.display = 'block'; return; }
         if (u.length < 2 || u.length > 40) { er.textContent = '2–40 χαρακτήρες.'; er.style.display = 'block'; return; }
         try {
-          await fb.updateUserProfile(Session.user.uid, { username: u, avatar: a || null });
+          /* FIX: use live auth UID, not Session.user.uid */
+          await fb.updateUserProfile(liveUser.uid, { username: u, avatar: a || null });
           if (Session.profile) { Session.profile.username = u; Session.profile.avatar = a || null; }
+          else Session.profile = { ...profileData, username: u, avatar: a || null };
           toast('Ενημερώθηκε!', 'success');
           close();
           setTimeout(() => location.reload(), 400);
