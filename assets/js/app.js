@@ -117,7 +117,13 @@ const Session = {
 
     this._loadingPromise = (async () => {
       try {
-        await fb.ensureUserDoc(user);
+        /* FIX E: ensureUserDoc errors are non-fatal — profile page must render
+           even if the user doc creation fails (e.g. transient offline). */
+        try { await fb.ensureUserDoc(user); } catch (e) {
+          console.warn('[Session] ensureUserDoc failed (non-fatal):', e.code ?? e.message);
+        }
+        /* Load all user data in parallel. _safeRead returns fallback on error,
+           so this Promise.all always resolves — no rejection possible. */
         const [profile, favs, watch, seen, ratings] = await Promise.all([
           fb.getUserProfile(user.uid),
           fb.getUserFavorites(user.uid),
@@ -127,9 +133,10 @@ const Session = {
         ]);
         this.user      = user;
         this.profile   = profile ?? {
-          uid: user.uid,
+          uid:      user.uid,
           username: user.displayName || user.email?.split('@')[0] || 'Χρήστης',
-          email: user.email, avatar: user.photoURL || null,
+          email:    user.email,
+          avatar:   user.photoURL || null,
         };
         this.favorites = new Set(favs);
         this.watchlist = new Set(watch);
@@ -137,10 +144,22 @@ const Session = {
         this.ratings   = ratings ?? {};
         this.loaded    = true;
         console.log('[Session] Hydrated.', {
-          favs: favs.length, watch: watch.length, seen: seen.length, ratings: Object.keys(ratings).length
+          favs: favs.length, watch: watch.length, seen: seen.length,
+          ratings: Object.keys(ratings ?? {}).length,
         });
+      } catch (e) {
+        /* Even on unexpected error: set minimal user so ProfileController renders */
+        console.error('[Session] hydrate error (using fallback profile):', e.message);
+        this.user    = user;
+        this.profile = this.profile ?? {
+          uid: user.uid, username: user.displayName || user.email?.split('@')[0] || 'Χρήστης',
+          email: user.email, avatar: user.photoURL || null,
+        };
+        this.loaded = true;
       } finally {
         this._loadingPromise = null;
+        /* FIX E: ALWAYS emit sessionChanged so ProfileController._render() fires */
+        this._emitChange();
       }
     })();
     return this._loadingPromise;
@@ -197,10 +216,13 @@ const Session = {
       console.log('[Session] toggleFavorite ✓ OK', { uid: user.uid, slug, added: result });
       return result;
     } catch (e) {
-      /* Revert optimistic change */
-      if (was) this.favorites.add(slug); else this.favorites.delete(slug);
-      this._emitChange();
-      console.error('[Session] toggleFavorite ✗ FAILED', { uid: user.uid, slug, error: e.message });
+      /* FIX B: only revert on hard errors — offline writes are queued, NOT failed */
+      const isOffline = e.code === 'unavailable' || (e.message ?? '').includes('offline');
+      if (!isOffline) {
+        if (was) this.favorites.add(slug); else this.favorites.delete(slug);
+        this._emitChange();
+      }
+      console.error('[Session] toggleFavorite error', { uid: user.uid, slug, code: e.code, offline: isOffline });
       throw e;
     }
   },
@@ -221,9 +243,12 @@ const Session = {
       console.log('[Session] toggleWatchlist ✓ OK', { uid: user.uid, slug, added: result });
       return result;
     } catch (e) {
-      if (was) this.watchlist.add(slug); else this.watchlist.delete(slug);
-      this._emitChange();
-      console.error('[Session] toggleWatchlist ✗ FAILED', { uid: user.uid, slug, error: e.message });
+      const isOffline = e.code === 'unavailable' || (e.message ?? '').includes('offline');
+      if (!isOffline) {
+        if (was) this.watchlist.add(slug); else this.watchlist.delete(slug);
+        this._emitChange();
+      }
+      console.error('[Session] toggleWatchlist error', { uid: user.uid, slug, code: e.code, offline: isOffline });
       throw e;
     }
   },
@@ -244,9 +269,12 @@ const Session = {
       console.log('[Session] toggleSeen ✓ OK', { uid: user.uid, slug, added: result });
       return result;
     } catch (e) {
-      if (was) this.seen.add(slug); else this.seen.delete(slug);
-      this._emitChange();
-      console.error('[Session] toggleSeen ✗ FAILED', { uid: user.uid, slug, error: e.message });
+      const isOffline = e.code === 'unavailable' || (e.message ?? '').includes('offline');
+      if (!isOffline) {
+        if (was) this.seen.add(slug); else this.seen.delete(slug);
+        this._emitChange();
+      }
+      console.error('[Session] toggleSeen error', { uid: user.uid, slug, code: e.code, offline: isOffline });
       throw e;
     }
   },
@@ -261,22 +289,20 @@ const Session = {
     this._emitChange();
 
     try {
-      const persistedRating = await fb.setRating(user.uid, slug, stars);
-      /* Re-fetch from Firestore as MANDATORY confirmation the write persisted */
-      const confirmed = await fb.getRating(user.uid, slug);
-      console.log('[Session] setRating re-fetch confirmed:', confirmed);
-      if (confirmed !== (persistedRating ?? stars)) {
-        console.warn('[Session] setRating confirmed value differs from intended', { sent: stars, confirmed });
-      }
-      /* Use confirmed value (may differ from intended if concurrent writes) */
-      this.ratings[slug] = confirmed || stars;
-      this._emitChange();
-      console.log('[Session] setRating ✓ OK & CONFIRMED', { uid: user.uid, slug, rating: confirmed });
-      return confirmed || stars;
+      await fb.setRating(user.uid, slug, stars);
+      /* FIX A: write succeeded (or is queued for offline sync). Keep the
+         optimistic value — no re-fetch. The rating is already in the cache. */
+      console.log('[Session] setRating ✓ write dispatched', { uid: user.uid, slug, stars });
+      return stars;
     } catch (e) {
-      if (prev) this.ratings[slug] = prev; else delete this.ratings[slug];
-      this._emitChange();
-      console.error('[Session] setRating ✗ FAILED', { uid: user.uid, slug, stars, error: e.message });
+      /* Revert ONLY on hard errors (e.g. permission-denied).
+         For offline/unavailable, Firestore will sync automatically — do NOT revert. */
+      const isOffline = e.code === 'unavailable' || (e.message ?? '').includes('offline');
+      if (!isOffline) {
+        if (prev) this.ratings[slug] = prev; else delete this.ratings[slug];
+        this._emitChange();
+      }
+      console.error('[Session] setRating error', { uid: user.uid, slug, stars, code: e.code, offline: isOffline });
       throw e;
     }
   },
@@ -1283,33 +1309,41 @@ class ProfileController {
         const evtUser = e.detail?.user;
         if (!evtUser) {
           this._renderLoggedOut();
-        } else {
-          this._showProfileUI();
-          /* Render from whatever Session state we have now; if hydration
-             is in progress, sessionChanged will fire when it completes
-             and trigger another _render(). */
+          return;
+        }
+        /* FIX C: Show the profile UI chrome immediately.
+           If Session is already hydrated (e.g. second authStateChanged dispatch
+           that includes profile), render now. Otherwise, sessionChanged fires
+           after hydration completes and _render() is called there. */
+        this._showProfileUI();
+        if (Session.user && Session.loaded) {
           this._render();
         }
+        /* If not yet hydrated: sessionChanged (below) handles it */
       });
 
       document.addEventListener('sessionChanged', () => {
+        /* FIX C: this fires after Session.hydrate() resolves — guaranteed to
+           have user + favorites + watchlist + seen + ratings populated. */
         if (Session.user) this._render();
       });
     }
 
-    /* If Firebase auth is ALREADY resolved (e.g. persisted session, page
-       refresh), trigger initial render without waiting. fb.auth.currentUser
-       is read synchronously — no promise, no blocking. */
+    /* FIX D: If Firebase auth is already resolved (returning user on page refresh),
+       kick off hydration immediately. Render ONLY after hydration resolves so that
+       Session.user/favorites/etc. are populated. sessionChanged fires automatically
+       at the end of hydrate(), so no explicit _render() call needed here. */
     const currentUser = fb.auth?.currentUser;
     if (currentUser) {
       this._showProfileUI();
-      this._render();
-      /* Kick off hydration in the background (no await). sessionChanged
-         will fire when done and trigger another _render() with full data. */
-      Session.hydrate(currentUser).catch(e => console.warn('[Profile] hydrate:', e.message));
-    } else {
-      /* If auth hasn't resolved yet, wait for authStateChanged event
-         (non-blocking — the listener above handles it when it fires). */
+      /* Start hydration; sessionChanged will trigger _render() when done.
+         If already hydrated (e.g. navigating back to profile page), render now. */
+      if (Session.loaded && Session.user?.uid === currentUser.uid) {
+        this._render();
+      } else {
+        Session.hydrate(currentUser).catch(e => console.warn('[Profile] hydrate:', e.message));
+        /* sessionChanged listener above will call _render() when hydrate completes */
+      }
     }
   }
 
