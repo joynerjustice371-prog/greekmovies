@@ -37,18 +37,17 @@ const firebaseConfig = {
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
-/* FIX 1+2: initializeFirestore with long-polling forces a reliable HTTP transport
-   that works on GitHub Pages (Fastly CDN). This also eliminates the startup race
-   condition — the SDK does not need enableNetwork() to go online.
-   experimentalForceLongPolling: true  → bypasses WebChannel/gRPC-web (which fails
-     on Fastly-proxied GitHub Pages) and uses plain HTTPS long-polling instead.
-   ignoreUndefinedProperties: true    → prevents errors from undefined fields. */
+/* FIX 1+2: Use initializeFirestore with long-polling.
+   experimentalForceLongPolling bypasses WebChannel/gRPC-web which is
+   unreliable on GitHub Pages (Fastly CDN). Long-polling uses plain HTTPS
+   and works in all environments. No enableNetwork() call needed — the SDK
+   connects automatically and queues writes during any transient offline period. */
 export const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
-  ignoreUndefinedProperties: true,
+  ignoreUndefinedProperties:    true,
 });
 
-console.log("[Firebase] App ready. Project:", firebaseConfig.projectId, "| Transport: long-polling");
+console.log("[Firebase] App ready. Project:", firebaseConfig.projectId, "| long-polling");
 
 /* ══════════════════════════════════════════════════════════════
    AUTH-READY PRIMITIVE — the foundation
@@ -109,41 +108,41 @@ async function _safeWrite(opName, fn) {
 async function _safeRead(opName, fn, fallback) {
   try { return await fn(); }
   catch (e) {
-    /* FIX 5: distinguish offline (transient) from real errors */
+    /* FIX 5: distinguish transient offline from real errors */
     const isOffline = e.code === 'unavailable' || (e.message ?? '').includes('offline');
     if (isOffline) {
-      console.warn(`[Firestore] ${opName} — OFFLINE (returning fallback, will retry on reconnect)`);
+      console.warn(`[Firestore] ${opName} — offline (returning fallback; will sync when online)`);
     } else {
-      console.error(`[Firestore] ${opName} — READ ERROR:`, e.code ?? e.message);
+      console.error(`[Firestore] ${opName} — error:`, e.code ?? e.message);
     }
     return fallback;
   }
 }
 
 /**
- * FIX 3: Non-throwing write verification.
- * Firestore queues writes when temporarily offline and syncs when back online.
- * A failed read-back does NOT mean the write failed — it means Firestore is
- * momentarily offline. We must NOT throw here, as that would revert valid
- * optimistic UI state and give the user a false failure message.
- * This function logs warnings but always returns a boolean — never throws.
+ * FIX 3: Non-throwing verify. Firestore queues writes when offline and syncs
+ * automatically when back online. A failed read-back means "Firestore is
+ * temporarily offline", NOT "write failed". We must NEVER throw here because:
+ *   1. setDoc/deleteDoc have already resolved (write is queued/committed)
+ *   2. Throwing would revert optimistic UI state and show a false failure
+ * This function only logs — it never throws, never affects state.
  */
 async function _verifyWrite(opName, ref, checkFn = null) {
   try {
     const snap = await getDoc(ref);
     if (!snap.exists()) {
-      console.warn(`[Firestore] ${opName} — verify: doc not visible yet (offline cache?). Write queued.`);
+      console.warn(`[Firestore] ${opName} — not yet visible (write queued, will sync).`);
       return false;
     }
     if (checkFn && !checkFn(snap.data())) {
-      console.warn(`[Firestore] ${opName} — verify: data mismatch (may sync shortly).`, snap.data());
+      console.warn(`[Firestore] ${opName} — data mismatch in read-back (may sync shortly).`);
       return false;
     }
-    console.log(`[Firestore] ${opName} — ✓ verified OK`);
+    console.log(`[Firestore] ${opName} — ✓ verified`);
     return true;
   } catch (e) {
-    /* Offline or network error — write is still queued by Firestore */
-    console.warn(`[Firestore] ${opName} — verify skipped (${e.code ?? 'offline'}). Write queued for sync.`);
+    /* Offline / unavailable — write is still queued by Firestore SDK */
+    console.warn(`[Firestore] ${opName} — verify skipped (${e.code ?? 'offline'}): write is queued.`);
     return false;
   }
 }
@@ -263,14 +262,12 @@ function _makeCollectionAPI(collName) {
       const ref  = doc(db, "users", authedUid, collName, slug);
       console.log(`[Firestore] remove-${collName} PATH:`, path);
       await _safeWrite(`remove-${collName}(${authedUid},${slug})`, () => deleteDoc(ref));
-      /* FIX 3: Non-throwing verify — Firestore queues the delete and syncs when online. */
+      /* FIX 3: non-throwing post-delete check */
       try {
         const after = await getDoc(ref);
-        if (after.exists()) console.warn(`[Firestore] remove-${collName} — doc still cached (will sync).`);
-        else console.log(`[Firestore] remove-${collName} — ✓ delete confirmed.`);
-      } catch (e) {
-        console.warn(`[Firestore] remove-${collName} — verify skipped (${e.code ?? 'offline'}). Delete queued.`);
-      }
+        if (after.exists()) console.warn(`[Firestore] remove-${collName}: doc cached (delete queued, will sync).`);
+        else console.log(`[Firestore] remove-${collName}: ✓ delete confirmed.`);
+      } catch (e) { console.warn(`[Firestore] remove-${collName}: verify skipped (${e.code ?? 'offline'}).`); }
     },
     async toggle(uid, slug) {
       const user = _requireUser(`toggle-${collName}(${slug})`);
@@ -288,14 +285,12 @@ function _makeCollectionAPI(collName) {
       if (snap.exists()) {
         /* Currently present → remove */
         await _safeWrite(`toggle-${collName}-remove(${authedUid},${slug})`, () => deleteDoc(ref));
-        /* FIX 3: non-throwing verify */
+        /* FIX 3: non-throwing post-delete check */
         try {
           const after = await getDoc(ref);
-          if (after.exists()) console.warn(`[Firestore] toggle-${collName} — doc still cached (will sync).`);
-          else console.log(`[Firestore] toggle-${collName} — ✓ remove confirmed.`);
-        } catch (e) {
-          console.warn(`[Firestore] toggle-${collName} — verify skipped (${e.code ?? 'offline'}). Delete queued.`);
-        }
+          if (after.exists()) console.warn(`[Firestore] toggle-${collName}: cached (delete queued).`);
+          else console.log(`[Firestore] toggle-${collName}: ✓ remove confirmed.`);
+        } catch (e) { console.warn(`[Firestore] toggle-${collName}: verify skipped (${e.code ?? 'offline'}).`); }
         return false;
       } else {
         /* Not present → add */
