@@ -30,5 +30,401 @@
         "δωρεάν"
       ]
     }
+  },
+  "grand-hotel": {
+    "id": "271048",
+    "tmdb_id": 271048,
+    "title": "Grand Hotel",
+    "slug": "grand-hotel",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ANT1",
+        "logo": "https://image.tmdb.org/t/p/w200/yepAYSCsRS9G4WF9Gt47GSuRjCz.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/4XECDtOnZ4BgWCnudTjq4i5B8wj.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/p3ePnRRDlcicUQf13o0mLFKpySw.jpg",
+    "year": 2024,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Grand Hotel Online Greek Subs",
+      "description": "Δες το Grand Hotel online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2024.",
+      "keywords": [
+        "Grand Hotel",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "porto-leone-sti-geitonia-me-ta-kokkina-fanaria": {
+    "id": "301405",
+    "tmdb_id": 301405,
+    "title": "Porto Leone: Στη γειτονιά με τα κόκκινα φανάρια",
+    "slug": "porto-leone-sti-geitonia-me-ta-kokkina-fanaria",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Alpha TV",
+        "logo": "https://image.tmdb.org/t/p/w200/jaY3I8qSvcymAOMsafafhFatC80.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/12VlP7qoAgnqdKuijIFlaUVSnfO.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/rK765pLaJW4e85DkgZXFec494Qc.jpg",
+    "year": 2025,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Porto Leone: Στη γειτονιά με τα κόκκινα φανάρια Online Greek Subs",
+      "description": "Δες το Porto Leone: Στη γειτονιά με τα κόκκινα φανάρια online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2025.",
+      "keywords": [
+        "Porto Leone: Στη γειτονιά με τα κόκκινα φανάρια",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "agios-erotas": {
+    "id": "272366",
+    "tmdb_id": 272366,
+    "title": "Άγιος Έρωτας",
+    "slug": "agios-erotas",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Alpha TV",
+        "logo": "https://image.tmdb.org/t/p/w200/jaY3I8qSvcymAOMsafafhFatC80.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/yJ2KgfNMPJ3NUbC6cL63v8DiMjl.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/5a7uevYvf9zQ12sWxa0eEw11Ums.jpg",
+    "year": 2024,
+    "rating": 6.5,
+    "seasons": [],
+    "seo": {
+      "title": "Άγιος Έρωτας Online Greek Subs",
+      "description": "Δες το Άγιος Έρωτας online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2024.",
+      "keywords": [
+        "Άγιος Έρωτας",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "echo-paidia": {
+    "id": "273168",
+    "tmdb_id": 273168,
+    "title": "Έχω Παιδιά",
+    "slug": "echo-paidia",
+    "type": "series",
+    "genres": [
+      "Κωμωδία",
+      "Οικογενειακή"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/k8zdIE13vMJX4eZYcuCKEGiRfL9.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/7wHShmMVsBntN8kstg5lZghcor3.jpg",
+    "year": 2024,
+    "rating": 8.0,
+    "seasons": [],
+    "seo": {
+      "title": "Έχω Παιδιά Online Greek Subs",
+      "description": "Δες το Έχω Παιδιά online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Οικογενειακή. Σειρά 2024.",
+      "keywords": [
+        "Έχω Παιδιά",
+        "σειρά",
+        "Κωμωδία",
+        "Οικογενειακή",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "i-gi-tis-elias": {
+    "id": "123644",
+    "tmdb_id": 123644,
+    "title": "Η Γη Της Ελιάς",
+    "slug": "i-gi-tis-elias",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/y8vue7CA7kS2z1mPDOILGh4uYeV.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/g3l3baYpWOJuVFFq13V1mi4RAd3.jpg",
+    "year": 2021,
+    "rating": 7.0,
+    "seasons": [],
+    "seo": {
+      "title": "Η Γη Της Ελιάς Online Greek Subs",
+      "description": "Δες το Η Γη Της Ελιάς online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2021.",
+      "keywords": [
+        "Η Γη Της Ελιάς",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "mia-nychta-mono": {
+    "id": "304636",
+    "tmdb_id": 304636,
+    "title": "Μια Νύχτα Μόνο",
+    "slug": "mia-nychta-mono",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/wVukYwITavsA10pDPNmkyQLlm7L.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/bmCVp1evSF6H8T2DyTPAM8Kr58F.jpg",
+    "year": 2025,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Μια Νύχτα Μόνο Online Greek Subs",
+      "description": "Δες το Μια Νύχτα Μόνο online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2025.",
+      "keywords": [
+        "Μια Νύχτα Μόνο",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "mpampa-sagapo": {
+    "id": "313578",
+    "tmdb_id": 313578,
+    "title": "Μπαμπά, σ'αγαπώ!",
+    "slug": "mpampa-sagapo",
+    "type": "series",
+    "genres": [
+      "Κωμωδία",
+      "Οικογενειακή"
+    ],
+    "networks": [
+      {
+        "name": "Alpha TV",
+        "logo": "https://image.tmdb.org/t/p/w200/jaY3I8qSvcymAOMsafafhFatC80.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tmmtixq4EoSPWXmuPuZZ687aWZH.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/o1aJTuHATGtaFDgUFYPYxg3TTDF.jpg",
+    "year": 2026,
+    "rating": 7.0,
+    "seasons": [],
+    "seo": {
+      "title": "Μπαμπά, σ'αγαπώ! Online Greek Subs",
+      "description": "Δες το Μπαμπά, σ'αγαπώ! online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Οικογενειακή. Σειρά 2026.",
+      "keywords": [
+        "Μπαμπά, σ'αγαπώ!",
+        "σειρά",
+        "Κωμωδία",
+        "Οικογενειακή",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "na-m-agapas": {
+    "id": "302422",
+    "tmdb_id": 302422,
+    "title": "Να μ' αγαπάς",
+    "slug": "na-m-agapas",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Alpha TV",
+        "logo": "https://image.tmdb.org/t/p/w200/jaY3I8qSvcymAOMsafafhFatC80.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/9sFiA0RKiaSKdCrRfyFAJGVrGEM.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/shG9ycupdvgdKOBJY2VHjiaUMaO.jpg",
+    "year": 2025,
+    "rating": 7.0,
+    "seasons": [],
+    "seo": {
+      "title": "Να μ' αγαπάς Online Greek Subs",
+      "description": "Δες το Να μ' αγαπάς online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2025.",
+      "keywords": [
+        "Να μ' αγαπάς",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "soyper-iroes": {
+    "id": "316872",
+    "tmdb_id": 316872,
+    "title": "Σούπερ Ήρωες",
+    "slug": "soyper-iroes",
+    "type": "series",
+    "genres": [
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "ANT1",
+        "logo": "https://image.tmdb.org/t/p/w200/yepAYSCsRS9G4WF9Gt47GSuRjCz.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/iYZFyXbh0GITY1TrzK6XiYW4EZS.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/5IGEHCMHD9g8jnBcoXDuUkLftMj.jpg",
+    "year": 2026,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Σούπερ Ήρωες Online Greek Subs",
+      "description": "Δες το Σούπερ Ήρωες online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2026.",
+      "keywords": [
+        "Σούπερ Ήρωες",
+        "σειρά",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "o-giatros": {
+    "id": "236209",
+    "tmdb_id": 236209,
+    "title": "Ο Γιατρός",
+    "slug": "o-giatros",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Alpha TV",
+        "logo": "https://image.tmdb.org/t/p/w200/jaY3I8qSvcymAOMsafafhFatC80.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/rGnq6mZz8H2QkMtT6UoF9Pg0aS.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/t8M2vcc34u8GvgslLk4x9IanL6k.jpg",
+    "year": 2023,
+    "rating": 8.0,
+    "seasons": [],
+    "seo": {
+      "title": "Ο Γιατρός Online Greek Subs",
+      "description": "Δες το Ο Γιατρός online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2023.",
+      "keywords": [
+        "Ο Γιατρός",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "oi-athooi": {
+    "id": "313544",
+    "tmdb_id": 313544,
+    "title": "Οι Αθώοι",
+    "slug": "oi-athooi",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/hICl5qsE11WGLqcAOZ05ARazRHK.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/4wLslqjpSh07NxTC3tweWhFeCZX.jpg",
+    "year": 2026,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Οι Αθώοι Online Greek Subs",
+      "description": "Δες το Οι Αθώοι online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2026.",
+      "keywords": [
+        "Οι Αθώοι",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
+  },
+  "paichnidia-ekdikisis": {
+    "id": "275892",
+    "tmdb_id": 275892,
+    "title": "Παιχνίδια Εκδίκησης",
+    "slug": "paichnidia-ekdikisis",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ANT1",
+        "logo": "https://image.tmdb.org/t/p/w200/yepAYSCsRS9G4WF9Gt47GSuRjCz.png"
+      },
+      {
+        "name": "MBC Shahid",
+        "logo": "https://image.tmdb.org/t/p/w200/fPku7XI2slnF3LDaL5Tmiajjmke.png"
+      },
+      {
+        "name": "ANT1+",
+        "logo": "https://image.tmdb.org/t/p/w200/ijCrGmqunlpo4NQMcWDBHPgh1.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/pM2hbLADHtcGci47DTZYkj8uHTV.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/2kWRUWB0cTCIPf5nsYYn6OkXynQ.jpg",
+    "year": 2024,
+    "rating": 7.0,
+    "seasons": [],
+    "seo": {
+      "title": "Παιχνίδια Εκδίκησης Online Greek Subs",
+      "description": "Δες το Παιχνίδια Εκδίκησης online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2024.",
+      "keywords": [
+        "Παιχνίδια Εκδίκησης",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    }
   }
 }
