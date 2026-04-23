@@ -91,7 +91,7 @@ export class TMDBClient {
   }
 
   _normalize(gr, en = null) {
-    const title    = gr.name?.trim()     || en?.name?.trim()     || gr.original_name || "Unknown";
+    const title    = gr.name?.trim()     || en?.name?.trim()     || gr.original_name || null;
     const overview = gr.overview?.trim() || en?.overview?.trim() || "";
     const genres   = (gr.genres?.length ? gr.genres : en?.genres ?? []).map(g => g.name);
 
