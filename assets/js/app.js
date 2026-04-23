@@ -77,6 +77,46 @@ function toast(msg, type = 'info') {
 
 const BASE_URL = (() => { try { return new URL('../../', import.meta.url).href; } catch { return '/'; } })();
 
+/* ── Episode normalizer ─────────────────────────────────────
+   Converts NEW schema (seasons[].episodes[].sources[]) to the
+   flat internal format: { season, ep, title, players{} }.
+   ─────────────────────────────────────────────────────────── */
+function normalizeEpisodes(data) {
+  if (Array.isArray(data.seasons) && data.seasons.length) {
+    const flat = [];
+    for (const s of data.seasons) {
+      const sNum = s.season_number ?? s.season ?? 1;
+      for (const ep of (s.episodes ?? [])) {
+        const epNum = ep.episode_number ?? ep.episode ?? 1;
+        const players = {};
+        for (const src of (ep.sources ?? [])) {
+          const key = src.server || src.name || src.label || 'Server';
+          if (src.url) players[key] = src.url;
+        }
+        if (!Object.keys(players).length && ep.url) players['Server'] = ep.url;
+        flat.push({ season: sNum, ep: epNum, title: ep.title ?? '', players });
+      }
+    }
+    return flat;
+  }
+  if (Array.isArray(data.episodes) && data.episodes.length) {
+    return data.episodes.map(ep => ({
+      season: ep.season ?? 1,
+      ep:     ep.ep ?? ep.episode_number ?? ep.episode ?? 1,
+      title:  ep.title ?? '',
+      players: ep.players ?? (ep.url ? { Server: ep.url } : {}),
+    }));
+  }
+  return [];
+}
+
+/* Derive channel/network name — new schema uses networks[], legacy uses channel field */
+function deriveChannel(data) {
+  if (data.channel && data.channel !== 'Unknown') return data.channel;
+  if (Array.isArray(data.networks) && data.networks.length) return data.networks[0].name ?? null;
+  return null;
+}
+
 /* ── SVG Icons ──────────────────────────────────────────── */
 const ICONS = {
   play:     `<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" fill="currentColor"/></svg>`,
@@ -628,13 +668,21 @@ class DataManager {
   }
 
   _buildLocalEntries(raw) {
-    return Object.entries(raw).map(([slug, data]) => ({
-      slug, data, tmdb: null,
-      title: data.title ?? data.title_fallback ?? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      overview: data.overview ?? '', channel: data.channel ?? 'Unknown',
-      _posterFallback: data.poster_fallback ?? null,
-      _backdropFallback: data.backdrop_fallback ?? null,
-    }));
+    return Object.entries(raw).map(([slug, data]) => {
+      /* Normalize episodes once — all controllers read data.episodes */
+      if (!data._normalized) {
+        data.episodes = normalizeEpisodes(data);
+        data._normalized = true;
+      }
+      return {
+        slug, data, tmdb: null,
+        title: data.title ?? data.title_fallback ?? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
+        overview: data.overview ?? '',
+        channel: deriveChannel(data),
+        _posterFallback: data.poster ?? data.poster_fallback ?? null,
+        _backdropFallback: data.backdrop ?? data.backdrop_fallback ?? null,
+      };
+    });
   }
 
   _mergeWithTMDB(locals, results) {
@@ -674,12 +722,17 @@ class DataManager {
     const raw = await this._loadRaw();
     const data = raw[slug];
     if (!data) return null;
+    if (!data._normalized) {
+      data.episodes = normalizeEpisodes(data);
+      data._normalized = true;
+    }
     const local = {
       slug, data, tmdb: null,
       title: data.title ?? data.title_fallback ?? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-      overview: data.overview ?? '', channel: data.channel ?? 'Unknown',
-      _posterFallback: data.poster_fallback ?? null,
-      _backdropFallback: data.backdrop_fallback ?? null,
+      overview: data.overview ?? '',
+      channel: deriveChannel(data),
+      _posterFallback: data.poster ?? data.poster_fallback ?? null,
+      _backdropFallback: data.backdrop ?? data.backdrop_fallback ?? null,
     };
     try {
       const t = await Promise.race([ tmdb.getDetails(data), new Promise(r => setTimeout(() => r(null), 6000)) ]);
@@ -775,9 +828,9 @@ export function classifyEntry(entry) {
    ══════════════════════════════════════════════════════════ */
 function renderCard(entry) {
   const { slug, title, channel, tmdb: t, _posterFallback } = entry;
-  const poster = t?.poster ?? _posterFallback ?? null;
+  const poster = t?.poster ?? _posterFallback ?? entry.data?.poster ?? null;
   const year = t?.year ?? entry.data?.year ?? '';
-  const rating = t?.rating ?? '';
+  const rating = t?.rating ?? entry.data?.rating ?? '';
   const watchUrl = pageUrl('watch.html', { series: slug, season: 1, ep: 1 });
   const genres = (t?.genres ?? entry.data?.genres ?? []).slice(0, 2);
   const posterHtml = poster ? `<img class="card-poster" src="${poster}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : '';
@@ -785,7 +838,7 @@ function renderCard(entry) {
   return `
     <div class="series-card" data-slug="${escapeHtml(slug)}"
          data-title="${escapeHtml(title.toLowerCase())}"
-         data-channel="${escapeHtml(channel.toLowerCase())}"
+         data-channel="${escapeHtml((channel ?? '').toLowerCase())}"
          data-genres="${escapeHtml(genres.join(',').toLowerCase())}">
       ${posterHtml}${ph}
       <div class="card-overlay">
@@ -793,7 +846,7 @@ function renderCard(entry) {
         <div class="card-meta">
           ${year?`<span>${escapeHtml(String(year))}</span>`:''}
           ${rating?`<span class="card-rating">${ICONS.star}${rating}</span>`:''}
-          <span class="card-channel">${escapeHtml(channel)}</span>
+          ${channel?`<span class="card-channel">${escapeHtml(channel)}</span>`:''}
         </div>
       </div>
       <a href="${watchUrl}" class="card-play-btn" aria-label="Παρακολούθηση ${escapeHtml(title)}">${ICONS.play}</a>
@@ -864,7 +917,7 @@ class SearchController {
     const q = this._input?.value?.trim().toLowerCase() ?? '';
     if (!q) { if (this._results) this._results.innerHTML = ''; return; }
     const m = this._all.filter(e =>
-      e.title.toLowerCase().includes(q) || e.channel.toLowerCase().includes(q) ||
+      e.title.toLowerCase().includes(q) || (e.channel ?? '').toLowerCase().includes(q) ||
       (e.tmdb?.genres ?? e.data?.genres ?? []).join(' ').toLowerCase().includes(q)
     );
     this._results.innerHTML = m.length
@@ -893,21 +946,51 @@ class HomepageController {
     new SearchController(this._all);
     initCardClicks();
     observeSections();
+    this._showWelcomePopup();
+  }
+
+  _showWelcomePopup() {
+    if (localStorage.getItem('welcome_seen')) return;
+    const el = document.createElement('div');
+    el.id = 'welcomeModal';
+    el.className = 'auth-overlay';
+    el.style.cssText = 'z-index:9999';
+    el.innerHTML = `
+      <div class="auth-modal" style="max-width:420px;text-align:center;padding:2rem 2rem 1.5rem">
+        <button class="auth-modal-close" id="welcomeClose" aria-label="Κλείσιμο" type="button">✕</button>
+        <div style="font-size:2.5rem;margin-bottom:.75rem">🎬</div>
+        <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:.75rem;color:var(--text-1)">Καλωσήρθατε στο StreamVault!</h2>
+        <p style="color:var(--text-3);line-height:1.6;margin-bottom:1.25rem">
+          Η ιστοσελίδα ανανεώνεται καθημερινά με νέες σειρές και ταινίες.<br><br>
+          Ευχαριστούμε για την υπομονή σας.
+        </p>
+        <button id="welcomeOk" class="auth-submit-btn" type="button" style="margin:0 auto;display:block;max-width:180px">Κατάλαβα!</button>
+      </div>`;
+    document.body.appendChild(el);
+    const close = () => { el.remove(); localStorage.setItem('welcome_seen', 'true'); };
+    el.querySelector('#welcomeClose').addEventListener('click', close);
+    el.querySelector('#welcomeOk').addEventListener('click', close);
+    el.addEventListener('click', e => { if (e.target === el) close(); });
   }
 
   _buildSections() {
     const c = $('#sections'); if (!c) return;
     const featured = this._all.filter(e => e.data.featured);
-    const recent = [...this._all].reverse().slice(0, 12);
-    const random = shuffle(this._all).filter(e => !featured.find(f => f.slug === e.slug)).slice(0, 10);
+    const recent   = [...this._all].reverse().slice(0, 12);
+    const movies   = this._all.filter(e => e.data.type === 'movie');
+    const series   = this._all.filter(e => e.data.type !== 'movie');
+    const random   = shuffle(series).filter(e => !featured.find(f => f.slug === e.slug)).slice(0, 10);
     let html = '';
     if (featured.length) html += buildSection('Προτεινόμενες', featured, 'row');
     html += buildSection('Πρόσφατες Αναρτήσεις', recent, 'row');
-    if (random.length) html += buildSection('Τυχαίες Επιλογές', random, 'row');
-    const byCh = groupBy(this._all, 'channel');
-    Object.entries(byCh).sort(([a],[b]) => a.localeCompare(b)).forEach(([ch, entries]) => {
-      html += buildSection(ch, entries, 'row');
-    });
+    if (movies.length)  html += buildSection('Ταινίες', movies, 'row');
+    if (random.length)  html += buildSection('Τυχαίες Επιλογές', random, 'row');
+    /* Group by network/channel — skip null key → shown as 'Άλλα' by groupBy */
+    const byCh = groupBy(series, 'channel');
+    Object.entries(byCh)
+      .filter(([ch]) => ch && ch !== 'null')
+      .sort(([a],[b]) => a.localeCompare(b))
+      .forEach(([ch, entries]) => { html += buildSection(ch, entries, 'row'); });
     c.innerHTML = html;
     initRowArrows();
   }
@@ -930,13 +1013,16 @@ class HomepageController {
     const e = this._featured[idx]; if (!e) return;
     const { title, channel, tmdb: t, _backdropFallback, _posterFallback } = e;
     const bg = $('#heroBg');
-    if (bg) { const img = t?.backdrop ?? t?.posterLg ?? _backdropFallback ?? _posterFallback ?? ''; bg.style.backgroundImage = img ? `url('${img}')` : ''; }
+    if (bg) {
+      const img = t?.backdrop ?? t?.posterLg ?? _backdropFallback ?? _posterFallback ?? e.data?.backdrop ?? '';
+      bg.style.backgroundImage = img ? `url('${img}')` : '';
+    }
     const ct = $('#heroContent');
     if (ct) {
-      const y = t?.year ?? e.data?.year ?? '', r = t?.rating ?? '', s = t?.seasons ?? null;
+      const y = t?.year ?? e.data?.year ?? '', r = t?.rating ?? e.data?.rating ?? '', s = t?.seasons ?? null;
       const g = (t?.genres ?? e.data?.genres ?? []).slice(0, 3), desc = e.overview ?? '';
       ct.innerHTML = `
-        <div class="hero-channel">${escapeHtml(channel)}</div>
+        ${channel ? `<div class="hero-channel">${escapeHtml(channel)}</div>` : ''}
         <h1 class="hero-title">${escapeHtml(title)}</h1>
         <div class="hero-meta">${y?`<span>${escapeHtml(String(y))}</span>`:''}${r?`<span class="hero-rating">${ICONS.star} ${r}</span>`:''}${s?`<span>${s} Σεζόν</span>`:''}</div>
         ${g.length?`<div class="hero-genres">${g.map(x=>`<span class="genre-tag">${escapeHtml(x)}</span>`).join('')}</div>`:''}
@@ -1111,19 +1197,22 @@ class SeriesController {
     const { slug, title, channel, tmdb: t, data, _backdropFallback, _posterFallback } = entry;
 
     const bd = $('#seriesBackdrop');
-    if (bd) { const i = t?.backdrop ?? t?.posterLg ?? _backdropFallback ?? ''; if (i) bd.style.backgroundImage = `url('${i}')`; }
+    if (bd) { const i = t?.backdrop ?? t?.posterLg ?? _backdropFallback ?? data.backdrop ?? ''; if (i) bd.style.backgroundImage = `url('${i}')`; }
     const p = $('#seriesPoster');
-    if (p) { const src = t?.posterLg ?? _posterFallback ?? null;
+    if (p) { const src = t?.posterLg ?? _posterFallback ?? data.poster ?? null;
       p.innerHTML = src ? `<img src="${src}" alt="${escapeHtml(title)}" onerror="this.parentElement.innerHTML='<div class=\\'no-poster\\'>${ICONS.film}</div>'">` : `<div class="no-poster">${ICONS.film}</div>`;
     }
-    const cb = $('#seriesChannelBadge'); if (cb) cb.textContent = channel;
+    const cb = $('#seriesChannelBadge');
+    if (cb) { if (channel) { cb.textContent = channel; cb.style.display = ''; } else cb.style.display = 'none'; }
     const te = $('#seriesTitle'); if (te) te.textContent = title;
 
     const m = $('#seriesMeta');
     if (m) {
       const parts = [];
-      if (t?.year) parts.push(`<span>${t.year}</span>`);
-      if (t?.rating) parts.push(`<span class="rating-stars">${ICONS.star} ${t.rating}</span>`);
+      const yr = t?.year ?? data.year;
+      const rt = t?.rating ?? data.rating;
+      if (yr) parts.push(`<span>${yr}</span>`);
+      if (rt) parts.push(`<span class="rating-stars">${ICONS.star} ${rt}</span>`);
       if (t?.seasons) parts.push(`<span>${t.seasons} Σεζόν</span>`);
       if (t?.status) parts.push(`<span>${escapeHtml(t.status)}</span>`);
       m.innerHTML = parts.join('<span class="meta-sep">·</span>');
@@ -1133,7 +1222,7 @@ class SeriesController {
     if (ge) { const g = t?.genres ?? data.genres ?? []; if (g.length) ge.innerHTML = g.map(x => `<span class="genre-tag">${escapeHtml(x)}</span>`).join(''); }
 
     const ov = $('#seriesOverview');
-    if (ov) ov.textContent = entry.overview || 'Δεν υπάρχει διαθέσιμη περιγραφή.';
+    if (ov) ov.textContent = entry.overview || data.overview || 'Δεν υπάρχει διαθέσιμη περιγραφή.';
 
     const cta = $('#seriesCta');
     if (cta) {
@@ -1725,7 +1814,8 @@ class NetworksController {
         ? entry.tmdb.networks
         : (entry.tmdb?.productionCompanies ?? []);
       /* Also fallback to data.channel if no TMDB networks */
-      const list = nets.length ? nets : [{ id: `ch:${entry.channel}`, name: entry.channel, logo: null }];
+      const list = nets.length ? nets : (entry.channel ? [{ id: `ch:${entry.channel}`, name: entry.channel, logo: null }] : []);
+      if (!list.length) continue;
       for (const n of list) {
         const key = String(n.id);
         if (!this._byNetwork.has(key)) {
@@ -1781,6 +1871,37 @@ class NetworksController {
 }
 
 /* ══════════════════════════════════════════════════════════
+   MOVIES PAGE
+   ══════════════════════════════════════════════════════════ */
+class MoviesController {
+  constructor() { this._dm = new DataManager(); this._all = []; }
+
+  async init() {
+    initNavScroll();
+    new AuthController().init();
+    this._all = await this._dm.loadAll();
+    this._render();
+    initCardClicks();
+  }
+
+  _render() {
+    const results = $('#moviesResults');
+    const countEl = $('#moviesCount');
+    if (!results) return;
+
+    const movies = this._all.filter(e => e.data.type === 'movie');
+
+    if (countEl) countEl.textContent = `${movies.length} ταιν${movies.length === 1 ? 'ία' : 'ίες'}`;
+
+    if (!movies.length) {
+      results.innerHTML = `<div class="profile-empty" style="text-align:center;padding:4rem 2rem"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p style="color:var(--text-3)">Δεν υπάρχουν ταινίες διαθέσιμες ακόμα.</p><p style="color:var(--text-4);font-size:.85rem;margin-top:.5rem">Σύντομα νέες προσθήκες!</p></div>`;
+      return;
+    }
+    results.innerHTML = `<div class="series-grid">${movies.map(renderCard).join('')}</div>`;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
    ROUTER
    ══════════════════════════════════════════════════════════ */
 async function router() {
@@ -1796,6 +1917,7 @@ async function router() {
       case 'profile':  await new ProfileController().init();   break;
       case 'genres':   await new GenresController().init();    break;
       case 'networks': await new NetworksController().init();  break;
+      case 'movies':   await new MoviesController().init();    break;
       case 'rules':
         initNavScroll();
         new AuthController().init();
