@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Λεπτομέρειες σειράς — StreamVault">
-  <title>StreamVault — Σειρά</title>
+  <meta name="description" content="Σειρές — GreekMovies">
+  <title>GreekMovies — Σειρές</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='16' fill='%23141414'/><polygon points='35,25 75,50 35,75' fill='%23e50914'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,73 +13,61 @@
 </head>
 <body data-page="series">
 
+  <!-- NAV -->
   <nav class="nav" id="navbar" aria-label="Κύρια πλοήγηση">
     <div class="nav-logo">
-      <a href="./index.html">STREAM<span>VAULT</span></a>
+      <a href="./index.html">GREEK<span>MOVIES</span></a>
     </div>
     <div class="nav-links">
       <a href="./index.html"    class="nav-link" data-nav="home">Αρχική Σελίδα</a>
       <a href="./genres.html"   class="nav-link" data-nav="genres">Είδος Ταινίας</a>
       <a href="./networks.html" class="nav-link" data-nav="networks">Network</a>
       <a href="./movies.html"   class="nav-link" data-nav="movies">Ταινίες</a>
+      <a href="./series.html"   class="nav-link active" data-nav="series_list">Σειρές</a>
       <a href="./rules.html"    class="nav-link" data-nav="rules">Κανόνες</a>
     </div>
     <div class="nav-actions" id="nav-actions">
-      <a href="./index.html" class="btn-icon" aria-label="Επιστροφή στην αρχική">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </a>
+      <button class="btn-icon" id="searchToggle" aria-label="Αναζήτηση (Ctrl+K)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
     </div>
   </nav>
 
-  <div class="series-hero">
-    <div class="series-backdrop" id="seriesBackdrop" role="img" aria-label="Backdrop σειράς"></div>
-    <div class="series-backdrop-overlay" aria-hidden="true"></div>
+  <!-- SEARCH OVERLAY (used in listing mode) -->
+  <div class="search-overlay" id="searchOverlay" role="dialog" aria-label="Αναζήτηση">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Αναζήτηση σειράς…" autocomplete="off" spellcheck="false">
+      <button class="btn-icon search-close" id="searchClose" aria-label="Κλείσιμο">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="search-results" id="searchResults" aria-live="polite"></div>
   </div>
 
-  <section class="series-info-section">
-    <div class="series-poster-wrap" id="seriesPoster">
-      <div class="skeleton skeleton-poster" style="width:200px;aspect-ratio:2/3;border-radius:10px"></div>
+  <!--
+    DUAL-MODE CONTAINER
+    No ?id  → SeriesController renders listing layout into #seriesMain
+    With ?id → SeriesController renders detail layout into #seriesMain
+  -->
+  <main id="seriesMain" class="series-main-init">
+    <!-- JS replaces this entirely on load -->
+    <div class="series-main-loading">
+      <div class="spinner"></div>
     </div>
-    <div class="series-details">
-      <div class="series-channel-badge" id="seriesChannelBadge"><div class="skeleton skeleton-text short" style="width:60px;height:12px"></div></div>
-      <h1 class="series-title" id="seriesTitle"><div class="skeleton skeleton-title" style="width:300px;height:44px"></div></h1>
-      <div class="series-meta-row" id="seriesMeta"><div class="skeleton skeleton-text short" style="width:220px;height:13px"></div></div>
-      <div class="series-genres" id="seriesGenres"><div class="skeleton skeleton-text short" style="width:180px;height:24px;border-radius:20px"></div></div>
-      <p class="series-overview" id="seriesOverview">
-        <span class="skeleton skeleton-text" style="display:block;margin-bottom:.5rem"></span>
-        <span class="skeleton skeleton-text" style="display:block;margin-bottom:.5rem;width:85%"></span>
-        <span class="skeleton skeleton-text short" style="display:block;width:60%"></span>
-      </p>
-      <div class="series-cta" id="seriesCta">
-        <div class="skeleton skeleton-btn"></div>
-        <div class="skeleton skeleton-btn"></div>
-      </div>
-      <div class="series-user-actions" id="seriesRatingWrap" style="margin-top:1rem"></div>
-    </div>
-  </section>
-
-  <section class="episodes-section">
-    <h2>Επεισόδια</h2>
-    <div id="episodesContainer">
-      <div class="season-tabs">
-        <div class="skeleton" style="width:90px;height:35px;border-radius:6px"></div>
-        <div class="skeleton" style="width:90px;height:35px;border-radius:6px"></div>
-      </div>
-      <div class="episodes-grid">
-        <div class="skeleton" style="height:68px;border-radius:8px"></div>
-        <div class="skeleton" style="height:68px;border-radius:8px"></div>
-        <div class="skeleton" style="height:68px;border-radius:8px"></div>
-        <div class="skeleton" style="height:68px;border-radius:8px"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="series-user-section" aria-label="Σχόλια">
-    <div id="seriesComments"></div>
-  </section>
+  </main>
 
   <footer class="footer">
-    <p>Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a> &nbsp;·&nbsp; StreamVault</p>
+    <p>Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a> &nbsp;·&nbsp; GreekMovies</p>
   </footer>
 
   <script type="module" src="./assets/js/app.js"></script>
