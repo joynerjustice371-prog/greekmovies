@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Παρακολούθηση επεισοδίου — StreamVault">
-  <title>StreamVault — Παρακολούθηση</title>
+  <meta name="description" content="Παρακολούθηση επεισοδίου — GreekMovies">
+  <title>GreekMovies — Παρακολούθηση</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='16' fill='%23141414'/><polygon points='35,25 75,50 35,75' fill='%23e50914'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
-<!-- watch-page class adds padding-top: var(--nav-h) so content sits below the fixed nav -->
 <body data-page="watch" class="watch-page">
 
   <nav class="nav" id="navbar" aria-label="Κύρια πλοήγηση">
     <div class="nav-logo">
-      <a href="./index.html">STREAM<span>VAULT</span></a>
+      <a href="./index.html">GREEK<span>MOVIES</span></a>
     </div>
     <div class="nav-links">
       <a href="./index.html"    class="nav-link" data-nav="home">Αρχική Σελίδα</a>
       <a href="./genres.html"   class="nav-link" data-nav="genres">Είδος Ταινίας</a>
       <a href="./networks.html" class="nav-link" data-nav="networks">Network</a>
       <a href="./movies.html"   class="nav-link" data-nav="movies">Ταινίες</a>
+      <a href="./series.html"   class="nav-link" data-nav="series_list">Σειρές</a>
       <a href="./rules.html"    class="nav-link" data-nav="rules">Κανόνες</a>
     </div>
     <div class="nav-actions" id="nav-actions">
-      <!-- watchSeriesLink injected by WatchController._renderMeta() -->
       <a href="#" id="watchSeriesLink" class="watch-series-link" aria-label="Πίσω στα επεισόδια" style="display:none">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
         Επιστροφή
@@ -33,13 +33,11 @@
     </div>
   </nav>
 
-  <!-- Title + episode badge — .watch-meta matches CSS -->
   <div class="watch-meta">
     <h1 class="watch-title" id="watchTitle">Φόρτωση…</h1>
     <span class="watch-ep-badge" id="watchEpBadge">—</span>
   </div>
 
-  <!-- Player — .player-wrapper matches CSS with aspect-ratio 16/9 -->
   <div class="player-wrapper" id="playerWrapper">
     <div class="player-loading">
       <div class="spinner"></div>
@@ -47,7 +45,6 @@
     </div>
   </div>
 
-  <!-- Controls bar — .watch-controls + .watch-controls-inner matches CSS -->
   <div class="watch-controls">
     <div class="watch-controls-inner">
       <span class="controls-label">Επεισόδιο</span>
@@ -59,7 +56,6 @@
       <span class="controls-label">Player</span>
       <div class="player-btns" id="playerBtns" aria-label="Επιλογή player"></div>
 
-      <!-- .nav-ep-btns + .nav-ep-btn match CSS for prev/next buttons -->
       <div class="nav-ep-btns">
         <button id="prevEpBtn" class="nav-ep-btn" type="button">
           <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -73,11 +69,10 @@
     </div>
   </div>
 
-  <!-- All episodes for current season — .all-episodes-section matches CSS -->
   <section class="all-episodes-section" id="allEpisodesPanel" aria-label="Όλα τα επεισόδια"></section>
 
   <footer class="footer">
-    <p>Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a> &nbsp;·&nbsp; StreamVault</p>
+    <p>Powered by <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a> &nbsp;·&nbsp; GreekMovies</p>
   </footer>
 
   <script type="module" src="./assets/js/app.js"></script>
