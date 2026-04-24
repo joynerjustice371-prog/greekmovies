@@ -2452,3 +2452,99 @@ body { animation: pageIn 0.4s ease forwards; }
     padding: 1rem;
   }
 }
+
+/* ─── Pagination ─── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: 2rem 4vw 4rem;
+  flex-wrap: wrap;
+}
+.page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 .75rem;
+  border-radius: var(--radius);
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--text-2);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+.page-btn:hover:not(.disabled):not(.active) {
+  color: var(--text-1);
+  border-color: var(--border-2);
+  background: var(--bg-surface);
+}
+.page-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  pointer-events: none;
+}
+.page-btn.disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.page-ellipsis {
+  color: var(--text-4);
+  padding: 0 .25rem;
+  line-height: 40px;
+}
+@media (max-width: 480px) {
+  .page-btn { min-width: 34px; height: 34px; font-size: .78rem; padding: 0 .5rem; }
+}
+
+/* ─── Homepage layout ─── */
+.home-page-wrap {
+  padding-top: calc(var(--nav-h, 70px) + 2rem);
+  padding-bottom: 4rem;
+}
+.home-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 4vw 1.25rem;
+}
+.home-section-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: .06em;
+  color: var(--text-1);
+}
+.home-section-count {
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.home-grid {
+  padding: 0 4vw;
+}
+.home-empty {
+  padding: 4rem 4vw;
+  text-align: center;
+  color: var(--text-3);
+}
+#homePagination { padding-top: 1rem; }
+
+/* ─── Series main init state ─── */
+.series-main-init {
+  padding-top: calc(var(--nav-h, 70px) + 1rem);
+  min-height: 60vh;
+}
+.series-main-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  color: var(--text-3);
+}
