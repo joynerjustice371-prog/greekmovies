@@ -25883,5 +25883,38 @@
       ]
     },
     "last_updated": 1777122246
+  },
+  "ayrio": {
+    "id": "314588",
+    "tmdb_id": 314588,
+    "title": "Αύριο",
+    "slug": "ayrio",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ΕΡΤ",
+        "logo": "https://image.tmdb.org/t/p/w200/u2nPloH6r2UTbLRJStKsypeN5bF.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/oY58ZcNB9o61w6aV9uEFpuaRTdg.jpg",
+    "backdrop": "",
+    "year": 2026,
+    "rating": 6.5,
+    "seasons": [],
+    "seo": {
+      "title": "Αύριο Online Greek Subs",
+      "description": "Δες τη Αύριο online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2026.",
+      "keywords": [
+        "Αύριο",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777123167
   }
 }
