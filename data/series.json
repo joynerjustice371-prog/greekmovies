@@ -26951,12 +26951,12 @@
     "tmdb_id": 1603455,
     "title": "Στο Παρά Πέντε - 20 Χρόνια Μετά",
     "slug": "sto-para-pente---20-chronia-meta",
-    "type": "movie",
+    "type": "series",
     "genres": [],
     "networks": [
       {
         "name": "Alpha",
-        "logo": null
+        "logo": ""
       }
     ],
     "poster": "https://image.tmdb.org/t/p/w500/vcEneV2wf9ZDO1US56h11haUKnH.jpg",
@@ -28135,5 +28135,38 @@
       ]
     },
     "last_updated": 1777152651
+  },
+  "i-katara-tis-tzelas-delafragka": {
+    "id": "272369",
+    "tmdb_id": 272369,
+    "title": "Η Κατάρα της Τζέλας Δελαφράγκα",
+    "slug": "i-katara-tis-tzelas-delafragka",
+    "type": "series",
+    "genres": [
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "Alpha TV",
+        "logo": "https://image.tmdb.org/t/p/w200/jaY3I8qSvcymAOMsafafhFatC80.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/ouevkCExLDffsWqrVFk1eVmbmOZ.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/n5XXfrN8ltNMR9bKQqLBSzsa528.jpg",
+    "year": 2024,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Η Κατάρα της Τζέλας Δελαφράγκα Online Greek Subs",
+      "description": "Δες τη Η Κατάρα της Τζέλας Δελαφράγκα online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2024.",
+      "keywords": [
+        "Η Κατάρα της Τζέλας Δελαφράγκα",
+        "σειρά",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777156118
   }
 }
