@@ -25802,7 +25802,23 @@
     "backdrop": "https://image.tmdb.org/t/p/original/qMOYjQ0xPjFL7E8QyQJw5I7xpnw.jpg",
     "year": 2025,
     "rating": 8.2,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-ixa4ktlpz0ej.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Ριφιφί Online Greek Subs",
       "description": "Δες τη Ριφιφί online με ελληνικούς υπότιτλους. Είδος: Αστυνομική, Δράμα, Κωμωδία. Σειρά 2025.",
@@ -25816,6 +25832,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777122175
+    "last_updated": 1777122209
   }
 }
