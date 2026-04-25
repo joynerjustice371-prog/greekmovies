@@ -27186,7 +27186,73 @@
     "backdrop": "https://image.tmdb.org/t/p/original/yNuIXgdLchJIUvVuWbGRg5rjGs.jpg",
     "year": 2022,
     "rating": 5.5,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-5nhm7gt99c8u.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-3gtx6m124lm4.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-8dzll6jmkiqp.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-dm869lmhvo8m.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-53jnxr20nmus.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 6,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-29by6u1y2pfe.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Σέρρες Online Greek Subs",
       "description": "Δες τη Σέρρες online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Δράμα. Σειρά 2022.",
@@ -27199,6 +27265,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777147171
+    "last_updated": 1777147233
   }
 }
