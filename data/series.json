@@ -13158,7 +13158,23 @@
     "backdrop": "https://image.tmdb.org/t/p/original/2kWRUWB0cTCIPf5nsYYn6OkXynQ.jpg",
     "year": 2024,
     "rating": 7.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-1znevw9it6ff.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Παιχνίδια Εκδίκησης Online Greek Subs",
       "description": "Δες το Παιχνίδια Εκδίκησης online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2024.",
@@ -13170,7 +13186,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777116142
   },
   "to-spiti-dipla-sto-potami": {
     "id": "301323",
