@@ -138,5 +138,9 @@
   "rififi": {
     "featured": false,
     "created_at": 1777122175
+  },
+  "ayrio": {
+    "featured": false,
+    "created_at": 1777123167
   }
 }
