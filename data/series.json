@@ -26310,5 +26310,38 @@
       ]
     },
     "last_updated": 1777125136
+  },
+  "ioannis-kapodistrias": {
+    "id": "125293",
+    "tmdb_id": 125293,
+    "title": "Ιωάννης Καποδίστριας",
+    "slug": "ioannis-kapodistrias",
+    "type": "series",
+    "genres": [
+      "Ντοκυμαντέρ"
+    ],
+    "networks": [
+      {
+        "name": "Cosmote TV",
+        "logo": "https://image.tmdb.org/t/p/w200/5FP51Vqper685TpfOurr9plMRwb.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/7NDD4xcPYyhMBW8l99wGWdjaShX.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/kmFK15min5qqlVF7H03KIJBxh9B.jpg",
+    "year": 2019,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Ιωάννης Καποδίστριας Online Greek Subs",
+      "description": "Δες τη Ιωάννης Καποδίστριας online με ελληνικούς υπότιτλους. Είδος: Ντοκυμαντέρ. Σειρά 2019.",
+      "keywords": [
+        "Ιωάννης Καποδίστριας",
+        "σειρά",
+        "Ντοκυμαντέρ",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777125908
   }
 }
