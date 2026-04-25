@@ -13363,6 +13363,21 @@
             ]
           }
         ]
+      },
+      {
+        "season_number": 2,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-kydc3b695k7e.html"
+              }
+            ]
+          }
+        ]
       }
     ],
     "seo": {
@@ -13376,7 +13391,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777116342
+    "last_updated": 1777117853
   },
   "to-spiti-dipla-sto-potami": {
     "id": "301323",
