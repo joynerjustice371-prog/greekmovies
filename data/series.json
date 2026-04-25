@@ -25780,5 +25780,42 @@
       ]
     },
     "last_updated": 1777020524
+  },
+  "rififi": {
+    "id": "306114",
+    "tmdb_id": 306114,
+    "title": "Ριφιφί",
+    "slug": "rififi",
+    "type": "series",
+    "genres": [
+      "Αστυνομική",
+      "Δράμα",
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "Cosmote TV",
+        "logo": "https://image.tmdb.org/t/p/w200/5FP51Vqper685TpfOurr9plMRwb.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/ngCwoSAGQBB1qKnPinRInmvfMDj.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/qMOYjQ0xPjFL7E8QyQJw5I7xpnw.jpg",
+    "year": 2025,
+    "rating": 8.2,
+    "seasons": [],
+    "seo": {
+      "title": "Ριφιφί Online Greek Subs",
+      "description": "Δες τη Ριφιφί online με ελληνικούς υπότιτλους. Είδος: Αστυνομική, Δράμα, Κωμωδία. Σειρά 2025.",
+      "keywords": [
+        "Ριφιφί",
+        "σειρά",
+        "Αστυνομική",
+        "Δράμα",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777122175
   }
 }
