@@ -26002,5 +26002,40 @@
       ]
     },
     "last_updated": 1777123258
+  },
+  "ta-fantasmata": {
+    "id": "301679",
+    "tmdb_id": 301679,
+    "title": "Τα Φαντάσματα",
+    "slug": "ta-fantasmata",
+    "type": "series",
+    "genres": [
+      "Κωμωδία",
+      "Επ. Φαντασία - Φαντασίας"
+    ],
+    "networks": [
+      {
+        "name": "Star",
+        "logo": "https://image.tmdb.org/t/p/w200/pSegCsDDflnTUnFMvmcNwwBGSsg.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tjwDcJvTl0Lst8AATg0HQhXNJPY.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/AuYbxxqB6M6eAZgXvZ4PE4qQSU3.jpg",
+    "year": 2025,
+    "rating": 9.0,
+    "seasons": [],
+    "seo": {
+      "title": "Τα Φαντάσματα Online Greek Subs",
+      "description": "Δες τη Τα Φαντάσματα online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Επ. Φαντασία - Φαντασίας. Σειρά 2025.",
+      "keywords": [
+        "Τα Φαντάσματα",
+        "σειρά",
+        "Κωμωδία",
+        "Επ. Φαντασία - Φαντασίας",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777123317
   }
 }
