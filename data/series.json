@@ -25903,7 +25903,23 @@
     "backdrop": "",
     "year": 2026,
     "rating": 6.5,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-34n5xp8hxodb.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Αύριο Online Greek Subs",
       "description": "Δες τη Αύριο online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2026.",
@@ -25915,6 +25931,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777123167
+    "last_updated": 1777123213
   }
 }
