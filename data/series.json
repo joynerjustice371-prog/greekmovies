@@ -26023,7 +26023,23 @@
     "backdrop": "https://image.tmdb.org/t/p/original/AuYbxxqB6M6eAZgXvZ4PE4qQSU3.jpg",
     "year": 2025,
     "rating": 9.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-twiakhczmybu.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Τα Φαντάσματα Online Greek Subs",
       "description": "Δες τη Τα Φαντάσματα online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Επ. Φαντασία - Φαντασίας. Σειρά 2025.",
@@ -26036,6 +26052,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777123317
+    "last_updated": 1777123918
   }
 }
