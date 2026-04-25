@@ -27915,7 +27915,103 @@
     "backdrop": "https://image.tmdb.org/t/p/original/lMIIAqdNUOiyIDlqs8p9H3SHj0G.jpg",
     "year": 2022,
     "rating": 6.4,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-x2zufifia2w0.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-sp6vdiqq963i.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-gmlfw72vza3b.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-0uowhyhw1s5g.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-2t89bbt6rv87.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 6,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-df5qsfvcv9vq.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 7,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-hfb5frkj6p9p.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 8,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-s31kksn6o2uh.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 9,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-cb1033babo3f.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Maestro Online Greek Subs",
       "description": "Δες τη Maestro online με ελληνικούς υπότιτλους. Είδος: Δράμα, Αστυνομική. Σειρά 2022.",
@@ -27928,6 +28024,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777151461
+    "last_updated": 1777151926
   }
 }
