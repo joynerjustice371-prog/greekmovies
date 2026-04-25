@@ -14721,7 +14721,23 @@
     "backdrop": "https://image.tmdb.org/t/p/original/9nhbKm3ASmjpQ2O7tKgHTwghjrk.jpg",
     "year": 2026,
     "rating": 8.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-jnvll7kptif4.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Η Μεγάλη Χίμαιρα Online Greek Subs",
       "description": "Δες τη Η Μεγάλη Χίμαιρα online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2026.",
@@ -14733,7 +14749,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777125221
+    "last_updated": 1777125738
   },
   "ilektra": {
     "id": "236736",
