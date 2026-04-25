@@ -26991,5 +26991,44 @@
       ]
     },
     "last_updated": 1777144862
+  },
+  "to-dichty": {
+    "id": "274612",
+    "tmdb_id": 274612,
+    "title": "Το Δίχτυ",
+    "slug": "to-dichty",
+    "type": "series",
+    "genres": [
+      "Αστυνομική",
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ERT1",
+        "logo": "https://image.tmdb.org/t/p/w200/mR0SoE9l7rq8nsmjeuMhv05CVoh.png"
+      },
+      {
+        "name": "ERTFLIX",
+        "logo": "https://image.tmdb.org/t/p/w200/u1NC8M9jjGBhdcnECsj8yLbcZ85.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/7VYkCpBXcnOv7jZLnrRSnB8XqOo.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/hTzqKUiT7RgaPoMd310KdZPoK5X.jpg",
+    "year": 2024,
+    "rating": 7.2,
+    "seasons": [],
+    "seo": {
+      "title": "Το Δίχτυ Online Greek Subs",
+      "description": "Δες τη Το Δίχτυ online με ελληνικούς υπότιτλους. Είδος: Αστυνομική, Δράμα. Σειρά 2024.",
+      "keywords": [
+        "Το Δίχτυ",
+        "σειρά",
+        "Αστυνομική",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777146129
   }
 }
