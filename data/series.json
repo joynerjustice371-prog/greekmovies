@@ -27890,5 +27890,44 @@
       ]
     },
     "last_updated": 1777150842
+  },
+  "maestro": {
+    "id": "209504",
+    "tmdb_id": 209504,
+    "title": "Maestro",
+    "slug": "maestro",
+    "type": "series",
+    "genres": [
+      "Δράμα",
+      "Αστυνομική"
+    ],
+    "networks": [
+      {
+        "name": "Netflix",
+        "logo": "https://image.tmdb.org/t/p/w200/wwemzKWzjKYJFfCeiB57q3r4Bcm.png"
+      },
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6lacPlstK6mcdu3tYAj5GXmJJZR.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/lMIIAqdNUOiyIDlqs8p9H3SHj0G.jpg",
+    "year": 2022,
+    "rating": 6.4,
+    "seasons": [],
+    "seo": {
+      "title": "Maestro Online Greek Subs",
+      "description": "Δες τη Maestro online με ελληνικούς υπότιτλους. Είδος: Δράμα, Αστυνομική. Σειρά 2022.",
+      "keywords": [
+        "Maestro",
+        "σειρά",
+        "Δράμα",
+        "Αστυνομική",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777151461
   }
 }
