@@ -12527,7 +12527,63 @@
     "backdrop": "https://image.tmdb.org/t/p/original/t8M2vcc34u8GvgslLk4x9IanL6k.jpg",
     "year": 2023,
     "rating": 8.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-9k2gy0cdt469.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-v6mmih1y392f.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-77zzq6dai4bx.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-0be3tdkd1gsd.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-420yd4mi4lon.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Ο Γιατρός Online Greek Subs",
       "description": "Δες το Ο Γιατρός online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2023.",
@@ -12539,7 +12595,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777112633
   },
   "oi-athooi": {
     "id": "313544",
@@ -15189,6 +15245,26 @@
                 "url": "https://vidmoly.biz/embed-vl8wt2bs2d4q.html"
               }
             ]
+          },
+          {
+            "episode_number": 129,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-p6w75wqcgs9q.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 130,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-84464w8ahto1.html"
+              }
+            ]
           }
         ]
       }
@@ -15204,7 +15280,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777076248
   },
   "kala-tha-paei-ki-ayto": {
     "id": "300807",
