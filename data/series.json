@@ -26409,5 +26409,40 @@
       ]
     },
     "last_updated": 1777126350
+  },
+  "sto-para-5": {
+    "id": "2386",
+    "tmdb_id": 2386,
+    "title": "Στο Παρά 5",
+    "slug": "sto-para-5",
+    "type": "series",
+    "genres": [
+      "Κωμωδία",
+      "Μυστηρίου"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/shSmGTs6JfZjKYnCLBEh9g6iR0p.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/uNooub0UvoU86iKXDeqBbCtfU7I.jpg",
+    "year": 2005,
+    "rating": 8.3,
+    "seasons": [],
+    "seo": {
+      "title": "Στο Παρά 5 Online Greek Subs",
+      "description": "Δες τη Στο Παρά 5 online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Μυστηρίου. Σειρά 2005.",
+      "keywords": [
+        "Στο Παρά 5",
+        "σειρά",
+        "Κωμωδία",
+        "Μυστηρίου",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777139075
   }
 }
