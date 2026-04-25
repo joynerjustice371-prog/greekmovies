@@ -26143,5 +26143,40 @@
       ]
     },
     "last_updated": 1777123982
+  },
+  "kakes-idees": {
+    "id": "290634",
+    "tmdb_id": 290634,
+    "title": "Κακές Ιδέες",
+    "slug": "kakes-idees",
+    "type": "series",
+    "genres": [
+      "Κωμωδία",
+      "Περιπέτεια - Δράσης"
+    ],
+    "networks": [
+      {
+        "name": "Cosmote TV",
+        "logo": "https://image.tmdb.org/t/p/w200/5FP51Vqper685TpfOurr9plMRwb.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/cUbf5tBseIkRdmJn8JmWzDKFxGI.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/r5lj3j3krW14x6fyn09AwIJVlSe.jpg",
+    "year": 2025,
+    "rating": 6.3,
+    "seasons": [],
+    "seo": {
+      "title": "Κακές Ιδέες Online Greek Subs",
+      "description": "Δες τη Κακές Ιδέες online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Περιπέτεια - Δράσης. Σειρά 2025.",
+      "keywords": [
+        "Κακές Ιδέες",
+        "σειρά",
+        "Κωμωδία",
+        "Περιπέτεια - Δράσης",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777124023
   }
 }
