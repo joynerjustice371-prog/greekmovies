@@ -27371,5 +27371,38 @@
       ]
     },
     "last_updated": 1777147902
+  },
+  "tampoy": {
+    "id": "273056",
+    "tmdb_id": 273056,
+    "title": "Ταμπoύ",
+    "slug": "tampoy",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/fOB7pU09AXjFJgakOlyaWXpmYdS.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/trob98OJcHNCXrH6vgCasNSkEay.jpg",
+    "year": 2024,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Ταμπoύ Online Greek Subs",
+      "description": "Δες τη Ταμπoύ online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2024.",
+      "keywords": [
+        "Ταμπoύ",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777150811
   }
 }
