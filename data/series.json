@@ -28155,7 +28155,153 @@
     "backdrop": "https://image.tmdb.org/t/p/original/n5XXfrN8ltNMR9bKQqLBSzsa528.jpg",
     "year": 2024,
     "rating": 0.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-huk2i3rf28bj.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-zrokglbafr1h.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-jf7cy3iyhxvd.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-tr3u5wvpc8df.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-594wk7cb0g8m.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 6,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-ua9ay45nob2u.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 7,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-mcmfpfwhs3a4.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 8,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-e3wufc5oq39y.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 9,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-skn7bzg70856.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 10,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-7amjgbjir71s.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 11,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-xz7h0ac4jdxa.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 12,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-nlwjy72zg0qu.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 13,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-l81h9t4z3wb1.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 14,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-zepu47bpy1fu.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Η Κατάρα της Τζέλας Δελαφράγκα Online Greek Subs",
       "description": "Δες τη Η Κατάρα της Τζέλας Δελαφράγκα online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2024.",
@@ -28167,6 +28313,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777156118
+    "last_updated": 1777157223
   }
 }
