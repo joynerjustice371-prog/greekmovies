@@ -26963,7 +26963,23 @@
     "backdrop": "https://image.tmdb.org/t/p/original/1Iwx7RlWIshAgO0TbpXCXZmVKcp.jpg",
     "year": 2025,
     "rating": 0.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-3oh9p3wwj0j0.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Στο Παρά Πέντε - 20 Χρόνια Μετά Online Greek Subs",
       "description": "Δες την Στο Παρά Πέντε - 20 Χρόνια Μετά online με ελληνικούς υπότιτλους. Ταινία 2025.",
@@ -26974,6 +26990,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777144358
+    "last_updated": 1777144862
   }
 }
