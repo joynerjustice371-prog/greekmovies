@@ -12692,6 +12692,21 @@
             ]
           }
         ]
+      },
+      {
+        "season_number": 2,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-4m5h2rzr3kaw.html"
+              }
+            ]
+          }
+        ]
       }
     ],
     "seo": {
@@ -12705,7 +12720,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777114615
+    "last_updated": 1777114620
   },
   "oi-athooi": {
     "id": "313544",
