@@ -28314,5 +28314,38 @@
       ]
     },
     "last_updated": 1777157224
+  },
+  "eytychismenoi-mazi": {
+    "id": "49268",
+    "tmdb_id": 49268,
+    "title": "Ευτυχισμένοι Μαζί",
+    "slug": "eytychismenoi-mazi",
+    "type": "series",
+    "genres": [
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/z6bBGAmHHQ6khjDAiROrQEh2PCs.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/uwSf89IR1kzP5IKRBPbuu5gAV13.jpg",
+    "year": 2007,
+    "rating": 8.5,
+    "seasons": [],
+    "seo": {
+      "title": "Ευτυχισμένοι Μαζί Online Greek Subs",
+      "description": "Δες τη Ευτυχισμένοι Μαζί online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2007.",
+      "keywords": [
+        "Ευτυχισμένοι Μαζί",
+        "σειρά",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777157346
   }
 }
