@@ -31170,5 +31170,38 @@
       ]
     },
     "last_updated": 1777203399
+  },
+  "sta-synora": {
+    "id": "238381",
+    "tmdb_id": 238381,
+    "title": "Στα Σύνορα",
+    "slug": "sta-synora",
+    "type": "series",
+    "genres": [
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "Star",
+        "logo": "https://image.tmdb.org/t/p/w200/pSegCsDDflnTUnFMvmcNwwBGSsg.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/m25976tu0PwcT67CHMFMz41Uzkk.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/npgtIJa5hg4hSiXF4U4ba5AxHMG.jpg",
+    "year": 2023,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Στα Σύνορα Online Greek Subs",
+      "description": "Δες τη Στα Σύνορα online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2023.",
+      "keywords": [
+        "Στα Σύνορα",
+        "σειρά",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777209836
   }
 }
