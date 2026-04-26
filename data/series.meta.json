@@ -230,5 +230,9 @@
   "to-nayagio": {
     "featured": false,
     "created_at": 1777236295
+  },
+  "zoi": {
+    "featured": false,
+    "created_at": 1777237559
   }
 }
