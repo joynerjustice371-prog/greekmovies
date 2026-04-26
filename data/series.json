@@ -29515,5 +29515,44 @@
       ]
     },
     "last_updated": 1777193678
+  },
+  "i-maria-poy-egine-kallas": {
+    "id": "272373",
+    "tmdb_id": 272373,
+    "title": "Η Μαρία που έγινε Κάλλας",
+    "slug": "i-maria-poy-egine-kallas",
+    "type": "series",
+    "genres": [
+      "Δράμα",
+      "Ντοκυμαντέρ"
+    ],
+    "networks": [
+      {
+        "name": "ERT1",
+        "logo": "https://image.tmdb.org/t/p/w200/mR0SoE9l7rq8nsmjeuMhv05CVoh.png"
+      },
+      {
+        "name": "ERTFLIX",
+        "logo": "https://image.tmdb.org/t/p/w200/u1NC8M9jjGBhdcnECsj8yLbcZ85.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/4DMqdFIzVSsTRqzXAyqPiklSbSn.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/5aHMaOT0voCG9Aaph17BoD2MLnR.jpg",
+    "year": 2024,
+    "rating": 7.5,
+    "seasons": [],
+    "seo": {
+      "title": "Η Μαρία που έγινε Κάλλας Online Greek Subs",
+      "description": "Δες τη Η Μαρία που έγινε Κάλλας online με ελληνικούς υπότιτλους. Είδος: Δράμα, Ντοκυμαντέρ. Σειρά 2024.",
+      "keywords": [
+        "Η Μαρία που έγινε Κάλλας",
+        "σειρά",
+        "Δράμα",
+        "Ντοκυμαντέρ",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777196479
   }
 }
