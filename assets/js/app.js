@@ -116,6 +116,9 @@ function normalizeEpisodes(data) {
       players: ep.players ?? (ep.url ? { Server: ep.url } : {}),
     }));
   }
+  if (data.type === 'movie' && data.players && Object.keys(data.players).length) {
+    return [{ season: 1, ep: 1, title: data.title ?? '', players: data.players }];
+  }
   return [];
 }
 
@@ -153,9 +156,11 @@ const ICONS = {
    ══════════════════════════════════════════════════════════ */
 function renderCard(entry) {
   const { slug, title, channel, tmdb: t, _posterFallback } = entry;
-  const poster  = t?.poster ?? _posterFallback ?? entry.data?.poster ?? null;
-  const year    = t?.year   ?? entry.data?.year   ?? null;
-  const rating  = t?.rating ?? entry.data?.rating ?? null;
+  const poster      = t?.poster ?? _posterFallback ?? entry.data?.poster ?? null;
+  const year        = t?.year   ?? entry.data?.year   ?? null;
+  const rating      = t?.rating ?? entry.data?.rating ?? null;
+  const isMovie     = entry.data?.type === 'movie';
+  const playerCount = isMovie ? Object.keys(entry.data?.players ?? {}).length : null;
   const watchUrl = pageUrl('watch.html', { series: slug, season: 1, ep: 1 });
 
   const posterImg = poster
@@ -170,7 +175,9 @@ function renderCard(entry) {
       <div class="card-meta">
         ${year   ? `<span>${esc(String(year))}</span>` : ''}
         ${rating ? `<span class="card-rating">${ICONS.star}${rating}</span>` : ''}
-        ${channel ? `<span class="card-channel">${esc(channel)}</span>` : ''}
+        ${playerCount !== null
+          ? `<span class="card-channel">${playerCount} player${playerCount !== 1 ? 's' : ''}</span>`
+          : channel ? `<span class="card-channel">${esc(channel)}</span>` : ''}
       </div>
     </div>
     <a href="${watchUrl}" class="card-play-btn" aria-label="Παρακολούθηση ${esc(title)}">${ICONS.play}</a>
@@ -475,9 +482,18 @@ class DataManager {
   async _loadRaw() {
     if (this._raw) return this._raw;
     try {
-      const r = await fetch(`${BASE_URL}data/series.json`);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      this._raw = await r.json();
+      const [seriesRes, moviesRes, metaRes] = await Promise.all([
+        fetch(`${BASE_URL}data/series.json`),
+        fetch(`${BASE_URL}data/movies.json`).catch(() => null),
+        fetch(`${BASE_URL}data/movies.meta.json`).catch(() => null),
+      ]);
+      const seriesData = seriesRes.ok ? await seriesRes.json() : {};
+      const moviesData = moviesRes?.ok ? await moviesRes.json() : {};
+      const metaData   = metaRes?.ok  ? await metaRes.json()  : {};
+      for (const key of Object.keys(moviesData)) {
+        if (metaData[key]) moviesData[key].featured = metaData[key].featured ?? false;
+      }
+      this._raw = { ...seriesData, ...moviesData };
       if (typeof this._raw !== 'object' || Array.isArray(this._raw)) throw new Error('Invalid JSON');
       return this._raw;
     } catch (e) { console.error('[DM]', e.message); this._raw = {}; return this._raw; }
@@ -648,20 +664,36 @@ class HomepageController {
     const grid       = $('#homeGrid');
     const countEl    = $('#homeCount');
     const pagination = $('#homePagination');
+    const featured   = $('#homeFeatured');
     if (!grid) return;
 
-    /* Sort by last_updated DESC — entries without the field sort to bottom */
     const sorted = [...all].sort((a, b) => (b.data.last_updated || 0) - (a.data.last_updated || 0));
 
+    /* Featured movies → dedicated hero section */
+    if (featured) {
+      const featuredMovies = sorted.filter(e => e.data.type === 'movie' && e.data.featured);
+      if (featuredMovies.length) {
+        featured.innerHTML = `
+          <div class="home-section-header">
+            <h2 class="home-section-title">🎬 Προτεινόμενες Ταινίες</h2>
+          </div>
+          <div class="series-grid home-grid" style="margin-bottom:2rem">${featuredMovies.map(renderCard).join('')}</div>`;
+        setupCards(featured);
+      } else {
+        featured.innerHTML = '';
+      }
+    }
+
+    /* Latest row: all content except featured movies */
+    const latest = sorted.filter(e => !(e.data.type === 'movie' && e.data.featured));
+
     const page       = getPage();
-    const totalPages = Math.ceil(sorted.length / PER_PAGE);
-    const items      = paginate(sorted, page);
+    const totalPages = Math.ceil(latest.length / PER_PAGE);
+    const items      = paginate(latest, page);
 
-    if (countEl) countEl.textContent = `${sorted.length} τίτλοι`;
-
+    if (countEl) countEl.textContent = `${all.length} τίτλοι`;
     grid.innerHTML = items.map(renderCard).join('');
     setupCards(grid);
-
     if (pagination) pagination.innerHTML = buildPaginationHTML(page, totalPages);
   }
 }
@@ -1040,30 +1072,65 @@ class WatchController {
    MOVIES CONTROLLER  — type=movie only, paginated
    ══════════════════════════════════════════════════════════ */
 class MoviesController {
-  constructor() { this._dm = new DataManager(); }
+  constructor() { this._dm = new DataManager(); this._movies = []; this._cat = 'all'; }
 
   async init() {
     initNavScroll(); new AuthController().init();
     const all = await this._dm.loadAll();
-    this._render(all); initCardClicks();
+    this._movies = all
+      .filter(e => e.data.type === 'movie')
+      .sort((a, b) => (b.data.last_updated || 0) - (a.data.last_updated || 0));
+    this._render(); initCardClicks();
     new SearchController(all);
   }
 
-  _render(all) {
+  _render() {
     const results = $('#moviesResults'); if (!results) return;
-    const movies  = all.filter(e => e.data.type === 'movie');
-    const sorted  = [...movies].sort((a, b) => (b.data.last_updated || 0) - (a.data.last_updated || 0));
-    const ce      = $('#moviesCount'); if (ce) ce.textContent = `${sorted.length} ταινίες`;
 
-    if (!sorted.length) {
-      results.innerHTML = `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες ακόμα.</p></div>`;
-      return;
+    const filtered = this._cat === 'all'
+      ? this._movies
+      : this._movies.filter(e => e.data.category === this._cat);
+
+    const ce = $('#moviesCount');
+    if (ce) ce.textContent = `${filtered.length} ταινίες`;
+
+    const catBar = `<div class="genres-bar" id="moviesCatFilter" style="margin-bottom:2rem">
+      <button class="genre-chip${this._cat === 'all'     ? ' active' : ''}" data-cat="all"     type="button">Όλες</button>
+      <button class="genre-chip${this._cat === 'greek'   ? ' active' : ''}" data-cat="greek"   type="button">Ελληνικές</button>
+      <button class="genre-chip${this._cat === 'foreign' ? ' active' : ''}" data-cat="foreign" type="button">Ξένες</button>
+    </div>`;
+
+    if (!filtered.length) {
+      results.innerHTML = catBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
+    } else {
+      const genreMap = new Map();
+      for (const movie of filtered) {
+        const genres = movie.data.genres ?? [];
+        const keys = genres.length ? genres : ['Άλλες'];
+        for (const g of keys) {
+          if (!genreMap.has(g)) genreMap.set(g, []);
+          genreMap.get(g).push(movie);
+        }
+      }
+      const sections = [...genreMap.entries()]
+        .sort(([a], [b]) => a.localeCompare(b, 'el'))
+        .map(([genre, movies]) => `
+          <div style="margin-bottom:2.5rem">
+            <div class="home-section-header" style="padding:0 4vw">
+              <h2 class="home-section-title">${esc(genre)}</h2>
+              <span class="home-section-count">${movies.length} ταινί${movies.length === 1 ? 'α' : 'ες'}</span>
+            </div>
+            <div class="series-grid home-grid" style="padding:0 4vw">${movies.map(renderCard).join('')}</div>
+          </div>`).join('');
+      results.innerHTML = catBar + sections;
+      setupCards(results);
     }
-    const page  = getPage();
-    const total = Math.ceil(sorted.length / PER_PAGE);
-    const items = paginate(sorted, page);
-    results.innerHTML = `<div class="section visible"><div class="series-grid">${items.map(renderCard).join('')}</div></div>${buildPaginationHTML(page, total)}`;
-    setupCards(results);
+
+    $('#moviesCatFilter')?.addEventListener('click', e => {
+      const b = e.target.closest('.genre-chip'); if (!b || !b.dataset.cat) return;
+      this._cat = b.dataset.cat;
+      this._render();
+    });
   }
 }
 
