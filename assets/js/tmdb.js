@@ -150,7 +150,7 @@ export class TMDBClient {
       );
       if (!res || !res.ok) throw new Error(res ? `TMDB ${res.status}` : 'Timeout');
       const data = await res.json();
-      const cast = (data.cast ?? []).slice(0, 12).map(a => ({
+      const cast = (data.cast || []).slice(0, 12).map(a => ({
         id: a.id,
         name: a.name,
         profile_path: a.profile_path ? IMG.thumb(a.profile_path) : null,
