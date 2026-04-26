@@ -159,8 +159,7 @@ function renderCard(entry) {
   const poster      = t?.poster ?? _posterFallback ?? entry.data?.poster ?? null;
   const year        = t?.year   ?? entry.data?.year   ?? null;
   const rating      = t?.rating ?? entry.data?.rating ?? null;
-  const isMovie     = entry.data?.type === 'movie';
-  const playerCount = isMovie ? Object.keys(entry.data?.players ?? {}).length : null;
+  const isMovie  = entry.data?.type === 'movie';
   const watchUrl = pageUrl('watch.html', { series: slug, season: 1, ep: 1 });
 
   const posterImg = poster
@@ -168,16 +167,14 @@ function renderCard(entry) {
     : '';
   const placeholder = `<div class="card-no-poster"${poster ? ' style="display:none"' : ''}>${ICONS.film}<span>${esc(title)}</span></div>`;
 
-  return `<div class="series-card" data-slug="${esc(slug)}" data-title="${esc(title.toLowerCase())}" data-channel="${esc((channel ?? '').toLowerCase())}">
+  return `<div class="series-card" data-slug="${esc(slug)}" data-title="${esc(title.toLowerCase())}" data-channel="${esc((channel ?? '').toLowerCase())}" data-type="${esc(entry.data?.type ?? '')}">
     ${posterImg}${placeholder}
     <div class="card-overlay">
       <div class="card-title">${esc(title)}</div>
       <div class="card-meta">
-        ${year   ? `<span>${esc(String(year))}</span>` : ''}
-        ${rating ? `<span class="card-rating">${ICONS.star}${rating}</span>` : ''}
-        ${playerCount !== null
-          ? `<span class="card-channel">${playerCount} player${playerCount !== 1 ? 's' : ''}</span>`
-          : channel ? `<span class="card-channel">${esc(channel)}</span>` : ''}
+        ${year ? `<span>${esc(String(year))}</span>` : ''}
+        ${!isMovie && rating  ? `<span class="card-rating">${ICONS.star}${rating}</span>` : ''}
+        ${!isMovie && channel ? `<span class="card-channel">${esc(channel)}</span>` : ''}
       </div>
     </div>
     <a href="${watchUrl}" class="card-play-btn" aria-label="Παρακολούθηση ${esc(title)}">${ICONS.play}</a>
@@ -212,7 +209,12 @@ function initCardClicks() {
     const card = e.target.closest('.series-card');
     if (!card || e.target.closest('a') || e.target.closest('.card-play-btn')) return;
     const slug = card.dataset.slug;
-    if (slug) window.location.href = pageUrl('series.html', { id: slug });
+    if (!slug) return;
+    if (card.dataset.type === 'movie') {
+      window.location.href = pageUrl('watch.html', { series: slug, season: 1, ep: 1 });
+    } else {
+      window.location.href = pageUrl('series.html', { id: slug });
+    }
   });
 }
 
@@ -667,7 +669,7 @@ class HomepageController {
     const featured   = $('#homeFeatured');
     if (!grid) return;
 
-    const sorted = [...all].sort((a, b) => (b.data.last_updated || 0) - (a.data.last_updated || 0));
+    const sorted = [...all].sort(() => Math.random() - 0.5);
 
     /* Featured movies → dedicated hero section */
     if (featured) {
@@ -994,9 +996,15 @@ class WatchController {
     this._slug = p.get('series'); this._season = +(p.get('season') ?? 1); this._ep = +(p.get('ep') ?? 1);
     if (!this._slug) { window.location.href = pageUrl('index.html'); return; }
     this._entry = await this._dm.getOne(this._slug);
-    if (!this._entry) { toast('Η σειρά δεν βρέθηκε.', 'error'); return; }
-    document.title = `${this._entry.title} S${this._season}E${this._ep} — GreekMovies`;
-    this._findEp(); this._renderMeta(); this._renderPlayer(); this._renderControls(); this._renderAllEps();
+    if (!this._entry) { toast('Δεν βρέθηκε.', 'error'); return; }
+    this._findEp();
+    if (this._entry.data.type === 'movie') {
+      document.title = `${this._entry.title} — GreekMovies`;
+      this._renderMeta(); this._renderPlayer(); this._renderMovieUI();
+    } else {
+      document.title = `${this._entry.title} S${this._season}E${this._ep} — GreekMovies`;
+      this._renderMeta(); this._renderPlayer(); this._renderControls(); this._renderAllEps();
+    }
   }
 
   _findEp() {
@@ -1021,6 +1029,44 @@ class WatchController {
         allowfullscreen allow="autoplay; fullscreen"
         sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-popups allow-top-navigation"></iframe>`;
     $('#playerIframe')?.addEventListener('load', () => $('#playerLoading')?.remove());
+  }
+
+  _renderMovieUI() {
+    /* Hide episode badge */
+    const badge = $('#watchEpBadge'); if (badge) badge.style.display = 'none';
+
+    /* Back link → movies page */
+    const bl = $('#watchSeriesLink');
+    if (bl) { bl.href = pageUrl('movies.html'); bl.style.display = ''; bl.textContent = ''; bl.appendChild(document.createTextNode('← Ταινίες')); }
+
+    /* Collapse watch-controls to just server buttons */
+    const inner = document.querySelector('.watch-controls-inner');
+    if (inner) {
+      const serverBtns = Object.keys(this._players)
+        .map(n => `<button class="player-btn${n === this._active ? ' active' : ''}" data-player="${esc(n)}" type="button">${esc(n)}</button>`)
+        .join('');
+      inner.innerHTML = `<span class="controls-label">Player</span><div class="player-btns" id="playerBtns">${serverBtns}</div>`;
+      $('#playerBtns')?.addEventListener('click', e => {
+        const btn = e.target.closest('.player-btn'); if (!btn) return;
+        $$('.player-btn').forEach(x => x.classList.remove('active')); btn.classList.add('active');
+        this._active = btn.dataset.player; this._renderPlayer();
+      });
+    }
+
+    /* Show title, poster, overview below player */
+    const panel = $('#allEpisodesPanel');
+    if (panel) {
+      const overview = this._entry.data?.overview ?? this._entry.overview ?? '';
+      const poster   = this._entry.tmdb?.posterLg ?? this._entry._posterFallback ?? this._entry.data?.poster ?? null;
+      panel.innerHTML = `<div style="padding:2rem 4vw;display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start">
+        ${poster ? `<img src="${esc(poster)}" alt="${esc(this._entry.title)}" style="width:160px;border-radius:8px;object-fit:cover;flex-shrink:0">` : ''}
+        <div style="flex:1;min-width:200px">
+          <h2 style="margin:0 0 .75rem;color:var(--text-1)">${esc(this._entry.title)}</h2>
+          ${this._entry.data?.year ? `<p style="color:var(--text-3);margin:0 0 .75rem">${esc(String(this._entry.data.year))}</p>` : ''}
+          ${overview ? `<p style="color:var(--text-2);line-height:1.7;max-width:640px;margin:0">${esc(overview)}</p>` : ''}
+        </div>
+      </div>`;
+    }
   }
 
   _renderControls() {
@@ -1072,7 +1118,7 @@ class WatchController {
    MOVIES CONTROLLER  — type=movie only, paginated
    ══════════════════════════════════════════════════════════ */
 class MoviesController {
-  constructor() { this._dm = new DataManager(); this._movies = []; this._cat = 'all'; }
+  constructor() { this._dm = new DataManager(); this._movies = []; this._genre = 'all'; }
 
   async init() {
     initNavScroll(); new AuthController().init();
@@ -1087,48 +1133,32 @@ class MoviesController {
   _render() {
     const results = $('#moviesResults'); if (!results) return;
 
-    const filtered = this._cat === 'all'
+    /* Build unique genre list from all movies */
+    const allGenres = [...new Set(this._movies.flatMap(e => e.data.genres ?? []))].sort((a, b) => a.localeCompare(b, 'el'));
+
+    /* Filter */
+    const filtered = this._genre === 'all'
       ? this._movies
-      : this._movies.filter(e => e.data.category === this._cat);
+      : this._movies.filter(e => (e.data.genres ?? []).includes(this._genre));
 
     const ce = $('#moviesCount');
     if (ce) ce.textContent = `${filtered.length} ταινίες`;
 
-    const catBar = `<div class="genres-bar" id="moviesCatFilter" style="margin-bottom:2rem">
-      <button class="genre-chip${this._cat === 'all'     ? ' active' : ''}" data-cat="all"     type="button">Όλες</button>
-      <button class="genre-chip${this._cat === 'greek'   ? ' active' : ''}" data-cat="greek"   type="button">Ελληνικές</button>
-      <button class="genre-chip${this._cat === 'foreign' ? ' active' : ''}" data-cat="foreign" type="button">Ξένες</button>
+    const genreBar = `<div class="genres-bar" id="moviesGenreFilter" style="margin-bottom:2rem">
+      <button class="genre-chip${this._genre === 'all' ? ' active' : ''}" data-genre="all" type="button">Όλες</button>
+      ${allGenres.map(g => `<button class="genre-chip${this._genre === g ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g)}</button>`).join('')}
     </div>`;
 
     if (!filtered.length) {
-      results.innerHTML = catBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
+      results.innerHTML = genreBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
     } else {
-      const genreMap = new Map();
-      for (const movie of filtered) {
-        const genres = movie.data.genres ?? [];
-        const keys = genres.length ? genres : ['Άλλες'];
-        for (const g of keys) {
-          if (!genreMap.has(g)) genreMap.set(g, []);
-          genreMap.get(g).push(movie);
-        }
-      }
-      const sections = [...genreMap.entries()]
-        .sort(([a], [b]) => a.localeCompare(b, 'el'))
-        .map(([genre, movies]) => `
-          <div style="margin-bottom:2.5rem">
-            <div class="home-section-header" style="padding:0 4vw">
-              <h2 class="home-section-title">${esc(genre)}</h2>
-              <span class="home-section-count">${movies.length} ταινί${movies.length === 1 ? 'α' : 'ες'}</span>
-            </div>
-            <div class="series-grid home-grid" style="padding:0 4vw">${movies.map(renderCard).join('')}</div>
-          </div>`).join('');
-      results.innerHTML = catBar + sections;
+      results.innerHTML = genreBar + `<div class="series-grid" style="padding:0 4vw">${filtered.map(renderCard).join('')}</div>`;
       setupCards(results);
     }
 
-    $('#moviesCatFilter')?.addEventListener('click', e => {
-      const b = e.target.closest('.genre-chip'); if (!b || !b.dataset.cat) return;
-      this._cat = b.dataset.cat;
+    $('#moviesGenreFilter')?.addEventListener('click', e => {
+      const b = e.target.closest('.genre-chip'); if (!b || !('genre' in b.dataset)) return;
+      this._genre = b.dataset.genre;
       this._render();
     });
   }
