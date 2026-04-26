@@ -28968,5 +28968,38 @@
       ]
     },
     "last_updated": 1777187499
+  },
+  "eisai-to-tairi-moy": {
+    "id": "34363",
+    "tmdb_id": 34363,
+    "title": "Είσαι Το Ταίρι Μου",
+    "slug": "eisai-to-tairi-moy",
+    "type": "series",
+    "genres": [
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6befyqfyCbr7UQuxyzccl0bDNu4.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/pkXMSdKfkdpk4Y9j1vbHfnAPT9j.jpg",
+    "year": 2001,
+    "rating": 7.9,
+    "seasons": [],
+    "seo": {
+      "title": "Είσαι Το Ταίρι Μου Online Greek Subs",
+      "description": "Δες τη Είσαι Το Ταίρι Μου online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2001.",
+      "keywords": [
+        "Είσαι Το Ταίρι Μου",
+        "σειρά",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777187682
   }
 }
