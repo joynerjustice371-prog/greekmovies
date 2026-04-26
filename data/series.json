@@ -29001,5 +29001,42 @@
       ]
     },
     "last_updated": 1777187682
+  },
+  "famagusta": {
+    "id": "242840",
+    "tmdb_id": 242840,
+    "title": "Famagusta",
+    "slug": "famagusta",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      },
+      {
+        "name": "Alpha Cyprus",
+        "logo": "https://image.tmdb.org/t/p/w200/6Y6E2q7IyY5IEdbZ9t8jM5jxFsB.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/eAgLGNJFjEEmAqg3WO7Xz08fCL1.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/dJApeCLIlNhLfbfM3ENRzxFBLt2.jpg",
+    "year": 2024,
+    "rating": 6.4,
+    "seasons": [],
+    "seo": {
+      "title": "Famagusta Online Greek Subs",
+      "description": "Δες τη Famagusta online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2024.",
+      "keywords": [
+        "Famagusta",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777193471
   }
 }
