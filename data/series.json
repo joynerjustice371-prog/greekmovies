@@ -32957,6 +32957,41 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777216463
+    "last_updated": 1777216468
+  },
+  "o-skarabaios": {
+    "id": "246140",
+    "tmdb_id": 246140,
+    "title": "Ο Σκαραβαίος",
+    "slug": "o-skarabaios",
+    "type": "series",
+    "genres": [
+      "Μυστηρίου",
+      "Αστυνομική"
+    ],
+    "networks": [
+      {
+        "name": "Alpha TV",
+        "logo": "https://image.tmdb.org/t/p/w200/jaY3I8qSvcymAOMsafafhFatC80.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/mcApVnDbiBNwgBZJPYPh0dmidID.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/9Zg66MM52rSLmJyOT3uQizDVLDV.jpg",
+    "year": 2024,
+    "rating": 6.0,
+    "seasons": [],
+    "seo": {
+      "title": "Ο Σκαραβαίος Online Greek Subs",
+      "description": "Δες τη Ο Σκαραβαίος online με ελληνικούς υπότιτλους. Είδος: Μυστηρίου, Αστυνομική. Σειρά 2024.",
+      "keywords": [
+        "Ο Σκαραβαίος",
+        "σειρά",
+        "Μυστηρίου",
+        "Αστυνομική",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777217849
   }
 }
