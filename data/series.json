@@ -29589,5 +29589,40 @@
       ]
     },
     "last_updated": 1777196536
+  },
+  "san-psema": {
+    "id": "251505",
+    "tmdb_id": 251505,
+    "title": "Σαν Ψέμα",
+    "slug": "san-psema",
+    "type": "series",
+    "genres": [
+      "Δράμα",
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "Open Beyond TV",
+        "logo": "https://image.tmdb.org/t/p/w200/qH5M9dRWAwpPJ34PehcOudqh2hq.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/wQEVSBnkI8cUr9ToLoMm3TkjPKo.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/mHj6NQz60HmVBTuyZPA7FHoOd8D.jpg",
+    "year": 2024,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Σαν Ψέμα Online Greek Subs",
+      "description": "Δες τη Σαν Ψέμα online με ελληνικούς υπότιτλους. Είδος: Δράμα, Κωμωδία. Σειρά 2024.",
+      "keywords": [
+        "Σαν Ψέμα",
+        "σειρά",
+        "Δράμα",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777196575
   }
 }
