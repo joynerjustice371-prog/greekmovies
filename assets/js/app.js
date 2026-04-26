@@ -669,7 +669,7 @@ class HomepageController {
     const featured   = $('#homeFeatured');
     if (!grid) return;
 
-    const sorted = [...all].sort((a, b) => (b.data.last_updated || 0) - (a.data.last_updated || 0));
+    const sorted = [...all].sort((a, b) => (b.data?.last_updated || 0) - (a.data?.last_updated || 0));
 
     /* Featured movies → dedicated hero section */
     if (featured) {
@@ -761,7 +761,7 @@ function _commentAvatar(c) {
 async function renderComments(container, slug) {
   let comments = [];
   try { comments = await fb.getComments(slug); } catch (_) {}
-  /* Newest first — safe copy, never mutate originals */
+  /* Newest first — safe copy */
   comments = [...(comments || [])].sort((a, b) => {
     const ta = a.timestamp ?? a.createdAt?.seconds ?? a.createdAt?.toDate?.()?.getTime() / 1000 ?? 0;
     const tb = b.timestamp ?? b.createdAt?.seconds ?? b.createdAt?.toDate?.()?.getTime() / 1000 ?? 0;
@@ -997,14 +997,15 @@ class SeriesController {
     try {
       const tmdbId = entry.tmdb?.tmdbId ?? entry.data?.tmdb_id;
       if (!tmdbId) { castWrap.innerHTML = ''; return; }
-      const type = entry.data?.type === 'movie' ? 'movie' : 'tv';
-      const credits = await tmdb.getCredits(tmdbId, type);
-      /* Dedupe by id */
-      const seen = new Set();
-      const cast = (credits || []).filter(a => { if (!a?.id || seen.has(a.id)) return false; seen.add(a.id); return true; });
+      /* Only fetch if cast is missing — never overwrite */
+      if (!entry.cast || !entry.cast.length) {
+        const type = entry.data?.type === 'movie' ? 'movie' : 'tv';
+        const credits = await tmdb.getCredits(tmdbId, type);
+        const seen = new Set();
+        entry.cast = (credits || []).filter(a => { if (!a?.id || seen.has(a.id)) return false; seen.add(a.id); return true; });
+      }
+      const cast = entry.cast || [];
       if (!cast.length) { castWrap.innerHTML = ''; return; }
-      /* Cache locally on entry — no global mutation */
-      if (!entry.data.cast?.length) entry.data.cast = cast;
       castWrap.innerHTML = `
         <h3 style="font-size:1.05rem;margin:0 0 1rem;color:var(--text-1)">Ηθοποιοί</h3>
         <div style="display:flex;flex-wrap:wrap;gap:.75rem">
@@ -1025,7 +1026,8 @@ class SeriesController {
 
   async _openActorModal(actorId, actorName) {
     const all = await this._dm.loadAll();
-    const results = (all || []).filter(e => e.data?.cast?.some(a => a.id === actorId));
+    /* LOCAL filter — no TMDB calls here */
+    const results = (all || []).filter(e => e.cast?.some(a => a.id === actorId));
     const o = document.createElement('div'); o.className = 'auth-overlay';
     o.innerHTML = `<div class="auth-modal" style="max-width:820px;width:95vw;max-height:85vh;overflow-y:auto">
       <button class="auth-modal-close" id="actorModalClose" type="button">✕</button>
@@ -1180,7 +1182,7 @@ class MoviesController {
   async init() {
     initNavScroll(); new AuthController().init();
     const all = await this._dm.loadAll();
-    /* Local copy + sort by last_updated DESC — never mutate originals */
+    /* Safe copy + sort by last_updated DESC — never mutate originals */
     this._movies = [...all.filter(e => e.data?.type === 'movie')]
       .sort((a, b) => (b.data?.last_updated || 0) - (a.data?.last_updated || 0));
     this._render(); initCardClicks();
@@ -1189,15 +1191,13 @@ class MoviesController {
 
   _render() {
     const results = $('#moviesResults'); if (!results) return;
-    const filtered = this._cat === 'all'
-      ? this._movies
-      : this._movies.filter(e => {
-          const isGreek = e.data?.category === 'greek';
-          return this._cat === 'greek' ? isGreek === true : isGreek === false;
-        });
+    /* Filter on a fresh reference — original this._movies untouched */
+    let displayMovies = this._movies;
+    if (this._cat === 'greek')   displayMovies = this._movies.filter(m => m.data?.category === 'greek');
+    if (this._cat === 'foreign') displayMovies = this._movies.filter(m => m.data?.category !== 'greek');
 
     const ce = $('#moviesCount');
-    if (ce) ce.textContent = `${filtered.length} ταινίες`;
+    if (ce) ce.textContent = `${displayMovies.length} ταινίες`;
 
     const catBar = `<div class="genres-bar" id="moviesCatFilter" style="margin-bottom:2rem">
       <button class="genre-chip${this._cat === 'all'     ? ' active' : ''}" data-cat="all"     type="button">Όλες</button>
@@ -1205,10 +1205,10 @@ class MoviesController {
       <button class="genre-chip${this._cat === 'foreign' ? ' active' : ''}" data-cat="foreign" type="button">Ξένες Ταινίες</button>
     </div>`;
 
-    if (!filtered.length) {
+    if (!displayMovies.length) {
       results.innerHTML = catBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
     } else {
-      results.innerHTML = catBar + `<div class="series-grid" style="padding:0 4vw">${filtered.map(renderCard).join('')}</div>`;
+      results.innerHTML = catBar + `<div class="series-grid" style="padding:0 4vw">${displayMovies.map(renderCard).join('')}</div>`;
       setupCards(results);
     }
 
@@ -1312,17 +1312,12 @@ class NetworksController {
    GENRES CONTROLLER
    ══════════════════════════════════════════════════════════ */
 class GenresController {
-  constructor() { this._dm = new DataManager(); this._allContent = []; this._active = 'all'; }
+  constructor() { this._dm = new DataManager(); this._all = []; this._active = 'all'; }
 
   async init() {
     initNavScroll(); new AuthController().init();
-    const all = await this._dm.loadAll();
-    /* SAFE MERGE — scoped to this page only, never mutates originals */
-    this._allContent = [...all].map(e => ({
-      ...e,
-      type: e.data?.type === 'movie' ? 'movie' : 'series',
-      genres: (e.data?.genres || []),
-    }));
+    /* Use ORIGINAL data — no clone, no replace */
+    this._all = await this._dm.loadAll();
     this._renderBar(); this._applyFilter(); initCardClicks();
     const qp = new URLSearchParams(location.search).get('genre');
     if (qp) { const b = $(`.genre-chip[data-genre="${CSS.escape(qp)}"]`); if (b) b.click(); }
@@ -1330,7 +1325,7 @@ class GenresController {
 
   _renderBar() {
     const bar = $('#genresBar'); if (!bar) return;
-    /* Remove 'Σειρές' button from the chip list */
+    /* Remove 'Σειρές' button from chip list */
     const chips = ['all', ...GREEK_GENRES.filter(g => g !== 'Σειρές')];
     bar.innerHTML = chips.map(g =>
       `<button class="genre-chip${g === this._active ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g === 'all' ? 'Όλα' : g)}</button>`
@@ -1342,34 +1337,37 @@ class GenresController {
     });
   }
 
-  _shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
-
-  _applyCategoryFilter(arr, category) {
-    if (category === 'all') return arr;
-    return arr.filter(e => {
-      try {
-        if ((e.genres || []).includes(category)) return true;
-        return classifyEntry(e).includes(category);
-      } catch (_) { return false; }
-    });
-  }
-
   _applyFilter() {
     const results = $('#genresResults'); if (!results) return;
+    const combined = this._all || [];
     let display;
     try {
-      const filtered = this._applyCategoryFilter(this._allContent, this._active);
-      display = this._shuffle(filtered);
+      let filtered;
+      if (this._active === 'all') {
+        filtered = combined;
+      } else {
+        filtered = combined.filter(item => {
+          try {
+            const direct = item.data?.genres || [];
+            if (direct.includes(this._active)) return true;
+            return classifyEntry(item).includes(this._active);
+          } catch (_) { return false; }
+        });
+      }
+      /* Safety: if filter unintentionally returns 0, show combined */
+      if (!filtered.length) filtered = combined;
+      /* Random ONLY here — safe copy, never mutates source */
+      display = [...filtered].sort(() => Math.random() - 0.5);
     } catch (_) {
-      /* Fallback: series-only, no shuffle */
-      display = this._allContent.filter(e => e.type !== 'movie' && (this._active === 'all' || classifyEntry(e).includes(this._active)));
+      /* Hard fallback: original dataset */
+      display = combined;
     }
     const ce = $('#genresCount'); if (ce) ce.textContent = `${display.length} σειρ${display.length === 1 ? 'ά' : 'ές'}`;
     if (display.length) {
       results.innerHTML = `<div class="series-grid">${display.map(renderCard).join('')}</div>`;
       setupCards(results);
     } else {
-      results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν αποτελέσματα για "${esc(this._active)}".</p></div>`;
+      results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν αποτελέσματα.</p></div>`;
     }
   }
 }
