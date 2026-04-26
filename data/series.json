@@ -30491,6 +30491,39 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777200415
+    "last_updated": 1777200417
+  },
+  "erimi-chora": {
+    "id": "240827",
+    "tmdb_id": 240827,
+    "title": "Έρημη Χώρα",
+    "slug": "erimi-chora",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ERTFLIX",
+        "logo": "https://image.tmdb.org/t/p/w200/u1NC8M9jjGBhdcnECsj8yLbcZ85.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/5M8XpOS1IeoUVCyBVrZGV1QFBma.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/qUao8gZJkp4woSlRFRnxWejUJuI.jpg",
+    "year": 2023,
+    "rating": 8.0,
+    "seasons": [],
+    "seo": {
+      "title": "Έρημη Χώρα Online Greek Subs",
+      "description": "Δες τη Έρημη Χώρα online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2023.",
+      "keywords": [
+        "Έρημη Χώρα",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777200579
   }
 }
