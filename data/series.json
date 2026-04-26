@@ -29025,7 +29025,108 @@
     "backdrop": "https://image.tmdb.org/t/p/original/dJApeCLIlNhLfbfM3ENRzxFBLt2.jpg",
     "year": 2024,
     "rating": 6.4,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-v5t7m9pxnp4c.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-1kznezchl3rz.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-xyiahzsnx2zk.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-xula4mircwqh.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-k04uzknx7fjq.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 6,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-30wy8ww4rb4n.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 7,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-imffqsuhkv0e.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 8,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-pujvz3ebwd3f.html"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "season_number": 2,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-j6p0bkt8h1q6.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Famagusta Online Greek Subs",
       "description": "Δες τη Famagusta online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2024.",
@@ -29037,6 +29138,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777193471
+    "last_updated": 1777193535
   }
 }
