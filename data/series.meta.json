@@ -214,5 +214,9 @@
   "monterna-oikogeneia": {
     "featured": false,
     "created_at": 1777200647
+  },
+  "sta-synora": {
+    "featured": false,
+    "created_at": 1777209836
   }
 }
