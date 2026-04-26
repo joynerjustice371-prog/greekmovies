@@ -34520,5 +34520,40 @@
       ]
     },
     "last_updated": 1777237742
+  },
+  "o-protos-apo-emas": {
+    "id": "236446",
+    "tmdb_id": 236446,
+    "title": "Ο Πρώτος από Εμάς",
+    "slug": "o-protos-apo-emas",
+    "type": "series",
+    "genres": [
+      "Κωμωδία",
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ANT1",
+        "logo": "https://image.tmdb.org/t/p/w200/yepAYSCsRS9G4WF9Gt47GSuRjCz.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/tIveEe1z3YUnDNBsrneLWZIduwu.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/8wHHk0poxoP9cBcp1tijLhAq7LB.jpg",
+    "year": 2023,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Ο Πρώτος από Εμάς Online Greek Subs",
+      "description": "Δες τη Ο Πρώτος από Εμάς online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Δράμα. Σειρά 2023.",
+      "keywords": [
+        "Ο Πρώτος από Εμάς",
+        "σειρά",
+        "Κωμωδία",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777237781
   }
 }
