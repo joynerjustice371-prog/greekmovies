@@ -33139,5 +33139,38 @@
       ]
     },
     "last_updated": 1777217907
+  },
+  "to-nayagio": {
+    "id": "236210",
+    "tmdb_id": 236210,
+    "title": "Το Ναυάγιο",
+    "slug": "to-nayagio",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/7Ubj4lM5UvDDzQftkHsnLNlhXcZ.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/xrNhqDAPKzDVYsgdBnEnEg9XsGf.jpg",
+    "year": 2023,
+    "rating": 8.0,
+    "seasons": [],
+    "seo": {
+      "title": "Το Ναυάγιο Online Greek Subs",
+      "description": "Δες τη Το Ναυάγιο online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2023.",
+      "keywords": [
+        "Το Ναυάγιο",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777236295
   }
 }
