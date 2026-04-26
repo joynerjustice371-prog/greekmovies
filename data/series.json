@@ -29681,7 +29681,113 @@
     "backdrop": "https://image.tmdb.org/t/p/original/wG6sm2yHKHpFw5yHkXSVlB4pml0.jpg",
     "year": 2024,
     "rating": 8.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-zvkouul71we2.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-9nrurthtbviq.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-ap4jvwu6g1h6.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-gnq9ohv9yw1b.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-bvuy2g1u9vsp.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 6,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-161s4z4n9s55.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 7,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-2sqm1djxevok.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 8,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-ri9qcw67j5dj.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 9,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-jdqyxlvzund9.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 10,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-rhfvk9wl2stc.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Μαύροι Πίνακες Online Greek Subs",
       "description": "Δες τη Μαύροι Πίνακες online με ελληνικούς υπότιτλους. Είδος: Αστυνομική, Δράμα. Σειρά 2024.",
@@ -29694,7 +29800,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777196536
+    "last_updated": 1777198195
   },
   "san-psema": {
     "id": "251505",
