@@ -30525,5 +30525,38 @@
       ]
     },
     "last_updated": 1777200579
+  },
+  "monterna-oikogeneia": {
+    "id": "102126",
+    "tmdb_id": 102126,
+    "title": "Μοντέρνα Οικογένεια",
+    "slug": "monterna-oikogeneia",
+    "type": "series",
+    "genres": [
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "Mega TV",
+        "logo": "https://image.tmdb.org/t/p/w200/9BWPicebrzShoc8uJFxHLugjc5K.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/brI95f1gyHAw8RanmclWOJOnr6B.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/vnChazF8LsaSxvir3qECSKHV5kt.jpg",
+    "year": 2014,
+    "rating": 4.0,
+    "seasons": [],
+    "seo": {
+      "title": "Μοντέρνα Οικογένεια Online Greek Subs",
+      "description": "Δες τη Μοντέρνα Οικογένεια online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2014.",
+      "keywords": [
+        "Μοντέρνα Οικογένεια",
+        "σειρά",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777200647
   }
 }
