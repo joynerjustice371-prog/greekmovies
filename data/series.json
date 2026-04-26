@@ -31809,5 +31809,38 @@
       ]
     },
     "last_updated": 1777209898
+  },
+  "oi-pantheoi": {
+    "id": "235603",
+    "tmdb_id": 235603,
+    "title": "Οι Πανθέοι",
+    "slug": "oi-pantheoi",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Skai",
+        "logo": "https://image.tmdb.org/t/p/w200/xADNihESQ9mHtnOnhruEg3RoUH6.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/jHfXcVBYltM7VYg3umDLCBMG1yt.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/amj9DFrXKN2ex1LQot0D46LEmlz.jpg",
+    "year": 2023,
+    "rating": 0.0,
+    "seasons": [],
+    "seo": {
+      "title": "Οι Πανθέοι Online Greek Subs",
+      "description": "Δες τη Οι Πανθέοι online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2023.",
+      "keywords": [
+        "Οι Πανθέοι",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777216421
   }
 }
