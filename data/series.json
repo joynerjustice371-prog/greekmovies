@@ -29540,7 +29540,113 @@
     "backdrop": "https://image.tmdb.org/t/p/original/5aHMaOT0voCG9Aaph17BoD2MLnR.jpg",
     "year": 2024,
     "rating": 7.5,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-t5apfsf2hl8i.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-qhluxyb2koad.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-dnuilxpj8ej4.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-hu9mkcmbdx8s.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-6zr6mhuaox02.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 6,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-gnr7lhvckcvk.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 7,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-xxthmay95s86.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 8,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-g6rw6yj7yfpx.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 9,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-t05tfphfq1qc.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 10,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-8cnsn4kd1y5i.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Η Μαρία που έγινε Κάλλας Online Greek Subs",
       "description": "Δες τη Η Μαρία που έγινε Κάλλας online με ελληνικούς υπότιτλους. Είδος: Δράμα, Ντοκυμαντέρ. Σειρά 2024.",
@@ -29553,7 +29659,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777196479
+    "last_updated": 1777197665
   },
   "mayroi-pinakes": {
     "id": "273166",
