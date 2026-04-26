@@ -190,5 +190,9 @@
   "eisai-to-tairi-moy": {
     "featured": false,
     "created_at": 1777187682
+  },
+  "famagusta": {
+    "featured": false,
+    "created_at": 1777193471
   }
 }
