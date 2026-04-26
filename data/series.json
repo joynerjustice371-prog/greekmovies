@@ -34483,5 +34483,42 @@
       ]
     },
     "last_updated": 1777237595
+  },
+  "psychokores": {
+    "id": "233804",
+    "tmdb_id": 233804,
+    "title": "Ψυχοκόρες",
+    "slug": "psychokores",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ANT1",
+        "logo": "https://image.tmdb.org/t/p/w200/yepAYSCsRS9G4WF9Gt47GSuRjCz.png"
+      },
+      {
+        "name": "ANT1+",
+        "logo": "https://image.tmdb.org/t/p/w200/ijCrGmqunlpo4NQMcWDBHPgh1.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/nKzEkDhsOdFnfrMSbwxzYbmuV6S.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/6Y1dP8EBGdwHNaLP9Q8RF2MkWUv.jpg",
+    "year": 2023,
+    "rating": 7.0,
+    "seasons": [],
+    "seo": {
+      "title": "Ψυχοκόρες Online Greek Subs",
+      "description": "Δες τη Ψυχοκόρες online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2023.",
+      "keywords": [
+        "Ψυχοκόρες",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777237742
   }
 }
