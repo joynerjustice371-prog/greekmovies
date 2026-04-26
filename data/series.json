@@ -35776,6 +35776,39 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777244571
+    "last_updated": 1777244572
+  },
+  "kane-oti-koimasai": {
+    "id": "210020",
+    "tmdb_id": 210020,
+    "title": "Κάνε Ότι Κοιμάσαι",
+    "slug": "kane-oti-koimasai",
+    "type": "series",
+    "genres": [
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ERT1",
+        "logo": "https://image.tmdb.org/t/p/w200/mR0SoE9l7rq8nsmjeuMhv05CVoh.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/6c5bHET1pGET8nSavQE1yvO1w8i.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/tQaMQRiBTORsTNFxeT7areyCP9K.jpg",
+    "year": 2022,
+    "rating": 8.4,
+    "seasons": [],
+    "seo": {
+      "title": "Κάνε Ότι Κοιμάσαι Online Greek Subs",
+      "description": "Δες τη Κάνε Ότι Κοιμάσαι online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2022.",
+      "keywords": [
+        "Κάνε Ότι Κοιμάσαι",
+        "σειρά",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777245000
   }
 }
