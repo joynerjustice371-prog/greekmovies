@@ -35810,5 +35810,42 @@
       ]
     },
     "last_updated": 1777245000
+  },
+  "sta-syrmata": {
+    "id": "235649",
+    "tmdb_id": 235649,
+    "title": "Στα Σύρματα",
+    "slug": "sta-syrmata",
+    "type": "series",
+    "genres": [
+      "Κωμωδία"
+    ],
+    "networks": [
+      {
+        "name": "ERT1",
+        "logo": "https://image.tmdb.org/t/p/w200/mR0SoE9l7rq8nsmjeuMhv05CVoh.png"
+      },
+      {
+        "name": "ERTFLIX",
+        "logo": "https://image.tmdb.org/t/p/w200/u1NC8M9jjGBhdcnECsj8yLbcZ85.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/1LtrOj2FSOn4TPQnCj4zOaNYNVL.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/wM2GvCmWWA404uK0UaVThEgr7dW.jpg",
+    "year": 2023,
+    "rating": 8.0,
+    "seasons": [],
+    "seo": {
+      "title": "Στα Σύρματα Online Greek Subs",
+      "description": "Δες τη Στα Σύρματα online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2023.",
+      "keywords": [
+        "Στα Σύρματα",
+        "σειρά",
+        "Κωμωδία",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777245135
   }
 }
