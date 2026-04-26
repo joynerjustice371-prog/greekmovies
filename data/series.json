@@ -28988,7 +28988,313 @@
     "backdrop": "https://image.tmdb.org/t/p/original/pkXMSdKfkdpk4Y9j1vbHfnAPT9j.jpg",
     "year": 2001,
     "rating": 7.9,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-wioso8461dwu.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-w2s2sig2d336.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-6kpkdxdskin0.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-1727xc8u2k6s.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-v1za1iu5vvfi.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 6,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-4eiqp4kufied.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 7,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-qdckk0s3ooyq.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 8,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-ktilbur4npmk.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 9,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-zc18mbgsj6bz.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 10,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-am88j4mmy2fp.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 11,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-kcuyjij8trit.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 12,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-gpf5odm1h12e.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 13,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-mk73ij9kr22a.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 14,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-gqv4cf0e1ohg.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 15,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-9cx9qn64yvw0.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 16,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-0pl3hewp3iyf.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 17,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-8qoasvxjtwcb.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 18,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-mle6o90w1o7o.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 19,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-u3efgma3551f.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 20,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-ce7pe0cwwebv.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 21,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-mhcgt5v1prle.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 22,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-9dz8kbo09379.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 23,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-3q4ks83lwyys.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 24,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-u8nxgq0ox0tr.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 25,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-jltykkssyndd.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 26,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-f2rehdriwach.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 27,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-x061bogbscnd.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 28,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-1k34o8kd5pae.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 29,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-itkrgzabix6e.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 30,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-iojv9u42rvt4.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Είσαι Το Ταίρι Μου Online Greek Subs",
       "description": "Δες τη Είσαι Το Ταίρι Μου online με ελληνικούς υπότιτλους. Είδος: Κωμωδία. Σειρά 2001.",
@@ -29000,7 +29306,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777187682
+    "last_updated": 1777196277
   },
   "famagusta": {
     "id": "242840",
