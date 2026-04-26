@@ -33159,7 +33159,23 @@
     "backdrop": "https://image.tmdb.org/t/p/original/xrNhqDAPKzDVYsgdBnEnEg9XsGf.jpg",
     "year": 2023,
     "rating": 8.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-3z13pe8mq6p7.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Το Ναυάγιο Online Greek Subs",
       "description": "Δες τη Το Ναυάγιο online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2023.",
@@ -33171,6 +33187,6 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777236295
+    "last_updated": 1777236328
   }
 }
