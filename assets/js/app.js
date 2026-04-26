@@ -669,7 +669,7 @@ class HomepageController {
     const featured   = $('#homeFeatured');
     if (!grid) return;
 
-    const sorted = [...all].sort((a, b) => (b.data?.last_updated || 0) - (a.data?.last_updated || 0));
+    const sorted = [...all].sort(() => Math.random() - 0.5);
 
     /* Featured movies → dedicated hero section */
     if (featured) {
@@ -761,12 +761,6 @@ function _commentAvatar(c) {
 async function renderComments(container, slug) {
   let comments = [];
   try { comments = await fb.getComments(slug); } catch (_) {}
-  /* Newest first — safe copy */
-  comments = [...(comments || [])].sort((a, b) => {
-    const ta = a.timestamp ?? a.createdAt?.seconds ?? a.createdAt?.toDate?.()?.getTime() / 1000 ?? 0;
-    const tb = b.timestamp ?? b.createdAt?.seconds ?? b.createdAt?.toDate?.()?.getTime() / 1000 ?? 0;
-    return tb - ta;
-  });
   const listHtml = comments.length
     ? comments.map(c => {
         const date = c.createdAt?.toDate?.()?.toLocaleDateString('el-GR') ?? '';
@@ -879,7 +873,6 @@ class SeriesController {
           <div id="seriesRatingWrap" style="margin-top:1rem"></div>
         </div>
       </section>
-      <section style="padding:0 4vw 1.5rem"><div id="seriesCast"></div></section>
       <section class="episodes-section"><h2>Επεισόδια</h2><div id="episodesContainer"></div></section>
       <section style="padding:0 4vw 4rem"><div id="seriesComments"></div></section>`;
     await this._renderDetail(entry);
@@ -958,7 +951,6 @@ class SeriesController {
     $('#seenBtn')?.addEventListener('click', async () => { if (!authOk()) { toast('Συνδεθείτε.', 'info'); return; } try { const a = await Session.toggleSeen(slug); toast(a ? '✓ Σημειώθηκε!' : 'Αφαιρέθηκε.', 'success'); } catch (e) { toast('Σφάλμα: ' + e.message, 'error'); } });
 
     this._renderEpisodes(slug, data.episodes ?? []);
-    this._renderCast(entry);
     const ce = $('#seriesComments');
     if (ce) { await renderComments(ce, slug); document.addEventListener('authStateChanged', () => renderComments(ce, slug)); }
   }
@@ -989,57 +981,6 @@ class SeriesController {
       $$('.season-tab', c).forEach(b => b.addEventListener('click', () => { active = +b.dataset.season; update(); }));
     };
     update();
-  }
-}
-
-  async _renderCast(entry) {
-    const castWrap = $('#seriesCast'); if (!castWrap) return;
-    try {
-      const tmdbId = entry.tmdb?.tmdbId ?? entry.data?.tmdb_id;
-      if (!tmdbId) { castWrap.innerHTML = ''; return; }
-      /* Only fetch if cast is missing — never overwrite */
-      if (!entry.cast || !entry.cast.length) {
-        const type = entry.data?.type === 'movie' ? 'movie' : 'tv';
-        const credits = await tmdb.getCredits(tmdbId, type);
-        const seen = new Set();
-        entry.cast = (credits || []).filter(a => { if (!a?.id || seen.has(a.id)) return false; seen.add(a.id); return true; });
-      }
-      const cast = entry.cast || [];
-      if (!cast.length) { castWrap.innerHTML = ''; return; }
-      castWrap.innerHTML = `
-        <h3 style="font-size:1.05rem;margin:0 0 1rem;color:var(--text-1)">Ηθοποιοί</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:.75rem">
-          ${cast.map(a => `
-            <button class="actor-card" data-actor-id="${a.id}" data-actor-name="${esc(a.name)}" type="button"
-              style="background:none;border:none;cursor:pointer;width:76px;text-align:center;color:var(--text-2);padding:0">
-              ${a.profile_path
-                ? `<img src="${esc(a.profile_path)}" alt="${esc(a.name)}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 5px" loading="lazy">`
-                : `<div style="width:60px;height:60px;border-radius:50%;background:var(--surface-2,#2a2a2a);display:flex;align-items:center;justify-content:center;margin:0 auto 5px">${ICONS.user}</div>`}
-              <div style="font-size:.72rem;line-height:1.3;word-break:break-word">${esc(a.name)}</div>
-            </button>`).join('')}
-        </div>`;
-      castWrap.querySelectorAll('.actor-card').forEach(btn => {
-        btn.addEventListener('click', () => this._openActorModal(+btn.dataset.actorId, btn.dataset.actorName));
-      });
-    } catch (_) { castWrap.innerHTML = ''; }
-  }
-
-  async _openActorModal(actorId, actorName) {
-    const all = await this._dm.loadAll();
-    /* LOCAL filter — no TMDB calls here */
-    const results = (all || []).filter(e => e.cast?.some(a => a.id === actorId));
-    const o = document.createElement('div'); o.className = 'auth-overlay';
-    o.innerHTML = `<div class="auth-modal" style="max-width:820px;width:95vw;max-height:85vh;overflow-y:auto">
-      <button class="auth-modal-close" id="actorModalClose" type="button">✕</button>
-      <h3 style="margin:0 0 1.5rem;font-size:1.05rem;color:var(--text-1)">📽 ${esc(actorName)}</h3>
-      ${results.length
-        ? `<div class="series-grid">${results.map(renderCard).join('')}</div>`
-        : `<p style="color:var(--text-3)">Δεν βρέθηκε περιεχόμενο με αυτόν τον ηθοποιό.</p>`}
-    </div>`;
-    document.body.appendChild(o);
-    if (results.length) setupCards(o);
-    o.addEventListener('click', e => { if (e.target === o) o.remove(); });
-    o.querySelector('#actorModalClose')?.addEventListener('click', () => o.remove());
   }
 }
 
@@ -1177,44 +1118,48 @@ class WatchController {
    MOVIES CONTROLLER  — type=movie only, paginated
    ══════════════════════════════════════════════════════════ */
 class MoviesController {
-  constructor() { this._dm = new DataManager(); this._movies = []; this._cat = 'all'; }
+  constructor() { this._dm = new DataManager(); this._movies = []; this._genre = 'all'; }
 
   async init() {
     initNavScroll(); new AuthController().init();
     const all = await this._dm.loadAll();
-    /* Safe copy + sort by last_updated DESC — never mutate originals */
-    this._movies = [...all.filter(e => e.data?.type === 'movie')]
-      .sort((a, b) => (b.data?.last_updated || 0) - (a.data?.last_updated || 0));
+    this._movies = all
+      .filter(e => e.data.type === 'movie')
+      .sort((a, b) => (b.data.last_updated || 0) - (a.data.last_updated || 0));
     this._render(); initCardClicks();
     new SearchController(all);
   }
 
   _render() {
     const results = $('#moviesResults'); if (!results) return;
-    /* Filter on a fresh reference — original this._movies untouched */
-    let displayMovies = this._movies;
-    if (this._cat === 'greek')   displayMovies = this._movies.filter(m => m.data?.category === 'greek');
-    if (this._cat === 'foreign') displayMovies = this._movies.filter(m => m.data?.category !== 'greek');
+
+    /* Build unique genre list from all movies */
+    const allGenres = [...new Set(this._movies.flatMap(e => e.data.genres ?? []))].sort((a, b) => a.localeCompare(b, 'el'));
+
+    /* Filter */
+    const filtered = this._genre === 'all'
+      ? this._movies
+      : this._movies.filter(e => (e.data.genres ?? []).includes(this._genre));
 
     const ce = $('#moviesCount');
-    if (ce) ce.textContent = `${displayMovies.length} ταινίες`;
+    if (ce) ce.textContent = `${filtered.length} ταινίες`;
 
-    const catBar = `<div class="genres-bar" id="moviesCatFilter" style="margin-bottom:2rem">
-      <button class="genre-chip${this._cat === 'all'     ? ' active' : ''}" data-cat="all"     type="button">Όλες</button>
-      <button class="genre-chip${this._cat === 'greek'   ? ' active' : ''}" data-cat="greek"   type="button">Ελληνικές Ταινίες</button>
-      <button class="genre-chip${this._cat === 'foreign' ? ' active' : ''}" data-cat="foreign" type="button">Ξένες Ταινίες</button>
+    const genreBar = `<div class="genres-bar" id="moviesGenreFilter" style="margin-bottom:2rem">
+      <button class="genre-chip${this._genre === 'all' ? ' active' : ''}" data-genre="all" type="button">Όλες</button>
+      ${allGenres.map(g => `<button class="genre-chip${this._genre === g ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g)}</button>`).join('')}
     </div>`;
 
-    if (!displayMovies.length) {
-      results.innerHTML = catBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
+    if (!filtered.length) {
+      results.innerHTML = genreBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
     } else {
-      results.innerHTML = catBar + `<div class="series-grid" style="padding:0 4vw">${displayMovies.map(renderCard).join('')}</div>`;
+      results.innerHTML = genreBar + `<div class="series-grid" style="padding:0 4vw">${filtered.map(renderCard).join('')}</div>`;
       setupCards(results);
     }
 
-    $('#moviesCatFilter')?.addEventListener('click', e => {
-      const b = e.target.closest('.genre-chip'); if (!b || !b.dataset.cat) return;
-      this._cat = b.dataset.cat; this._render();
+    $('#moviesGenreFilter')?.addEventListener('click', e => {
+      const b = e.target.closest('.genre-chip'); if (!b || !('genre' in b.dataset)) return;
+      this._genre = b.dataset.genre;
+      this._render();
     });
   }
 }
@@ -1316,7 +1261,6 @@ class GenresController {
 
   async init() {
     initNavScroll(); new AuthController().init();
-    /* Use ORIGINAL data — no clone, no replace */
     this._all = await this._dm.loadAll();
     this._renderBar(); this._applyFilter(); initCardClicks();
     const qp = new URLSearchParams(location.search).get('genre');
@@ -1325,9 +1269,7 @@ class GenresController {
 
   _renderBar() {
     const bar = $('#genresBar'); if (!bar) return;
-    /* Remove 'Σειρές' button from chip list */
-    const chips = ['all', ...GREEK_GENRES.filter(g => g !== 'Σειρές')];
-    bar.innerHTML = chips.map(g =>
+    bar.innerHTML = ['all', ...GREEK_GENRES].map(g =>
       `<button class="genre-chip${g === this._active ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g === 'all' ? 'Όλα' : g)}</button>`
     ).join('');
     bar.addEventListener('click', e => {
@@ -1339,35 +1281,13 @@ class GenresController {
 
   _applyFilter() {
     const results = $('#genresResults'); if (!results) return;
-    const combined = this._all || [];
-    let display;
-    try {
-      let filtered;
-      if (this._active === 'all') {
-        filtered = combined;
-      } else {
-        filtered = combined.filter(item => {
-          try {
-            const direct = item.data?.genres || [];
-            if (direct.includes(this._active)) return true;
-            return classifyEntry(item).includes(this._active);
-          } catch (_) { return false; }
-        });
-      }
-      /* Safety: if filter unintentionally returns 0, show combined */
-      if (!filtered.length) filtered = combined;
-      /* Random ONLY here — safe copy, never mutates source */
-      display = [...filtered].sort(() => Math.random() - 0.5);
-    } catch (_) {
-      /* Hard fallback: original dataset */
-      display = combined;
-    }
-    const ce = $('#genresCount'); if (ce) ce.textContent = `${display.length} σειρ${display.length === 1 ? 'ά' : 'ές'}`;
-    if (display.length) {
-      results.innerHTML = `<div class="series-grid">${display.map(renderCard).join('')}</div>`;
+    const filtered = this._active === 'all' ? this._all : this._all.filter(e => classifyEntry(e).includes(this._active));
+    const ce = $('#genresCount'); if (ce) ce.textContent = `${filtered.length} σειρ${filtered.length === 1 ? 'ά' : 'ές'}`;
+    if (filtered.length) {
+      results.innerHTML = `<div class="series-grid">${filtered.map(renderCard).join('')}</div>`;
       setupCards(results);
     } else {
-      results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν αποτελέσματα.</p></div>`;
+      results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν σειρές για "${esc(this._active)}".</p></div>`;
     }
   }
 }
