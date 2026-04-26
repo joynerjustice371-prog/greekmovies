@@ -34318,5 +34318,44 @@
       ]
     },
     "last_updated": 1777236650
+  },
+  "zoi": {
+    "id": "224485",
+    "tmdb_id": 224485,
+    "title": "Ζωή",
+    "slug": "zoi",
+    "type": "series",
+    "genres": [
+      "Κωμωδία",
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "ANT1",
+        "logo": "https://image.tmdb.org/t/p/w200/yepAYSCsRS9G4WF9Gt47GSuRjCz.png"
+      },
+      {
+        "name": "ANT1+",
+        "logo": "https://image.tmdb.org/t/p/w200/ijCrGmqunlpo4NQMcWDBHPgh1.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/zaFvmgjv6Ig2F76wSl6EZZKgsHM.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/5hQtyNGOD5S7CHfzZks6jtaKT9J.jpg",
+    "year": 2024,
+    "rating": 7.5,
+    "seasons": [],
+    "seo": {
+      "title": "Ζωή Online Greek Subs",
+      "description": "Δες τη Ζωή online με ελληνικούς υπότιτλους. Είδος: Κωμωδία, Δράμα. Σειρά 2024.",
+      "keywords": [
+        "Ζωή",
+        "σειρά",
+        "Κωμωδία",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777237559
   }
 }
