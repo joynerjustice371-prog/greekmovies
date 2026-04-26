@@ -761,6 +761,7 @@ function _commentAvatar(c) {
 async function renderComments(container, slug) {
   let comments = [];
   try { comments = await fb.getComments(slug); } catch (_) {}
+  comments.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
   const listHtml = comments.length
     ? comments.map(c => {
         const date = c.createdAt?.toDate?.()?.toLocaleDateString('el-GR') ?? '';
@@ -873,6 +874,7 @@ class SeriesController {
           <div id="seriesRatingWrap" style="margin-top:1rem"></div>
         </div>
       </section>
+      <section style="padding:0 4vw 1.5rem"><div id="seriesCast"></div></section>
       <section class="episodes-section"><h2>Επεισόδια</h2><div id="episodesContainer"></div></section>
       <section style="padding:0 4vw 4rem"><div id="seriesComments"></div></section>`;
     await this._renderDetail(entry);
@@ -951,6 +953,7 @@ class SeriesController {
     $('#seenBtn')?.addEventListener('click', async () => { if (!authOk()) { toast('Συνδεθείτε.', 'info'); return; } try { const a = await Session.toggleSeen(slug); toast(a ? '✓ Σημειώθηκε!' : 'Αφαιρέθηκε.', 'success'); } catch (e) { toast('Σφάλμα: ' + e.message, 'error'); } });
 
     this._renderEpisodes(slug, data.episodes ?? []);
+    this._renderCast(entry);
     const ce = $('#seriesComments');
     if (ce) { await renderComments(ce, slug); document.addEventListener('authStateChanged', () => renderComments(ce, slug)); }
   }
@@ -981,6 +984,49 @@ class SeriesController {
       $$('.season-tab', c).forEach(b => b.addEventListener('click', () => { active = +b.dataset.season; update(); }));
     };
     update();
+  }
+}
+
+  async _renderCast(entry) {
+    const castWrap = $('#seriesCast'); if (!castWrap) return;
+    const tmdbId = entry.tmdb?.tmdbId ?? entry.data?.tmdb_id;
+    if (!tmdbId) { castWrap.innerHTML = ''; return; }
+    const type = entry.data?.type === 'movie' ? 'movie' : 'tv';
+    const cast = await tmdb.getCredits(tmdbId, type);
+    if (!cast?.length) { castWrap.innerHTML = ''; return; }
+    if (!entry.data.cast?.length) entry.data.cast = cast;
+    castWrap.innerHTML = `
+      <h3 style="font-size:1.05rem;margin:0 0 1rem;color:var(--text-1)">Ηθοποιοί</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:.75rem">
+        ${cast.map(a => `
+          <button class="actor-card" data-actor-id="${a.id}" data-actor-name="${esc(a.name)}" type="button"
+            style="background:none;border:none;cursor:pointer;width:76px;text-align:center;color:var(--text-2);padding:0">
+            ${a.profile_path
+              ? `<img src="${esc(a.profile_path)}" alt="${esc(a.name)}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 5px" loading="lazy">`
+              : `<div style="width:60px;height:60px;border-radius:50%;background:var(--surface-2,#2a2a2a);display:flex;align-items:center;justify-content:center;margin:0 auto 5px">${ICONS.user}</div>`}
+            <div style="font-size:.72rem;line-height:1.3;word-break:break-word">${esc(a.name)}</div>
+          </button>`).join('')}
+      </div>`;
+    castWrap.querySelectorAll('.actor-card').forEach(btn => {
+      btn.addEventListener('click', () => this._openActorModal(+btn.dataset.actorId, btn.dataset.actorName));
+    });
+  }
+
+  async _openActorModal(actorId, actorName) {
+    const all = await this._dm.loadAll();
+    const results = all.filter(e => e.data.cast?.some(a => a.id === actorId));
+    const o = document.createElement('div'); o.className = 'auth-overlay';
+    o.innerHTML = `<div class="auth-modal" style="max-width:820px;width:95vw;max-height:85vh;overflow-y:auto">
+      <button class="auth-modal-close" id="actorModalClose" type="button">✕</button>
+      <h3 style="margin:0 0 1.5rem;font-size:1.05rem;color:var(--text-1)">📽 ${esc(actorName)}</h3>
+      ${results.length
+        ? `<div class="series-grid">${results.map(renderCard).join('')}</div>`
+        : `<p style="color:var(--text-3)">Δεν βρέθηκε περιεχόμενο με αυτόν τον ηθοποιό.</p>`}
+    </div>`;
+    document.body.appendChild(o);
+    if (results.length) setupCards(o);
+    o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+    o.querySelector('#actorModalClose')?.addEventListener('click', () => o.remove());
   }
 }
 
@@ -1118,7 +1164,7 @@ class WatchController {
    MOVIES CONTROLLER  — type=movie only, paginated
    ══════════════════════════════════════════════════════════ */
 class MoviesController {
-  constructor() { this._dm = new DataManager(); this._movies = []; this._genre = 'all'; }
+  constructor() { this._dm = new DataManager(); this._movies = []; this._cat = 'all'; }
 
   async init() {
     initNavScroll(); new AuthController().init();
@@ -1132,34 +1178,29 @@ class MoviesController {
 
   _render() {
     const results = $('#moviesResults'); if (!results) return;
-
-    /* Build unique genre list from all movies */
-    const allGenres = [...new Set(this._movies.flatMap(e => e.data.genres ?? []))].sort((a, b) => a.localeCompare(b, 'el'));
-
-    /* Filter */
-    const filtered = this._genre === 'all'
+    const filtered = this._cat === 'all'
       ? this._movies
-      : this._movies.filter(e => (e.data.genres ?? []).includes(this._genre));
+      : this._movies.filter(e => e.data.category === this._cat);
 
     const ce = $('#moviesCount');
     if (ce) ce.textContent = `${filtered.length} ταινίες`;
 
-    const genreBar = `<div class="genres-bar" id="moviesGenreFilter" style="margin-bottom:2rem">
-      <button class="genre-chip${this._genre === 'all' ? ' active' : ''}" data-genre="all" type="button">Όλες</button>
-      ${allGenres.map(g => `<button class="genre-chip${this._genre === g ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g)}</button>`).join('')}
+    const catBar = `<div class="genres-bar" id="moviesCatFilter" style="margin-bottom:2rem">
+      <button class="genre-chip${this._cat === 'all'     ? ' active' : ''}" data-cat="all"     type="button">Όλες</button>
+      <button class="genre-chip${this._cat === 'greek'   ? ' active' : ''}" data-cat="greek"   type="button">Ελληνικές Ταινίες</button>
+      <button class="genre-chip${this._cat === 'foreign' ? ' active' : ''}" data-cat="foreign" type="button">Ξένες Ταινίες</button>
     </div>`;
 
     if (!filtered.length) {
-      results.innerHTML = genreBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
+      results.innerHTML = catBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
     } else {
-      results.innerHTML = genreBar + `<div class="series-grid" style="padding:0 4vw">${filtered.map(renderCard).join('')}</div>`;
+      results.innerHTML = catBar + `<div class="series-grid" style="padding:0 4vw">${filtered.map(renderCard).join('')}</div>`;
       setupCards(results);
     }
 
-    $('#moviesGenreFilter')?.addEventListener('click', e => {
-      const b = e.target.closest('.genre-chip'); if (!b || !('genre' in b.dataset)) return;
-      this._genre = b.dataset.genre;
-      this._render();
+    $('#moviesCatFilter')?.addEventListener('click', e => {
+      const b = e.target.closest('.genre-chip'); if (!b || !b.dataset.cat) return;
+      this._cat = b.dataset.cat; this._render();
     });
   }
 }
@@ -1257,14 +1298,30 @@ class NetworksController {
    GENRES CONTROLLER
    ══════════════════════════════════════════════════════════ */
 class GenresController {
-  constructor() { this._dm = new DataManager(); this._all = []; this._active = 'all'; }
+  constructor() { this._dm = new DataManager(); this._all = []; this._type = 'all'; this._active = 'all'; }
 
   async init() {
     initNavScroll(); new AuthController().init();
     this._all = await this._dm.loadAll();
+    this._injectTypeFilter();
     this._renderBar(); this._applyFilter(); initCardClicks();
     const qp = new URLSearchParams(location.search).get('genre');
     if (qp) { const b = $(`.genre-chip[data-genre="${CSS.escape(qp)}"]`); if (b) b.click(); }
+  }
+
+  _injectTypeFilter() {
+    const bar = $('#genresBar'); if (!bar?.parentElement) return;
+    const wrap = document.createElement('div');
+    wrap.id = 'genresTypeFilter'; wrap.className = 'genres-bar'; wrap.style.marginBottom = '0.5rem';
+    wrap.innerHTML = [['all', 'Όλα'], ['series', 'Σειρές'], ['movie', 'Ταινίες']].map(([t, l]) =>
+      `<button class="genre-chip${this._type === t ? ' active' : ''}" data-gtype="${esc(t)}" type="button">${esc(l)}</button>`
+    ).join('');
+    bar.parentElement.insertBefore(wrap, bar);
+    wrap.addEventListener('click', e => {
+      const b = e.target.closest('.genre-chip'); if (!b) return;
+      $$('.genre-chip', wrap).forEach(x => x.classList.remove('active')); b.classList.add('active');
+      this._type = b.dataset.gtype; this._applyFilter();
+    });
   }
 
   _renderBar() {
@@ -1281,13 +1338,19 @@ class GenresController {
 
   _applyFilter() {
     const results = $('#genresResults'); if (!results) return;
-    const filtered = this._active === 'all' ? this._all : this._all.filter(e => classifyEntry(e).includes(this._active));
-    const ce = $('#genresCount'); if (ce) ce.textContent = `${filtered.length} σειρ${filtered.length === 1 ? 'ά' : 'ές'}`;
-    if (filtered.length) {
-      results.innerHTML = `<div class="series-grid">${filtered.map(renderCard).join('')}</div>`;
+    let pool = this._all;
+    if (this._type === 'movie')  pool = pool.filter(e => e.data.type === 'movie');
+    if (this._type === 'series') pool = pool.filter(e => e.data.type === 'series' || !e.data.type);
+    const byGenre = this._active === 'all' ? pool : pool.filter(e => classifyEntry(e).includes(this._active));
+    const shuffled = [...byGenre].sort(() => Math.random() - 0.5);
+    const n = shuffled.length;
+    const ce = $('#genresCount');
+    if (ce) ce.textContent = `${n} ${this._type === 'movie' ? `ταινί${n === 1 ? 'α' : 'ες'}` : `σειρ${n === 1 ? 'ά' : 'ές'}`}`;
+    if (shuffled.length) {
+      results.innerHTML = `<div class="series-grid">${shuffled.map(renderCard).join('')}</div>`;
       setupCards(results);
     } else {
-      results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν σειρές για "${esc(this._active)}".</p></div>`;
+      results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν αποτελέσματα.</p></div>`;
     }
   }
 }
