@@ -29554,5 +29554,40 @@
       ]
     },
     "last_updated": 1777196479
+  },
+  "mayroi-pinakes": {
+    "id": "273166",
+    "tmdb_id": 273166,
+    "title": "Μαύροι Πίνακες",
+    "slug": "mayroi-pinakes",
+    "type": "series",
+    "genres": [
+      "Αστυνομική",
+      "Δράμα"
+    ],
+    "networks": [
+      {
+        "name": "Star",
+        "logo": "https://image.tmdb.org/t/p/w200/pSegCsDDflnTUnFMvmcNwwBGSsg.png"
+      }
+    ],
+    "poster": "https://image.tmdb.org/t/p/w500/yg8HeKEVIQKEKS08JIxfxB555Gp.jpg",
+    "backdrop": "https://image.tmdb.org/t/p/original/wG6sm2yHKHpFw5yHkXSVlB4pml0.jpg",
+    "year": 2024,
+    "rating": 8.0,
+    "seasons": [],
+    "seo": {
+      "title": "Μαύροι Πίνακες Online Greek Subs",
+      "description": "Δες τη Μαύροι Πίνακες online με ελληνικούς υπότιτλους. Είδος: Αστυνομική, Δράμα. Σειρά 2024.",
+      "keywords": [
+        "Μαύροι Πίνακες",
+        "σειρά",
+        "Αστυνομική",
+        "Δράμα",
+        "Greek Subs",
+        "δωρεάν"
+      ]
+    },
+    "last_updated": 1777196536
   }
 }
