@@ -202,5 +202,9 @@
   "mayroi-pinakes": {
     "featured": false,
     "created_at": 1777196536
+  },
+  "san-psema": {
+    "featured": false,
+    "created_at": 1777196575
   }
 }
