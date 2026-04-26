@@ -30512,7 +30512,93 @@
     "backdrop": "https://image.tmdb.org/t/p/original/qUao8gZJkp4woSlRFRnxWejUJuI.jpg",
     "year": 2023,
     "rating": 8.0,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-l4bwwb6qvtce.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-h4357kky1hqm.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 3,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-ikbnkxmon8hs.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 4,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-bij5y65vb6oh.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 5,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-9d6gkmp35a38.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 6,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-6rmjotuqhc26.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 7,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-5xsrcft47h02.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 8,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-bjandr3m73ao.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Έρημη Χώρα Online Greek Subs",
       "description": "Δες τη Έρημη Χώρα online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2023.",
@@ -30524,7 +30610,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777200579
+    "last_updated": 1777204497
   },
   "monterna-oikogeneia": {
     "id": "102126",
