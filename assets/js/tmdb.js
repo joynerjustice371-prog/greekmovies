@@ -140,13 +140,13 @@ export class TMDBClient {
     }
   }
 
-  async getCredits(tmdbId, type = 'tv') {
+  async getCredits(tmdbId, type = 'tv', opts = {}) {
     const key = `credits:${type}:${tmdbId}`;
     if (this._cache.has(key)) return this._cache.get(key);
     try {
-      const res = await withTimeout(
-        fetch(`${TMDB_BASE}/${type}/${tmdbId}/credits?api_key=${TMDB_API_KEY}&language=el-GR`),
-        5000
+      const res = await fetch(
+        `${TMDB_BASE}/${type}/${tmdbId}/credits?api_key=${TMDB_API_KEY}&language=el-GR`,
+        { signal: opts.signal }
       );
       if (!res || !res.ok) return { cast: [] };
       const data = await res.json();
