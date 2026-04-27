@@ -140,6 +140,26 @@ export class TMDBClient {
     }
   }
 
+  async getCredits(tmdbId, type = 'tv') {
+    const key = `credits:${type}:${tmdbId}`;
+    if (this._cache.has(key)) return this._cache.get(key);
+    try {
+      const res = await withTimeout(
+        fetch(`${TMDB_BASE}/${type}/${tmdbId}/credits?api_key=${TMDB_API_KEY}&language=el-GR`),
+        5000
+      );
+      if (!res || !res.ok) return [];
+      const data = await res.json();
+      const cast = (data.cast || []).slice(0, 12).map(a => ({
+        id: a.id,
+        name: a.name,
+        profile_path: a.profile_path ? IMG.thumb(a.profile_path) : null,
+      }));
+      this._cache.set(key, cast);
+      return cast;
+    } catch (_) { return []; }
+  }
+
   cacheSize() { return this._cache.size; }
 }
 
