@@ -1122,18 +1122,38 @@ class MoviesController {
 
   async init() {
     initNavScroll(); new AuthController().init();
+    /* Load raw movies.json — direct property access, no item.data */
+    let moviesData = {};
+    try {
+      moviesData = await fetch(`${BASE_URL}data/movies.json`).then(r => r.ok ? r.json() : {});
+    } catch (_) {}
+    /* Build movies array WITHOUT map() */
+    const movies = [];
+    for (const slug in moviesData) {
+      if (Object.prototype.hasOwnProperty.call(moviesData, slug)) {
+        movies.push({ slug, ...moviesData[slug] });
+      }
+    }
+    this._movies = movies;
+    /* Keep SearchController fed (separate concern — untouched) */
     const all = await this._dm.loadAll();
-    this._movies = [...all.filter(e => e.data?.type === 'movie')]
-      .sort((a, b) => (b.data?.last_updated || 0) - (a.data?.last_updated || 0));
     this._render(); initCardClicks();
     new SearchController(all);
   }
 
   _render() {
     const results = $('#moviesResults'); if (!results) return;
-    let displayMovies = this._movies;
-    if (this._cat === 'greek')   displayMovies = this._movies.filter(m => m.data?.category === 'greek');
-    if (this._cat === 'foreign') displayMovies = this._movies.filter(m => m.data?.category !== 'greek');
+    const movies = this._movies;
+    /* Filter — direct properties, no item.data */
+    let displayMovies = movies;
+    if (this._cat === 'greek')   displayMovies = movies.filter(m => m.category === 'greek');
+    if (this._cat === 'foreign') displayMovies = movies.filter(m => m.category !== 'greek');
+
+    /* Sort on safe copy */
+    displayMovies = [...displayMovies].sort((a, b) => (b.last_updated || 0) - (a.last_updated || 0));
+
+    /* Safety: empty → fallback to movies */
+    if (!displayMovies.length) displayMovies = movies;
 
     const ce = $('#moviesCount');
     if (ce) ce.textContent = `${displayMovies.length} ταινίες`;
@@ -1145,9 +1165,21 @@ class MoviesController {
     </div>`;
 
     if (!displayMovies.length) {
-      results.innerHTML = catBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
+      results.innerHTML = catBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες.</p></div>`;
     } else {
-      results.innerHTML = catBar + `<div class="series-grid" style="padding:0 4vw">${displayMovies.map(renderCard).join('')}</div>`;
+      /* Build cards via for-of (no .map() on movies array) */
+      const cardsArr = [];
+      for (const item of displayMovies) {
+        cardsArr.push(renderCard({
+          slug: item.slug,
+          data: item,
+          tmdb: null,
+          title: item.title || item.slug,
+          channel: null,
+          _posterFallback: item.poster || null,
+        }));
+      }
+      results.innerHTML = catBar + `<div class="series-grid" style="padding:0 4vw">${cardsArr.join('')}</div>`;
       setupCards(results);
     }
 
