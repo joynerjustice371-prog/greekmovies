@@ -1287,18 +1287,35 @@ class GenresController {
 
   async init() {
     initNavScroll(); new AuthController().init();
-    /* Fetch RAW JSON directly — no loadAll, no DataManager */
-    let series = [], movies = [];
+    /* Fetch raw JSON directly — no loadAll */
+    let sRaw = {}, mRaw = {};
     try {
-      const [sRaw, mRaw] = await Promise.all([
+      const [s, m] = await Promise.all([
         fetch(`${BASE_URL}data/series.json`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
         fetch(`${BASE_URL}data/movies.json`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
       ]);
-      series = Object.entries(sRaw || {}).map(([slug, d]) => ({ slug, ...d, type: 'series', genres: d?.genres || [] }));
-      movies = Object.entries(mRaw || {}).map(([slug, d]) => ({ slug, ...d, type: 'movie',  genres: d?.genres || [] }));
-    } catch (_) { series = []; movies = []; }
-    /* USE ORIGINAL DATA — direct concat */
+      sRaw = s || {}; mRaw = m || {};
+    } catch (_) {}
+
+    /* Build series array — no map() */
+    const series = [];
+    for (const slug in sRaw) {
+      if (Object.prototype.hasOwnProperty.call(sRaw, slug)) {
+        const d = sRaw[slug] || {};
+        series.push({ slug, ...d, type: 'series', genres: d.genres || [] });
+      }
+    }
+    /* Build movies array — no map() */
+    const movies = [];
+    for (const slug in mRaw) {
+      if (Object.prototype.hasOwnProperty.call(mRaw, slug)) {
+        const d = mRaw[slug] || {};
+        movies.push({ slug, ...d, type: 'movie', genres: d.genres || [] });
+      }
+    }
+    /* USE ONLY: const combined = [...series, ...movies]; */
     this._combined = [...series, ...movies];
+
     this._renderBar(); this._applyFilter(); initCardClicks();
     const qp = new URLSearchParams(location.search).get('genre');
     if (qp) { const b = $(`.genre-chip[data-genre="${CSS.escape(qp)}"]`); if (b) b.click(); }
@@ -1306,11 +1323,17 @@ class GenresController {
 
   _renderBar() {
     const bar = $('#genresBar'); if (!bar) return;
-    /* Remove 'Σειρές' chip */
-    const chips = ['all', ...GREEK_GENRES.filter(g => g !== 'Σειρές')];
-    bar.innerHTML = chips.map(g =>
-      `<button class="genre-chip${g === this._active ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g === 'all' ? 'Όλα' : g)}</button>`
-    ).join('');
+    /* Remove 'Σειρές' button */
+    const chips = ['all'];
+    for (const g of GREEK_GENRES) {
+      if (g !== 'Σειρές') chips.push(g);
+    }
+    /* Build HTML — no map() */
+    let html = '';
+    for (const g of chips) {
+      html += `<button class="genre-chip${g === this._active ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g === 'all' ? 'Όλα' : g)}</button>`;
+    }
+    bar.innerHTML = html;
     bar.addEventListener('click', e => {
       const b = e.target.closest('.genre-chip'); if (!b) return;
       $$('.genre-chip', bar).forEach(x => x.classList.remove('active')); b.classList.add('active');
@@ -1322,28 +1345,37 @@ class GenresController {
     const results = $('#genresResults'); if (!results) return;
     const combined = this._combined || [];
     let display;
+
     if (this._active === 'all' || this._active === 'Όλα') {
       display = combined;
     } else {
-      display = combined.filter(item => (item.genres || []).includes(this._active));
+      display = combined.filter(item => {
+        if (!item.genres) return false;
+        return item.genres.includes(this._active);
+      });
     }
-    /* Safety: fall back to combined if empty */
-    if (!display.length) display = combined;
-    /* Random ONLY here — safe copy */
+
+    /* Random ONLY here — safe copy, no mutation of original */
     display = [...display].sort(() => Math.random() - 0.5);
+
+    /* Safety fallback */
+    if (!display.length) display = combined;
 
     const ce = $('#genresCount'); if (ce) ce.textContent = `${display.length} σειρ${display.length === 1 ? 'ά' : 'ές'}`;
     if (display.length) {
-      /* Wrap raw items so renderCard works (renderCard reads entry.data, entry._posterFallback, etc.) */
-      const cards = display.map(item => ({
-        slug: item.slug,
-        data: item,
-        tmdb: null,
-        title: item.title || item.slug,
-        channel: null,
-        _posterFallback: item.poster || null,
-      }));
-      results.innerHTML = `<div class="series-grid">${cards.map(renderCard).join('')}</div>`;
+      /* Build cards via for-of — no map() */
+      const cardsArr = [];
+      for (const item of display) {
+        cardsArr.push(renderCard({
+          slug: item.slug,
+          data: item,
+          tmdb: null,
+          title: item.title || item.slug,
+          channel: null,
+          _posterFallback: item.poster || null,
+        }));
+      }
+      results.innerHTML = `<div class="series-grid">${cardsArr.join('')}</div>`;
       setupCards(results);
     } else {
       results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν αποτελέσματα.</p></div>`;
