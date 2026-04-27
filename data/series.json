@@ -3541,7 +3541,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777062471
+    "last_updated": 1777062471,
+    "cast": [
+      {
+        "id": 935656,
+        "name": "Μίρκα Παπακωνσταντίνου",
+        "profile_path": null
+      },
+      {
+        "id": 1581924,
+        "name": "Παύλος Ορκόπουλος",
+        "profile_path": "/jX2LFULfLVw83yb3BfsSlBsoXl9.jpg"
+      },
+      {
+        "id": 72514,
+        "name": "Ρένια Λουιζίδου",
+        "profile_path": "/alB84YXLJ4HGHgmiGiCZdYgRPRH.jpg"
+      },
+      {
+        "id": 569316,
+        "name": "Γιώργος Γιαννόπουλος",
+        "profile_path": "/odX4BbgT4kcjgVOSRyVwXKiTWSF.jpg"
+      },
+      {
+        "id": 1937910,
+        "name": "Μελέτης Ηλίας",
+        "profile_path": "/mvaNhOZlUHVcCiINkzC93Fvx3bA.jpg"
+      },
+      {
+        "id": 1235137,
+        "name": "Βάσω Λασκαράκη",
+        "profile_path": "/mtJ3zyTlhY9omAS8rYJ0FYnmEuf.jpg"
+      },
+      {
+        "id": 1605840,
+        "name": "Αλέξανδρος Μπουρδούμης",
+        "profile_path": "/bZDHTxoPu0w4EwfvWBWK7N6jDGl.jpg"
+      },
+      {
+        "id": 2282424,
+        "name": "Ιωάννα Ασημακοπούλου",
+        "profile_path": "/d9Enm6H9TwmGdR2nSjUEkPW1sg.jpg"
+      },
+      {
+        "id": 2595118,
+        "name": "Σοφία Πανάγου",
+        "profile_path": "/GrYRCLXgQeIKC9HMypz9TtUq4g.jpg"
+      },
+      {
+        "id": 1620753,
+        "name": "Γιάννης Δρακόπουλος",
+        "profile_path": "/nhl2uRSthmBPAYgj4OwAyKaj9ft.jpg"
+      }
+    ]
   },
   "grand-hotel": {
     "id": "271048",
@@ -4640,7 +4692,8 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": []
   },
   "porto-leone-sti-geitonia-me-ta-kokkina-fanaria": {
     "id": "301405",
@@ -5347,7 +5400,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 1208483,
+        "name": "Βασίλης Mπισμπίκης",
+        "profile_path": "/uPhMvETyGOphbRNhk79U8YCNIe5.jpg"
+      },
+      {
+        "id": 1266213,
+        "name": "Αντώνης Καρυστινός",
+        "profile_path": "/2xSaER1CUgkrKc5IS24HmwenIaZ.jpg"
+      },
+      {
+        "id": 1340642,
+        "name": "Κλέλια Ρένεση",
+        "profile_path": "/uwxtePoPIclDmpLjNLDpmHXwnEK.jpg"
+      },
+      {
+        "id": 102999,
+        "name": "Αλέκος Συσσοβίτης",
+        "profile_path": "/no0CGPfNMjJGKAicvLZ4QmyCGIG.jpg"
+      },
+      {
+        "id": 2888532,
+        "name": "Μαρίνα Ασλάνογλου",
+        "profile_path": "/yUr0NsSScs8T69X23RXX2CEjAb0.jpg"
+      },
+      {
+        "id": 2100712,
+        "name": "Μαριάννα Πολυχρονίδη",
+        "profile_path": "/4Hcuxsn6h0xwOmX632VQikiSq5t.jpg"
+      },
+      {
+        "id": 3199802,
+        "name": "Ιζαμπέλλα Φούλοπ",
+        "profile_path": "/zzpa8cGKUE9JNWDSP9I8pVdVhX6.jpg"
+      },
+      {
+        "id": 1972567,
+        "name": "Άρης Αντωνόπουλος",
+        "profile_path": "/daAyN4oE2HQ4ZBZe63hgOt72JDe.jpg"
+      },
+      {
+        "id": 2851149,
+        "name": "Βασίλης Μηλιώνης",
+        "profile_path": "/yF9GuKJtpgZ7IGLUZ7c6VGnJuCH.jpg"
+      },
+      {
+        "id": 1211606,
+        "name": "Σταύρος Σβήγκος",
+        "profile_path": "/p7X0zleuyAtavZcRfH5IQFSC2dx.jpg"
+      }
+    ]
   },
   "agios-erotas": {
     "id": "272366",
@@ -7881,7 +7986,19 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777067708
+    "last_updated": 1777067708,
+    "cast": [
+      {
+        "id": 3233565,
+        "name": "Ηρώ Πεκτέση",
+        "profile_path": "/vGPjpzEgJYKJ85Vq9RFpLmTVMiJ.jpg"
+      },
+      {
+        "id": 2851164,
+        "name": "Dinos Papageorgiou",
+        "profile_path": null
+      }
+    ]
   },
   "echo-paidia": {
     "id": "273168",
@@ -8807,7 +8924,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 2478025,
+        "name": "Ευγενία Σαμαρά",
+        "profile_path": "/gyrUeK5fG4laeoMCZVLRyAsPzMf.jpg"
+      },
+      {
+        "id": 2985896,
+        "name": "Βασίλης Μαυρογεωργίου",
+        "profile_path": "/nXfleFYvecfPIbo74AzKWG4JWeh.jpg"
+      },
+      {
+        "id": 5005057,
+        "name": "Αμαρυλλίς Καπίρη",
+        "profile_path": "/qqilaaxonCTMLnMODWijF7TmY1c.jpg"
+      },
+      {
+        "id": 5005058,
+        "name": "Κωνσταντίνος Κουρογένης Κόλτσης",
+        "profile_path": "/pOBJwmJZPiKuZEeOOFo91h4l4Ag.jpg"
+      },
+      {
+        "id": 1585077,
+        "name": "Αθηνά Οικονομάκου",
+        "profile_path": "/wt87bBXh6qVxiNZWg4MUtgbfVZ8.jpg"
+      },
+      {
+        "id": 2403279,
+        "name": "Νικόλας Παπαδομιχελάκης",
+        "profile_path": "/ceVKco300zLoX327InHH7RE0zFT.jpg"
+      },
+      {
+        "id": 4498329,
+        "name": "Μάκης Παπασημακόπουλος",
+        "profile_path": "/oIVcQUi0hlkPQK7l8Fo47SNZNpw.jpg"
+      },
+      {
+        "id": 935665,
+        "name": "Μπέσυ Μάλφα",
+        "profile_path": "/nS2lAYwZUceOyE5rYbJKRxHPN9q.jpg"
+      },
+      {
+        "id": 481026,
+        "name": "Ερρίκος Λίτσης",
+        "profile_path": "/xZZ8OAtgIjoIZPl2XXk5X2TfJ2P.jpg"
+      },
+      {
+        "id": 2171703,
+        "name": "Ανθή Ευστρατιάδου",
+        "profile_path": "/eQl23TeidhmnQOwZJDpKvWZbLBW.jpg"
+      }
+    ]
   },
   "i-gi-tis-elias": {
     "id": "123644",
@@ -9966,7 +10135,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777049792
+    "last_updated": 1777049792,
+    "cast": [
+      {
+        "id": 2475965,
+        "name": "Γιώργος Παρτσαλάκης",
+        "profile_path": "/zvyfOi6Wy9yj88S1Y7SPR0Augvs.jpg"
+      },
+      {
+        "id": 1097462,
+        "name": "Πασχάλης Τσαρούχας",
+        "profile_path": "/AeXq2siMMmqczBVnSo1hgEf25s9.jpg"
+      },
+      {
+        "id": 2255319,
+        "name": "Αντιγόνη Κουλουκάκου",
+        "profile_path": "/jySrsF8toCoV1s9AFKd7KkUBmFn.jpg"
+      },
+      {
+        "id": 2305141,
+        "name": "Άντζελα Γκερέκου",
+        "profile_path": "/wCfkxvOIP3f9iZsOSKrd2gewnwB.jpg"
+      },
+      {
+        "id": 1382105,
+        "name": "Κούλλης Νικολάου",
+        "profile_path": "/AlciD1DdnIluLQWO8T4fElD5hHg.jpg"
+      },
+      {
+        "id": 3219627,
+        "name": "Λυδία Κορνιόρδου",
+        "profile_path": "/2CE4M0ZJPH5D1jerWZCfdUwzRQ5.jpg"
+      },
+      {
+        "id": 2244437,
+        "name": "Στέλλα Φυρογένη",
+        "profile_path": "/8wFg6USYBmY9k1yhontcVGs0g1d.jpg"
+      },
+      {
+        "id": 1476488,
+        "name": "Ιφιγένεια Τζόλα",
+        "profile_path": "/gFG464JyUE94J4Z7f9FbakzsE55.jpg"
+      },
+      {
+        "id": 1260050,
+        "name": "Μάρω Κοντού",
+        "profile_path": "/tJwnzQGhE8oFi2xi6DQe6RcG701.jpg"
+      },
+      {
+        "id": 3369568,
+        "name": "Αντωνία Χαραλάμπους",
+        "profile_path": "/ohPzAt7LMv9dpZEnD9k4X5PDJsf.jpg"
+      }
+    ]
   },
   "mia-nychta-mono": {
     "id": "304636",
@@ -10695,7 +10916,39 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777066559
+    "last_updated": 1777066559,
+    "cast": [
+      {
+        "id": 1327928,
+        "name": "Δημήτρης Λάλος",
+        "profile_path": "/5ewWJL1dlTyj26mXB9Levemq8Hz.jpg"
+      },
+      {
+        "id": 1568875,
+        "name": "Μαριλίτα Λαμπροπούλου",
+        "profile_path": "/qLyBBPesoQsFNH5BknmUi0rligI.jpg"
+      },
+      {
+        "id": 2922699,
+        "name": "Τάσος Ιορδανίδης",
+        "profile_path": "/6iC4wxaAwdebuJTQHJ5jXLTDq7z.jpg"
+      },
+      {
+        "id": 3670533,
+        "name": "Μαριάννα Πουρέγκα",
+        "profile_path": "/gI7Ss5XETV30wzETzXJeb0QJSFp.jpg"
+      },
+      {
+        "id": 147222,
+        "name": "Γιάννης Βούρος",
+        "profile_path": "/3yJEzwIWRgjfqyzxoN3AoHKjS6B.jpg"
+      },
+      {
+        "id": 4812042,
+        "name": "Φώτης Πετρίδης",
+        "profile_path": null
+      }
+    ]
   },
   "mpampa-sagapo": {
     "id": "313578",
@@ -11036,7 +11289,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 2191299,
+        "name": "Αναστάσης Ροϊλός",
+        "profile_path": "/8F4HZOJvPJYvwdKImi9A6Fc81Pu.jpg"
+      },
+      {
+        "id": 3608090,
+        "name": "Mιχάλης Βαλάσογλου",
+        "profile_path": "/5ayinLSktzn3QkFiBW5vRsesNyz.jpg"
+      },
+      {
+        "id": 2851149,
+        "name": "Βασίλης Μηλιώνης",
+        "profile_path": "/yF9GuKJtpgZ7IGLUZ7c6VGnJuCH.jpg"
+      },
+      {
+        "id": 1957678,
+        "name": "Ευσταθία Τσαπαρέλη",
+        "profile_path": "/kXnHiOjfPFrPdtmyy6azUOXLP5Y.jpg"
+      },
+      {
+        "id": 4959741,
+        "name": "Θεόβη Στύλλου",
+        "profile_path": "/s6aXkG8hgRlTOWMffJYpqnR3UOg.jpg"
+      },
+      {
+        "id": 6029596,
+        "name": "Νάντια Κατσούρα",
+        "profile_path": null
+      },
+      {
+        "id": 5565480,
+        "name": "Λένα Μποζάκη",
+        "profile_path": "/jDB8ZmZ7y3z4mnqaDzMW3fN1rfS.jpg"
+      },
+      {
+        "id": 2137560,
+        "name": "Πηνελόπη Μαρκοπούλου",
+        "profile_path": "/isSQ4eps86L1iI5P1H9QbhF9jua.jpg"
+      },
+      {
+        "id": 5706402,
+        "name": "Μορτ Κλωναράκη",
+        "profile_path": "/tYnm4NtncAtrX7RKU2zHpA85PHj.jpg"
+      },
+      {
+        "id": 6029539,
+        "name": "Ιάσωνας Τσιώνης",
+        "profile_path": null
+      }
+    ]
   },
   "na-m-agapas": {
     "id": "302422",
@@ -12377,7 +12682,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777071961
+    "last_updated": 1777071961,
+    "cast": [
+      {
+        "id": 1109744,
+        "name": "Στεφανή Καπετανίδη",
+        "profile_path": "/sAWwVeeCSg6W0L7kb20bUZXeBqw.jpg"
+      },
+      {
+        "id": 1312155,
+        "name": "Κώστας Νικούλι",
+        "profile_path": "/Asw47jNoj7cTyeeq4AwE983gND1.jpg"
+      },
+      {
+        "id": 1815101,
+        "name": "Ειρήνη Αγγελοπούλου",
+        "profile_path": "/edG2GfadsReubsaLIF8gkZfZay9.jpg"
+      },
+      {
+        "id": 1095435,
+        "name": "Στάθης Σταμουλακάτος",
+        "profile_path": "/icXrNzps8Zt1vKhxeSZIaPFwOWJ.jpg"
+      },
+      {
+        "id": 2783230,
+        "name": "Μιχαήλ Ταμπακάκης",
+        "profile_path": "/4gQadAEmfHPY94kkSlWxe8BV79I.jpg"
+      },
+      {
+        "id": 2901286,
+        "name": "Ελισάβετ Μουτάφη",
+        "profile_path": "/53K8PTZtE6gAII1RXYHn5qKmYGF.jpg"
+      },
+      {
+        "id": 3717487,
+        "name": "Μέγκυ Σούλι",
+        "profile_path": "/kvhdlILOlXO958sZSbf2I0Qlgu2.jpg"
+      },
+      {
+        "id": 2318508,
+        "name": "Μάνια Παπαδημητρίου",
+        "profile_path": "/dW4SXmjofMHOEeVMIpfEgAcCeQP.jpg"
+      },
+      {
+        "id": 1284336,
+        "name": "Δημήτρης Αλεξανδρής",
+        "profile_path": "/nJeuGSYikzsRsEsXLz7Ekk3Vazg.jpg"
+      },
+      {
+        "id": 5735562,
+        "name": "Αλέξανδρος Πχιεχόβιακ",
+        "profile_path": null
+      }
+    ]
   },
   "soyper-iroes": {
     "id": "316872",
@@ -12506,7 +12863,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 1009361,
+        "name": "Γιάννης Μπέζος",
+        "profile_path": "/3UnW6LTJ01tryxM72MlmQnsXwcY.jpg"
+      },
+      {
+        "id": 2976216,
+        "name": "Αλέξανδρος Χρυσανθόπουλος",
+        "profile_path": "/iLQBQbAXLeIovrDmFQHnuPxnaqi.jpg"
+      },
+      {
+        "id": 3385546,
+        "name": "Νατάσα Εξηνταβελώνη",
+        "profile_path": "/cuh6SVCDkC2QECb94d5kpTo0w5P.jpg"
+      },
+      {
+        "id": 2650960,
+        "name": "Ελεάνα  Στραβοδήμου",
+        "profile_path": "/rvjwdvCTZwDQt92BkYB6n86vLXZ.jpg"
+      },
+      {
+        "id": 2915133,
+        "name": "Σταύρος Μαρκάλας",
+        "profile_path": "/5aX8VMLfhRDBaO8QSj1985WC8hM.jpg"
+      },
+      {
+        "id": 2183236,
+        "name": "Αινείας Τσαμάτης",
+        "profile_path": "/prTOzxiNzhxbyTL6rufx2Ze5PzS.jpg"
+      },
+      {
+        "id": 2424699,
+        "name": "Αλέξανδρος Ζουριδάκης",
+        "profile_path": "/nihCJs5oAgcHafQgQrbcYBlWk6i.jpg"
+      },
+      {
+        "id": 6079677,
+        "name": "Katerina Patsiani",
+        "profile_path": "/v7WT7UzU25Wh0UUPkdT8TY5g3pk.jpg"
+      },
+      {
+        "id": 4325504,
+        "name": "Βασίλης Ντάρμας",
+        "profile_path": "/m8rFAAmkACx7GHU1uSToEtbdUv7.jpg"
+      },
+      {
+        "id": 3179685,
+        "name": "Ζωή Ρηγοπούλου",
+        "profile_path": "/q7qYcK2gUhJLKZ9hRwlrS5DSC8y.jpg"
+      }
+    ]
   },
   "o-giatros": {
     "id": "236209",
@@ -12980,7 +13389,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777115256
+    "last_updated": 1777115256,
+    "cast": [
+      {
+        "id": 121589,
+        "name": "Κωνσταντίνος Μαρκουλάκης",
+        "profile_path": "/9VVxycNTTICLGeTymSGFpLRbOTJ.jpg"
+      },
+      {
+        "id": 1944115,
+        "name": "Βασιλική Τρουφάκου",
+        "profile_path": "/xlHfxuWaOGzoepgoqIqshNRQ7Se.jpg"
+      },
+      {
+        "id": 2873779,
+        "name": "Δήμητρα Σιγάλα",
+        "profile_path": "/uxCiAqflPjzq0cbMl6Y1vArrgRF.jpg"
+      },
+      {
+        "id": 2434491,
+        "name": "Αλέξανδρος Κωχ",
+        "profile_path": "/jtwxQcmS73aoRVJWjXYKJ6sH9pc.jpg"
+      },
+      {
+        "id": 2743445,
+        "name": "Αντώνης Μυριαγκός",
+        "profile_path": "/kIkKz9arhlh1fGP4sjeTLSQReBR.jpg"
+      },
+      {
+        "id": 2474695,
+        "name": "Θάνος Λέκκας",
+        "profile_path": "/uelUob5CUKhhOg3kOBmNhiCrKx6.jpg"
+      },
+      {
+        "id": 3333250,
+        "name": "Χρήστος Ζαν Μπατίστ",
+        "profile_path": "/wmTlteQ56yKYWTLF91KTwuQ2Dtm.jpg"
+      },
+      {
+        "id": 550331,
+        "name": "Τζωρτζίνα Λιώση",
+        "profile_path": "/3oqmBJ4HcBIFTU80ahoq0O1Dwk8.jpg"
+      },
+      {
+        "id": 2937948,
+        "name": "Παναγιώτης Εξαρχέας",
+        "profile_path": "/seL5bV59VvA1Oa1EciYpSJjrnjj.jpg"
+      },
+      {
+        "id": 3090630,
+        "name": "Μαριέλλη Μανουδάκη",
+        "profile_path": "/gyHkTTtiKivjgrwOZgwkW5xlBIr.jpg"
+      }
+    ]
   },
   "oi-athooi": {
     "id": "313544",
@@ -13129,7 +13590,49 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777075045
+    "last_updated": 1777075045,
+    "cast": [
+      {
+        "id": 1312155,
+        "name": "Κώστας Νικούλι",
+        "profile_path": "/Asw47jNoj7cTyeeq4AwE983gND1.jpg"
+      },
+      {
+        "id": 2247574,
+        "name": "Χριστίνα Χειλά Φαμέλη",
+        "profile_path": "/nFwWuOwnDVjiUSXmd1XPEFWOL1e.jpg"
+      },
+      {
+        "id": 1886981,
+        "name": "Γιάννης Νιάρρος",
+        "profile_path": "/rk2PjmVjiwPhcFUkwQvGARNBQmR.jpg"
+      },
+      {
+        "id": 4325610,
+        "name": "Αμαλία Καβάλη",
+        "profile_path": "/rKUv9fQAl42FqZnIkBvVAUGNwIO.jpg"
+      },
+      {
+        "id": 1094734,
+        "name": "Μαρία Καλλιμάνη",
+        "profile_path": "/yF2As1EYjkyAu6OJbVNzHoKaFxw.jpg"
+      },
+      {
+        "id": 2283827,
+        "name": "Ελένη Ζιώγα",
+        "profile_path": "/d5e61FloyfF5ao2dlDlT8F958yd.jpg"
+      },
+      {
+        "id": 1527067,
+        "name": "Λουκία Μιχαλοπούλου",
+        "profile_path": "/m3xjigqqwdEBCNM59Jp76qwSLLu.jpg"
+      },
+      {
+        "id": 1144911,
+        "name": "Χρήστος Καλαβρούζος",
+        "profile_path": "/2vgeF0FJaWRL0CQZov7sYWORf2o.jpg"
+      }
+    ]
   },
   "paichnidia-ekdikisis": {
     "id": "275892",
@@ -13581,7 +14084,8 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777119768
+    "last_updated": 1777119768,
+    "cast": []
   },
   "to-spiti-dipla-sto-potami": {
     "id": "301323",
@@ -14110,7 +14614,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777065612
+    "last_updated": 1777065612,
+    "cast": [
+      {
+        "id": 1315642,
+        "name": "Πέγκυ Τρικαλιώτη",
+        "profile_path": "/6AGeDlO61ZHZ0tcbsmAXAUNfryX.jpg"
+      },
+      {
+        "id": 1455553,
+        "name": "Γιώργος Χρυσοστόμου",
+        "profile_path": "/w5OYOI3VFZRSBuEdriopRKoj8u4.jpg"
+      },
+      {
+        "id": 2263843,
+        "name": "Αναστασία Παντούση",
+        "profile_path": "/4zjfSwYd774GWKiEAwih36Lhshp.jpg"
+      },
+      {
+        "id": 2818257,
+        "name": "Αλέξανδρος Σταύρου",
+        "profile_path": "/fugJhMy9As6R19PHxLfos5ep5Jj.jpg"
+      },
+      {
+        "id": 2474695,
+        "name": "Θάνος Λέκκας",
+        "profile_path": "/uelUob5CUKhhOg3kOBmNhiCrKx6.jpg"
+      },
+      {
+        "id": 3697456,
+        "name": "Άννη Θεοχάρη",
+        "profile_path": "/oyghwGzxgXGaXtltfMHHepKiIi3.jpg"
+      },
+      {
+        "id": 2873549,
+        "name": "Αργύρης Αγγέλου",
+        "profile_path": "/ifrPj34rL23xpcn0virbMqLmzFX.jpg"
+      },
+      {
+        "id": 2304713,
+        "name": "Νάνσυ Μπούκλη",
+        "profile_path": "/pjfSpl2mwBObElNSHWEh5dHKDAG.jpg"
+      },
+      {
+        "id": 3073344,
+        "name": "Μιχάλης Τιτόπουλος",
+        "profile_path": "/iVyxe9fr8YSWC612sIssDSGVome.jpg"
+      },
+      {
+        "id": 2602279,
+        "name": "Μαρία Τζομπανάκη",
+        "profile_path": "/m68codCceEXCWty6DyD1qmPXDvv.jpg"
+      }
+    ]
   },
   "giati-re-patera": {
     "id": "300883",
@@ -14391,7 +14947,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 2133866,
+        "name": "Μιχάλης Λεβεντογιάννης",
+        "profile_path": "/8jEas2HBtNj7ajieZkYz68gmRjb.jpg"
+      },
+      {
+        "id": 3520090,
+        "name": "Ηλίας Βαλάσης",
+        "profile_path": "/qtMNpiO4JyubBb5vDJuNWDn5WAR.jpg"
+      },
+      {
+        "id": 2172150,
+        "name": "Κωνσταντίνος Λιάρος",
+        "profile_path": "/8IyWEtUuae5Hf7q9ZyfKU3eZYyR.jpg"
+      },
+      {
+        "id": 4972544,
+        "name": "Θεανώ Κλάδη",
+        "profile_path": "/6yEpxYvndHSwEQKaFZUigeJnqIv.jpg"
+      },
+      {
+        "id": 2976220,
+        "name": "Μιχάλης Μιχαλακίδης",
+        "profile_path": "/fSuLIRRVOXRYVFggf9ZwHo5X67b.jpg"
+      },
+      {
+        "id": 2589005,
+        "name": "Κωνσταντίνα Μιχαήλ",
+        "profile_path": "/2Zj7ZTR5xHcdHg7RtBdr5BaA25c.jpg"
+      },
+      {
+        "id": 2897428,
+        "name": "Φωτεινή Παπαχριστοπούλου",
+        "profile_path": "/cANr92onxdmkY27S3uqCi4jlYqH.jpg"
+      },
+      {
+        "id": 3434957,
+        "name": "Νίκη Λάμη",
+        "profile_path": "/eOfKP9mP4DLeRE11WGN9lwK2DRU.jpg"
+      },
+      {
+        "id": 4961329,
+        "name": "Θάνος Μπίρκος",
+        "profile_path": "/vNc0mp9E4IL4wum25plBN3FWNJH.jpg"
+      },
+      {
+        "id": 3603955,
+        "name": "Αμαλία Νίνου",
+        "profile_path": "/lr0KCeomSDyBXFYZE0r3vvnvDeu.jpg"
+      }
+    ]
   },
   "hotel-elvira": {
     "id": "302396",
@@ -14424,7 +15032,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 2728153,
+        "name": "Ελίζα Σκολίδη",
+        "profile_path": "/kjjctJKGZ1AaUyrVvrqfVOE4rEt.jpg"
+      },
+      {
+        "id": 2133866,
+        "name": "Μιχάλης Λεβεντογιάννης",
+        "profile_path": "/8jEas2HBtNj7ajieZkYz68gmRjb.jpg"
+      },
+      {
+        "id": 1165743,
+        "name": "Γιώργος Σουξές",
+        "profile_path": "/sYsJxH7sG2pRZh53EA67wKfAZFm.jpg"
+      },
+      {
+        "id": 1944111,
+        "name": "Άννα Κουρή",
+        "profile_path": "/oBiwCjFMjS9jcwzbJmkpsdv6TPE.jpg"
+      },
+      {
+        "id": 3250562,
+        "name": "Γκαλ Α. Ρομπίσα",
+        "profile_path": "/6ooY12qyfyW5XYPwMfWKufKZvTn.jpg"
+      },
+      {
+        "id": 2976214,
+        "name": "Γιωργής Τσουρής",
+        "profile_path": "/k3vuy1wh9mcZYhqUoeUuAwd7XLk.jpg"
+      },
+      {
+        "id": 3389425,
+        "name": "Ελπίδα Νικολάου",
+        "profile_path": "/fopJiC3mljkwNcNuyAsmQ5hI95U.jpg"
+      },
+      {
+        "id": 3902478,
+        "name": "Δημήτρης Τσέλιος",
+        "profile_path": null
+      },
+      {
+        "id": 4318964,
+        "name": "Βαγγέλης Δαούσης",
+        "profile_path": "/ouLim5WGWwoOb5M7oiTZ1cRCa2e.jpg"
+      },
+      {
+        "id": 1603889,
+        "name": "Λένα Γιάκα",
+        "profile_path": null
+      }
+    ]
   },
   "apo-ilio-se-ilio": {
     "id": "315644",
@@ -14700,7 +15360,8 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": []
   },
   "i-megali-chimaira": {
     "id": "309662",
@@ -14799,7 +15460,29 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777125769
+    "last_updated": 1777125769,
+    "cast": [
+      {
+        "id": 2479586,
+        "name": "Fotinì Peluso",
+        "profile_path": "/8EghHDlJmqToMyfceY4BwNEU57u.jpg"
+      },
+      {
+        "id": 1277475,
+        "name": "Ανδρέας Κωνσταντίνου",
+        "profile_path": "/pQ70pnBPFafDZH4AQgrrEveGC6U.jpg"
+      },
+      {
+        "id": 1672812,
+        "name": "Δημήτρης Κίτσος",
+        "profile_path": "/xJEDdzJCPv44PhRvAm05fAK7tQg.jpg"
+      },
+      {
+        "id": 142814,
+        "name": "Καρυοφυλλιά Καραμπέτη",
+        "profile_path": "/bVUQ8VtezdnbPCMAOmlK3Xbe3DK.jpg"
+      }
+    ]
   },
   "ilektra": {
     "id": "236736",
@@ -16142,7 +16825,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777076248
+    "last_updated": 1777076248,
+    "cast": [
+      {
+        "id": 2462238,
+        "name": "Έμιλυ Κολιανδρή",
+        "profile_path": "/7EaZmHJ3faelR9a7CAJeSDZyVIa.jpg"
+      },
+      {
+        "id": 556106,
+        "name": "Αποστόλης Τότσικας",
+        "profile_path": "/lUV9T7136ldFNSyjhnTPpG9SdEe.jpg"
+      },
+      {
+        "id": 3093435,
+        "name": "Θανάσης Πατριαρχέας",
+        "profile_path": "/lO3xZxMtpz5u7oWiVq0I43GI2Jj.jpg"
+      },
+      {
+        "id": 231409,
+        "name": "Κατερίνα Διδασκάλου",
+        "profile_path": "/fRHwvSB1PT3cCWAIQI0f3HBuvs7.jpg"
+      },
+      {
+        "id": 994412,
+        "name": "Γιώργος Συμεωνίδης",
+        "profile_path": "/qq1hoQ5UUlpjbbX9Petz0bPGyHs.jpg"
+      },
+      {
+        "id": 3514366,
+        "name": "Λουκία Παπαδάκη",
+        "profile_path": "/zP3KjxQkFRTryZjEtcVGgnwTJa8.jpg"
+      },
+      {
+        "id": 144462,
+        "name": "Αλέξανδρος Μυλωνάς",
+        "profile_path": "/yRF2ub310iH9BJCk8WSzXhnNvyz.jpg"
+      },
+      {
+        "id": 1184653,
+        "name": "Νεφέλη Κουρή",
+        "profile_path": "/qHJRmFHsnDltzSjwrz5ct4lgKQv.jpg"
+      },
+      {
+        "id": 2871969,
+        "name": "Ευαγγελία Μουμούρη",
+        "profile_path": "/gAARMUNAY0TiMaKYkIulr6c8sQ7.jpg"
+      },
+      {
+        "id": 2788850,
+        "name": "Δανάη Λουκάκη",
+        "profile_path": "/hbhl2OXjDiiFzNn4sG1njtRdfq9.jpg"
+      }
+    ]
   },
   "kala-tha-paei-ki-ayto": {
     "id": "300807",
@@ -16175,7 +16910,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 2873713,
+        "name": "Κωνσταντίνα Κλαψινού",
+        "profile_path": "/2KpIIztYmaauRAnhd4v8ygWL93I.jpg"
+      },
+      {
+        "id": 1031168,
+        "name": "Μαρία Λεκάκη",
+        "profile_path": "/kByFsUYBiiUgTmdzVfPiD0O7kZ1.jpg"
+      },
+      {
+        "id": 1260645,
+        "name": "Κώστας Κόκλας",
+        "profile_path": "/xjZVYFpPMyKFEqXjldnJ8Le9EET.jpg"
+      },
+      {
+        "id": 3081550,
+        "name": "Γιώργος Χριστοδούλου",
+        "profile_path": "/zofQCS58TKJbmB3ZEbjp4F9vq4N.jpg"
+      },
+      {
+        "id": 3708509,
+        "name": "Πέτρος Σκαρμέας",
+        "profile_path": "/z2folHp2NojGHqCrChCTiMJVAqb.jpg"
+      },
+      {
+        "id": 935656,
+        "name": "Μίρκα Παπακωνσταντίνου",
+        "profile_path": null
+      },
+      {
+        "id": 2832735,
+        "name": "Ντόρα Μακρυγιάννη",
+        "profile_path": "/2Bcnr3BKxI59O7DXsPsp176arpA.jpg"
+      },
+      {
+        "id": 3847651,
+        "name": "Ίαν Στρατής",
+        "profile_path": "/rKXsTpgkWUaxgNuq6HnsBNMrLMR.jpg"
+      },
+      {
+        "id": 1274546,
+        "name": "Τζίνη Παπαδοπούλου",
+        "profile_path": "/fFKCaaGKfsuAlDkqEJPjMCDmCmA.jpg"
+      },
+      {
+        "id": 548634,
+        "name": "Γιάννης Ζουγανέλης",
+        "profile_path": "/gRnaXYVBEcGsTIeQRuLZNFRTNzz.jpg"
+      }
+    ]
   },
   "to-paidi": {
     "id": "300805",
@@ -17336,7 +18123,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777051620
+    "last_updated": 1777051620,
+    "cast": [
+      {
+        "id": 3471373,
+        "name": "Βασίλης Μπούτσικος",
+        "profile_path": "/yjhBFBUrCVkQVw1pUlWDL23Uf7l.jpg"
+      },
+      {
+        "id": 4221279,
+        "name": "Ντένια Στασινοπούλου",
+        "profile_path": "/k0di0SEEDfv91UMiWXu8nrjM040.jpg"
+      },
+      {
+        "id": 2044555,
+        "name": "Νίκος Ζεγκίνογλου",
+        "profile_path": "/muXKJbndnhsdTIUQUC0P85gHZyT.jpg"
+      },
+      {
+        "id": 2976215,
+        "name": "Ιζαμπέλα Μπαλτσαβιά",
+        "profile_path": "/yepxn8wzyapYpVOEI6wndWtfixu.jpg"
+      },
+      {
+        "id": 1418982,
+        "name": "Άννα Μάσχα",
+        "profile_path": "/pBDEV5rNnHH77YI13iw37rxfQQG.jpg"
+      },
+      {
+        "id": 1394200,
+        "name": "Έλενα Τοπαλίδου",
+        "profile_path": "/zNS1FcqaUXLLvOtb06Gn2AjvNTu.jpg"
+      },
+      {
+        "id": 2707850,
+        "name": "Χρήστος Κοντογεώργης",
+        "profile_path": "/rCQi6odmj7IVNmtDBJgKb1BU9p.jpg"
+      },
+      {
+        "id": 2873825,
+        "name": "Στέφη Πουλοπούλου",
+        "profile_path": "/k0RHMhTy4z83zdBGeiNegqbM1W6.jpg"
+      },
+      {
+        "id": 2926829,
+        "name": "Σύνθια Μπατσή",
+        "profile_path": "/7pwdFkcqZuQBGIs0x71Ktgf3oVN.jpg"
+      },
+      {
+        "id": 2678215,
+        "name": "Μαρία Μπαγανά",
+        "profile_path": "/mcZxsMYFKI20bSlMkPXmrwaSsP1.jpg"
+      }
+    ]
   },
   "tote-kai-tora": {
     "id": "304952",
@@ -17369,7 +18208,19 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 2986814,
+        "name": "Αλέξανδρος Τσουβέλας",
+        "profile_path": "/r2ofTIQGo5dejrBrsNDaf4xuJjV.jpg"
+      },
+      {
+        "id": 4961404,
+        "name": "Έλενα Χαραλαμπούδη",
+        "profile_path": "/ywTBHeWaOVvL7kaeGE2tttVzE5N.jpg"
+      }
+    ]
   },
   "tromeroi-goneis": {
     "id": "302832",
@@ -17805,7 +18656,34 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777072959
+    "last_updated": 1777072959,
+    "cast": [
+      {
+        "id": 2991874,
+        "name": "Γιώργος Κριθαράς",
+        "profile_path": null
+      },
+      {
+        "id": 2922962,
+        "name": "Ευδοκία Ρουμελιώτη",
+        "profile_path": "/vxmLZ2CDCSG9rGu00NbE1tNDWID.jpg"
+      },
+      {
+        "id": 2981715,
+        "name": "Κωνσταντίνος Πεσλής",
+        "profile_path": "/hjmIVFq2SfEHHsg2ofqpamaD6pk.jpg"
+      },
+      {
+        "id": 5820774,
+        "name": "Ορέστης Μπάμπαλης",
+        "profile_path": null
+      },
+      {
+        "id": 5820775,
+        "name": "Δημήτρης Μακρόπουλος",
+        "profile_path": null
+      }
+    ]
   },
   "vip-kala-geramata": {
     "id": "272368",
@@ -18194,7 +19072,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 935653,
+        "name": "Τάσος Χαλκιάς",
+        "profile_path": "/9IPJEchI7tDmRe2gmSiAdu1p86z.jpg"
+      },
+      {
+        "id": 1505958,
+        "name": "Δημήτρης Μαυρόπουλος",
+        "profile_path": "/qgluvSZKi0xhRB0iGVzZRK4W23w.jpg"
+      },
+      {
+        "id": 2976216,
+        "name": "Αλέξανδρος Χρυσανθόπουλος",
+        "profile_path": "/iLQBQbAXLeIovrDmFQHnuPxnaqi.jpg"
+      },
+      {
+        "id": 2433897,
+        "name": "Κώστας Καζάκας",
+        "profile_path": "/zYwDU7WurVZqPapL8WmZqzeEPKe.jpg"
+      },
+      {
+        "id": 2720082,
+        "name": "Μαρία Πετεβή",
+        "profile_path": "/7COwqWojBYmF6KVoOnj8ThNGLSM.jpg"
+      },
+      {
+        "id": 1716094,
+        "name": "Άννα Κουτσαφτίκη",
+        "profile_path": "/rA77buoUlIfiAZphEecmINuNBYg.jpg"
+      },
+      {
+        "id": 3692462,
+        "name": "Σταύρος Τσουμάνης",
+        "profile_path": "/s0COnknR1O3OhXEjfZNrGkLoI6B.jpg"
+      },
+      {
+        "id": 2965221,
+        "name": "Πάρις Θωμόπουλος",
+        "profile_path": "/t0q5iPdMH3zk9F4gAiiKQ2iWrFm.jpg"
+      },
+      {
+        "id": 5007875,
+        "name": "Μαρία Μουσχούρη",
+        "profile_path": "/dQIymnfrW705sDLU5LFfxs54RAu.jpg"
+      },
+      {
+        "id": 4876676,
+        "name": "Idra Kayne",
+        "profile_path": "/h7ERbhB5rjhGD5f700z3Mt3kTHz.jpg"
+      }
+    ]
   },
   "agios-paisios-apo-ta-farasa-ston-oyrano": {
     "id": "157242",
@@ -18448,7 +19378,34 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 2411376,
+        "name": "Προκόπης Αγαθοκλέους",
+        "profile_path": "/8y1aEdUSUwA9HJyfxmBkSkfii3t.jpg"
+      },
+      {
+        "id": 1304369,
+        "name": "Δημήτρης Ξανθόπουλος",
+        "profile_path": "/z2oE3zgOdeD58etTAsIQhpVLNMW.jpg"
+      },
+      {
+        "id": 2032291,
+        "name": "Χριστίνα Παυλίδου",
+        "profile_path": "/igUvIzo1eS96IdDtsDBPD1VCAKy.jpg"
+      },
+      {
+        "id": 1392806,
+        "name": "Δρόσος Σκώτης",
+        "profile_path": "/dkaYyn5sHfictWckaECAmYR3FFU.jpg"
+      },
+      {
+        "id": 5377834,
+        "name": "Δέσποινα Γκάτζιου",
+        "profile_path": "/192tDOguM9GShslDeH3DeROvEBz.jpg"
+      }
+    ]
   },
   "aparaitito-fos": {
     "id": "287481",
@@ -18567,7 +19524,39 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 3670533,
+        "name": "Μαριάννα Πουρέγκα",
+        "profile_path": "/gI7Ss5XETV30wzETzXJeb0QJSFp.jpg"
+      },
+      {
+        "id": 1303061,
+        "name": "Προμηθέας Αλειφερόπουλος",
+        "profile_path": "/qeElauWhFO6JxwpEFSB10mEl1at.jpg"
+      },
+      {
+        "id": 2851140,
+        "name": "Δημήτρης Καπουράνης",
+        "profile_path": "/kA3lOStmSVAJC4MHmIWjbuwOzp2.jpg"
+      },
+      {
+        "id": 2191299,
+        "name": "Αναστάσης Ροϊλός",
+        "profile_path": "/8F4HZOJvPJYvwdKImi9A6Fc81Pu.jpg"
+      },
+      {
+        "id": 1284336,
+        "name": "Δημήτρης Αλεξανδρής",
+        "profile_path": "/nJeuGSYikzsRsEsXLz7Ekk3Vazg.jpg"
+      },
+      {
+        "id": 1394692,
+        "name": "Ευγενία Δημητροπούλου",
+        "profile_path": "/7b8wE8vTYuO5cFr62m3i16Sebo0.jpg"
+      }
+    ]
   },
   "archelaoy-5": {
     "id": "271011",
@@ -19410,7 +20399,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 1009362,
+        "name": "Γιάννης Στάνκογλου",
+        "profile_path": "/5W0k7Avq0rVyFC2H6rYXUQWNhbC.jpg"
+      },
+      {
+        "id": 580669,
+        "name": "Εβελίνα Παπούλια",
+        "profile_path": "/uqrHDXkQDgzKzs1lWdKJqiw7Mme.jpg"
+      },
+      {
+        "id": 1252819,
+        "name": "Γεράσιμος Γεννατάς",
+        "profile_path": "/bAqkX6kSRJtaCtIb8VppHVfAtpG.jpg"
+      },
+      {
+        "id": 1307170,
+        "name": "Ναταλία Δραγούμη",
+        "profile_path": "/zC0u1zAGSHjiWZxIs7DqG7lIchl.jpg"
+      },
+      {
+        "id": 3385546,
+        "name": "Νατάσα Εξηνταβελώνη",
+        "profile_path": "/cuh6SVCDkC2QECb94d5kpTo0w5P.jpg"
+      },
+      {
+        "id": 3143049,
+        "name": "Άλκηστις Ζιρώ",
+        "profile_path": "/qjf1DXVHwdGtYWtm8L6wUitOWrH.jpg"
+      },
+      {
+        "id": 1479647,
+        "name": "Βάσω Καβαλιεράτου",
+        "profile_path": "/85J4CFZuyIWp07fziBscFW0H8Wo.jpg"
+      },
+      {
+        "id": 4325521,
+        "name": "Γιάννης Καράμπαμπας",
+        "profile_path": "/5ysMOtm7JXoBTj3ddzMfkA790hQ.jpg"
+      },
+      {
+        "id": 2707850,
+        "name": "Χρήστος Κοντογεώργης",
+        "profile_path": "/rCQi6odmj7IVNmtDBJgKb1BU9p.jpg"
+      },
+      {
+        "id": 3697452,
+        "name": "Χάρης Χιώτης",
+        "profile_path": "/o24wnwlBLewhtxt1wfpyMcasfUS.jpg"
+      }
+    ]
   },
   "diafani-agapi": {
     "id": "272371",
@@ -19771,7 +20812,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 4296368,
+        "name": "Μάρκος Παπαδοκωνσταντάκης",
+        "profile_path": "/bNHLkzwTdsIZxAc1h5n3kjQhYRM.jpg"
+      },
+      {
+        "id": 1511460,
+        "name": "Χαρά Μάτα Γιαννάτου",
+        "profile_path": "/jG4SuQW6qoofBFgghRFACwcD0kl.jpg"
+      },
+      {
+        "id": 2015652,
+        "name": "Μιχάλης Οικονόμου",
+        "profile_path": "/uNR9jvFJRlAwwHIyqpwRWGthZLr.jpg"
+      },
+      {
+        "id": 2144696,
+        "name": "Μιχάλης Σαράντης",
+        "profile_path": "/u5tcdimNyvueow9tiXKlc2lvHjb.jpg"
+      },
+      {
+        "id": 4959741,
+        "name": "Θεόβη Στύλλου",
+        "profile_path": "/s6aXkG8hgRlTOWMffJYpqnR3UOg.jpg"
+      },
+      {
+        "id": 98985,
+        "name": "Νίκος Ψαρράς",
+        "profile_path": "/bxsUBMowa1Eud1LmUCJ8DbBULhg.jpg"
+      },
+      {
+        "id": 3717487,
+        "name": "Μέγκυ Σούλι",
+        "profile_path": "/kvhdlILOlXO958sZSbf2I0Qlgu2.jpg"
+      },
+      {
+        "id": 1277475,
+        "name": "Ανδρέας Κωνσταντίνου",
+        "profile_path": "/pQ70pnBPFafDZH4AQgrrEveGC6U.jpg"
+      },
+      {
+        "id": 1418982,
+        "name": "Άννα Μάσχα",
+        "profile_path": "/pBDEV5rNnHH77YI13iw37rxfQQG.jpg"
+      },
+      {
+        "id": 3741905,
+        "name": "Γιώργος Νούσης",
+        "profile_path": "/ux4Y0JXvlrSpJCP33J03vIsLAWd.jpg"
+      }
+    ]
   },
   "i-magissa": {
     "id": "235835",
@@ -21015,7 +22108,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 1382074,
+        "name": "Μαρία Κίτσου",
+        "profile_path": "/logH8nKVv5w2sjaIl2X2AwrlEYx.jpg"
+      },
+      {
+        "id": 1937910,
+        "name": "Μελέτης Ηλίας",
+        "profile_path": "/mvaNhOZlUHVcCiINkzC93Fvx3bA.jpg"
+      },
+      {
+        "id": 550334,
+        "name": "Γιώργος Παπαγεωργίου",
+        "profile_path": "/zHCvPYB17ieX9uwXs2XfpSc13Z1.jpg"
+      },
+      {
+        "id": 4987571,
+        "name": "Έλενα Σαλαμπάση",
+        "profile_path": "/mlDYUN5qPgGsgC15IodJx0EsrKZ.jpg"
+      },
+      {
+        "id": 1194929,
+        "name": "Γιούλικα Σκαφιδά",
+        "profile_path": "/ag7QJW3CkG9Bbqm7vaEVDsfVx2r.jpg"
+      },
+      {
+        "id": 1984091,
+        "name": "Σπύρος Χατζηαγγελάκης",
+        "profile_path": "/6jTPq8q2L1JIcUbUyapUN5Osf1l.jpg"
+      },
+      {
+        "id": 2777453,
+        "name": "Σπύρος Τσεκούρας",
+        "profile_path": "/odo889mp91YduQPCApL6D0d1ctE.jpg"
+      },
+      {
+        "id": 2110177,
+        "name": "Γιάννης Ποιμενίδης",
+        "profile_path": "/7bsNmgRHNk5N4HeqkhVsANETtT7.jpg"
+      },
+      {
+        "id": 4987572,
+        "name": "Ελευθερία Κοντογεώργη",
+        "profile_path": "/jQYc89xtEK7AXAr9yaiMYeCxl77.jpg"
+      },
+      {
+        "id": 3687519,
+        "name": "Σοφία Κικιλιντζιά",
+        "profile_path": "/bYkdjN9jqjmfvJtp98JSHidvquX.jpg"
+      }
+    ]
   },
   "i-paralia": {
     "id": "234460",
@@ -24003,7 +25148,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 2247573,
+        "name": "Δημήτρης Μοθωναίος",
+        "profile_path": "/qq7A3pNe1Dc8TMXJXFC3oSPnYOE.jpg"
+      },
+      {
+        "id": 447184,
+        "name": "Μαρία Ναυπλιώτου",
+        "profile_path": "/sHssCOydDU355dw6dtotD3otsJo.jpg"
+      },
+      {
+        "id": 2044555,
+        "name": "Νίκος Ζεγκίνογλου",
+        "profile_path": "/muXKJbndnhsdTIUQUC0P85gHZyT.jpg"
+      },
+      {
+        "id": 1194925,
+        "name": "Αλέξανδρος Λογοθέτης",
+        "profile_path": "/q1mLUSHHlnWQNh2YNFaRFh4KoTF.jpg"
+      },
+      {
+        "id": 1672812,
+        "name": "Δημήτρης Κίτσος",
+        "profile_path": "/xJEDdzJCPv44PhRvAm05fAK7tQg.jpg"
+      },
+      {
+        "id": 3219628,
+        "name": "Αφροδίτη Λιάντου",
+        "profile_path": "/rgy9cMS2CSFsOmSBfB38ZDu32cj.jpg"
+      },
+      {
+        "id": 1114599,
+        "name": "Μπέτυ Λιβανού",
+        "profile_path": "/3hobBPbs5wFONQ3dVC6OdoWKsGX.jpg"
+      },
+      {
+        "id": 1177441,
+        "name": "Γιώργος Νινιός",
+        "profile_path": "/mR3QlGx3y68uVZriNzoOLOnwPy.jpg"
+      },
+      {
+        "id": 2783415,
+        "name": "Μαίρη Μηνά",
+        "profile_path": "/1BEDlSxGD93b1bzTcwHDXm7ACf7.jpg"
+      },
+      {
+        "id": 2678215,
+        "name": "Μαρία Μπαγανά",
+        "profile_path": "/mcZxsMYFKI20bSlMkPXmrwaSsP1.jpg"
+      }
+    ]
   },
   "mama-sta-kryfa": {
     "id": "286037",
@@ -24344,7 +25541,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 1148324,
+        "name": "Τζένη Θεωνά",
+        "profile_path": "/hafrfA0ONXAp26MIqMgr5HxgZGA.jpg"
+      },
+      {
+        "id": 550332,
+        "name": "Αντίνοος Αλμπάνης",
+        "profile_path": "/xIWdcWAZywLSZy3A2xKrzUjWO3x.jpg"
+      },
+      {
+        "id": 1261726,
+        "name": "Νικολέττα Καρρά",
+        "profile_path": "/sRk7dvVhsGWafP3lASTAXdXOaOs.jpg"
+      },
+      {
+        "id": 1546731,
+        "name": "Άννα Μενενάκου",
+        "profile_path": "/y3xuOzjsPNqpc6A334fFAK7NOAK.jpg"
+      },
+      {
+        "id": 3434957,
+        "name": "Νίκη Λάμη",
+        "profile_path": "/eOfKP9mP4DLeRE11WGN9lwK2DRU.jpg"
+      },
+      {
+        "id": 1394692,
+        "name": "Ευγενία Δημητροπούλου",
+        "profile_path": "/7b8wE8vTYuO5cFr62m3i16Sebo0.jpg"
+      },
+      {
+        "id": 2818248,
+        "name": "Αντιγόνη Δρακουλάκη",
+        "profile_path": "/g3PXTQlqv3Ct7j9DIo8RQY6bVEX.jpg"
+      },
+      {
+        "id": 2981715,
+        "name": "Κωνσταντίνος Πεσλής",
+        "profile_path": "/hjmIVFq2SfEHHsg2ofqpamaD6pk.jpg"
+      },
+      {
+        "id": 5735620,
+        "name": "Θανάσης Ισιδώρου",
+        "profile_path": "/nCmzTWbewWUzqOkljxdtnVkJSaL.jpg"
+      },
+      {
+        "id": 5735623,
+        "name": "Εμμέλεια Πρίντεζη",
+        "profile_path": "/wsXLKExGsyOzJx8hNHcWAeDP5eK.jpg"
+      }
+    ]
   },
   "na-me-les-mama": {
     "id": "301554",
@@ -24463,7 +25712,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 1382074,
+        "name": "Μαρία Κίτσου",
+        "profile_path": "/logH8nKVv5w2sjaIl2X2AwrlEYx.jpg"
+      },
+      {
+        "id": 5713501,
+        "name": "Ναυσικά Κοκοτά",
+        "profile_path": "/cc4ZwhoacpQ7GQjd3T4gItz7v1F.jpg"
+      },
+      {
+        "id": 2429003,
+        "name": "Φιλαρέτη Κομνηνού",
+        "profile_path": "/iIizfTLFvKINDrR3i0AC3PbnMZ4.jpg"
+      },
+      {
+        "id": 313259,
+        "name": "Ελένη Κοκκίδου",
+        "profile_path": "/ryQF6H6vNqyQHdIdW5WMNQtPOeX.jpg"
+      },
+      {
+        "id": 1672813,
+        "name": "Δήμητρα Βλαγκοπούλου",
+        "profile_path": "/bk2cy1ckvlojT3X3ju7fzZ3CgB4.jpg"
+      },
+      {
+        "id": 3113000,
+        "name": "Ιβάν Σβιτάιλο",
+        "profile_path": "/1DY8Iy4EP7lcxPazcIyM1GVJt8W.jpg"
+      },
+      {
+        "id": 2581642,
+        "name": "Δανάη Επιθυμιάδη",
+        "profile_path": "/4GVZgLCSOBmGlrfSpztJnRastot.jpg"
+      },
+      {
+        "id": 2183236,
+        "name": "Αινείας Τσαμάτης",
+        "profile_path": "/prTOzxiNzhxbyTL6rufx2Ze5PzS.jpg"
+      },
+      {
+        "id": 5713509,
+        "name": "Χριστίνα Μαριάνου",
+        "profile_path": null
+      },
+      {
+        "id": 3708507,
+        "name": "Έλενα Μαρσίδου",
+        "profile_path": "/1H2bC3YxKWyho12YrLaJsc9RsMB.jpg"
+      }
+    ]
   },
   "o-timoros": {
     "id": "272357",
@@ -25402,7 +26703,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 1327928,
+        "name": "Δημήτρης Λάλος",
+        "profile_path": "/5ewWJL1dlTyj26mXB9Levemq8Hz.jpg"
+      },
+      {
+        "id": 123049,
+        "name": "Οδυσσέας Παπασπηλιόπουλος",
+        "profile_path": "/AcHMBNeIstM1HOXB0V0E7zAWBu7.jpg"
+      },
+      {
+        "id": 1155111,
+        "name": "Μαρίνα Καλογήρου",
+        "profile_path": "/pFHbzqa66mzYUQQ7FLRF4ZiWXf2.jpg"
+      },
+      {
+        "id": 1829192,
+        "name": "Λάζαρος Γεωργακόπουλος",
+        "profile_path": "/sMW2rVcVCrDHw7uwNjjt4FoCCy.jpg"
+      },
+      {
+        "id": 257875,
+        "name": "Γιώτα Φέστα",
+        "profile_path": "/qpX8P7QNaoytrdzc9qicJsY3Q9I.jpg"
+      },
+      {
+        "id": 3143054,
+        "name": "Εριέττα Μανούρη",
+        "profile_path": "/xSKJ2VCpHJinn0DdR63TZwOl1a5.jpg"
+      },
+      {
+        "id": 2581642,
+        "name": "Δανάη Επιθυμιάδη",
+        "profile_path": "/4GVZgLCSOBmGlrfSpztJnRastot.jpg"
+      },
+      {
+        "id": 2777449,
+        "name": "Μαρία Χάνου",
+        "profile_path": "/efQlEDsuMBG3OYJ9fBHiQ7v0Qlc.jpg"
+      },
+      {
+        "id": 2755029,
+        "name": "Κωνσταντίνος Γαβαλάς",
+        "profile_path": "/2IMT0dy1RBTbQxyVmrWvmqB0XRo.jpg"
+      },
+      {
+        "id": 2650960,
+        "name": "Ελεάνα  Στραβοδήμου",
+        "profile_path": "/rvjwdvCTZwDQt92BkYB6n86vLXZ.jpg"
+      }
+    ]
   },
   "iq-160": {
     "id": "223257",
@@ -25845,7 +27198,34 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777020524
+    "last_updated": 1777020524,
+    "cast": [
+      {
+        "id": 234812,
+        "name": "Σμαράγδα Καρύδη",
+        "profile_path": "/3aIrnWPYX991fBcL8c3vN90rx4a.jpg"
+      },
+      {
+        "id": 231405,
+        "name": "Νίκος Κουρής",
+        "profile_path": "/aznNCJtU9ThrYle8qwUBXOZxDUo.jpg"
+      },
+      {
+        "id": 2981300,
+        "name": "Μαρούσκα Παναγιωτοπούλου",
+        "profile_path": "/1oUh9uT2FBj5vSSkMboz0jm7gHB.jpg"
+      },
+      {
+        "id": 2162997,
+        "name": "Ηλίας Μουλάς",
+        "profile_path": "/1r0eAb1agAWOxjBxSjTkBUfxNjt.jpg"
+      },
+      {
+        "id": 2728153,
+        "name": "Ελίζα Σκολίδη",
+        "profile_path": "/kjjctJKGZ1AaUyrVvrqfVOE4rEt.jpg"
+      }
+    ]
   },
   "rififi": {
     "id": "306114",
@@ -25948,7 +27328,49 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777122246
+    "last_updated": 1777122246,
+    "cast": [
+      {
+        "id": 1252816,
+        "name": "Βασίλης Χαραλαμπόπουλος",
+        "profile_path": "/i4EVBH78c4GONzACMTO9aCm04tl.jpg"
+      },
+      {
+        "id": 2133865,
+        "name": "Πάνος Βλάχος",
+        "profile_path": "/ZU69YO1Ty8IzZ0ScAKvbntHIuq.jpg"
+      },
+      {
+        "id": 1303061,
+        "name": "Προμηθέας Αλειφερόπουλος",
+        "profile_path": "/qeElauWhFO6JxwpEFSB10mEl1at.jpg"
+      },
+      {
+        "id": 2871969,
+        "name": "Ευαγγελία Μουμούρη",
+        "profile_path": "/gAARMUNAY0TiMaKYkIulr6c8sQ7.jpg"
+      },
+      {
+        "id": 2204647,
+        "name": "Χρήστος Χατζηπαναγιώτης",
+        "profile_path": "/4lkG7jywoVP3DGn1ZacesD0bQ4s.jpg"
+      },
+      {
+        "id": 107836,
+        "name": "Βλαδίμηρος Κυριακίδης",
+        "profile_path": "/pDQDL6Mq28wzEiF2r4gdk43KdZI.jpg"
+      },
+      {
+        "id": 3009125,
+        "name": "Δήμος Γιγαντάκης",
+        "profile_path": "/jRl5jEnVaEODrwsHiT4eFIADDAa.jpg"
+      },
+      {
+        "id": 5828184,
+        "name": "Achilleas Zervas",
+        "profile_path": null
+      }
+    ]
   },
   "ayrio": {
     "id": "314588",
@@ -26067,7 +27489,29 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777123258
+    "last_updated": 1777123258,
+    "cast": [
+      {
+        "id": 980210,
+        "name": "Στεφανία Γουλιώτη",
+        "profile_path": "/9Vhn5Wi3heKIix1654ktiXKbw3L.jpg"
+      },
+      {
+        "id": 980217,
+        "name": "Χρήστος Λούλης",
+        "profile_path": "/8JZSfO7ZTfXXy74ABd9GHjUn9Cv.jpg"
+      },
+      {
+        "id": 1206241,
+        "name": "Θέμης Πάνου",
+        "profile_path": "/rb0ROJR5OxxW5uWpbrulyk32v9H.jpg"
+      },
+      {
+        "id": 122422,
+        "name": "Άννα Καλαϊτζίδου",
+        "profile_path": "/vYi8fa9L9gS7ScCVqwZgFfdmJ1R.jpg"
+      }
+    ]
   },
   "ta-fantasmata": {
     "id": "301679",
@@ -26208,7 +27652,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777123982
+    "last_updated": 1777123982,
+    "cast": [
+      {
+        "id": 1581919,
+        "name": "Έλλη Τρίγγου",
+        "profile_path": "/pXZGdJWz8QvlOVd5o8fib40SzFN.jpg"
+      },
+      {
+        "id": 556108,
+        "name": "Ορφέας Αυγουστίδης",
+        "profile_path": "/2E9Y02XZevGjOjJbC00wqjfccyJ.jpg"
+      },
+      {
+        "id": 1259843,
+        "name": "Ναταλία Τσαλίκη",
+        "profile_path": "/fozXuAVXUFnJJvS0u9r79xGvoqu.jpg"
+      },
+      {
+        "id": 1561760,
+        "name": "Στέλιος Ιακωβίδης",
+        "profile_path": "/5WSwzX51DzCzJL9gTN1OoAza345.jpg"
+      },
+      {
+        "id": 1631139,
+        "name": "Αγορίτσα Οικονόμου",
+        "profile_path": "/1ZfBGWxkmtddkrhmcow5ptX8ohm.jpg"
+      },
+      {
+        "id": 2651209,
+        "name": "Νίκος Γιαλελής",
+        "profile_path": "/qT23MqmkuCtaZ0YAhvX3t9QUFPm.jpg"
+      },
+      {
+        "id": 5714439,
+        "name": "Άρης Τρουπάκης",
+        "profile_path": "/v31hcs0iShmeLkifBIgIiBbeZMp.jpg"
+      },
+      {
+        "id": 2342337,
+        "name": "Θοδωρής Σκυφτούλης",
+        "profile_path": "/uyPuriqYSL0ilUb3LA6fufgKrsq.jpg"
+      },
+      {
+        "id": 2601656,
+        "name": "Ευαγγελία Καρακατσάνη",
+        "profile_path": "/nqpbbP8sIumAZRRy1zdkc0qa7wr.jpg"
+      },
+      {
+        "id": 5714446,
+        "name": "Χάρης Φλέουρας",
+        "profile_path": "/5n9PwxzyU5zwhQQF9YB3lNJweHz.jpg"
+      }
+    ]
   },
   "kakes-idees": {
     "id": "290634",
@@ -26309,7 +27805,54 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777125136
+    "last_updated": 1777125136,
+    "cast": [
+      {
+        "id": 1939220,
+        "name": "Διονύσης Ατζαράκης",
+        "profile_path": "/lG21IAE8sGjUKu2sBWMgNltdTFJ.jpg"
+      },
+      {
+        "id": 3697036,
+        "name": "Θανάσης Αλευράς",
+        "profile_path": "/qcROA7tH2IgU7wlcewS7fz119Hd.jpg"
+      },
+      {
+        "id": 1394193,
+        "name": "Μαίρη Συνατσάκη",
+        "profile_path": "/zOzEjV8JRfKurBr6ucGgvwebzLT.jpg"
+      },
+      {
+        "id": 5417623,
+        "name": "Θωμάς Ζάμπρας",
+        "profile_path": "/z4XG5xoIHQ3x7yf09Yj6jtfBSRt.jpg"
+      },
+      {
+        "id": 547056,
+        "name": "Γιάννης Μποσταντζόγλου",
+        "profile_path": "/nzC5iMDN5sdYfCnrDHysI1a6S2Q.jpg"
+      },
+      {
+        "id": 114257,
+        "name": "Ελισάβετ Κωνσταντινίδου",
+        "profile_path": "/cIM9wdiPPFrJTkHj9yK4BnEhxwe.jpg"
+      },
+      {
+        "id": 2133869,
+        "name": "Τζερόμ Καλούτα",
+        "profile_path": "/hKwnWtj5CtVWNeGtWHUgoFWwa9i.jpg"
+      },
+      {
+        "id": 2211657,
+        "name": "Δημήτρης Καμπόλης",
+        "profile_path": "/2Z63WbybrhcOBAyuJ5Axyyai1PR.jpg"
+      },
+      {
+        "id": 1274544,
+        "name": "Μαρία Καβογιάννη",
+        "profile_path": "/ponAG7CTYxHIfabbGvqEOnipis0.jpg"
+      }
+    ]
   },
   "ioannis-kapodistrias": {
     "id": "125293",
@@ -26408,7 +27951,39 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777126350
+    "last_updated": 1777126350,
+    "cast": [
+      {
+        "id": 2548786,
+        "name": "Σπύρος Σταμούλης",
+        "profile_path": "/z3sW5gMyPYJhpKdzft8k5aQAfkV.jpg"
+      },
+      {
+        "id": 3086199,
+        "name": "Γωγώ Ξηρού",
+        "profile_path": "/aj8gWYny1glrGAJ80RsPjZB5T2u.jpg"
+      },
+      {
+        "id": 2403279,
+        "name": "Νικόλας Παπαδομιχελάκης",
+        "profile_path": "/ceVKco300zLoX327InHH7RE0zFT.jpg"
+      },
+      {
+        "id": 1476117,
+        "name": "Σωτήρης Ταχτσόγλου",
+        "profile_path": "/1aA8VNQ8Wm213FI5lqwUmGN9fXs.jpg"
+      },
+      {
+        "id": 2650952,
+        "name": "Μαργαρίτα Καστρινού",
+        "profile_path": "/tLnyi8pTXitaxY9u8DXcQaY5XTH.jpg"
+      },
+      {
+        "id": 221965,
+        "name": "Γιώργος Γκικαπέππας",
+        "profile_path": "/8syuFqeY70LZuQoKgDRxhOC3dPC.jpg"
+      }
+    ]
   },
   "sto-para-5": {
     "id": "2386",
@@ -26944,7 +28519,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777144267
+    "last_updated": 1777144267,
+    "cast": [
+      {
+        "id": 234812,
+        "name": "Σμαράγδα Καρύδη",
+        "profile_path": "/3aIrnWPYX991fBcL8c3vN90rx4a.jpg"
+      },
+      {
+        "id": 114257,
+        "name": "Ελισάβετ Κωνσταντινίδου",
+        "profile_path": "/cIM9wdiPPFrJTkHj9yK4BnEhxwe.jpg"
+      },
+      {
+        "id": 1231197,
+        "name": "Γιώργος Καπουτζίδης",
+        "profile_path": "/s8sM9ez3TEeGV8W77LarxFNWLjD.jpg"
+      },
+      {
+        "id": 1977596,
+        "name": "Αργύρης Αγγέλου",
+        "profile_path": "/ixUmju0yC76w8ZFODsAQJxDNMJJ.jpg"
+      },
+      {
+        "id": 2915177,
+        "name": "Αγγελική Λάμπρη",
+        "profile_path": "/decS6g6fdfyhho1hjyEJAvBrMw6.jpg"
+      },
+      {
+        "id": 1312758,
+        "name": "Ειρήνη Κουμαριανού",
+        "profile_path": "/lYyMuuVPAzmT8OVEi6CMTDzYnjO.jpg"
+      },
+      {
+        "id": 1581924,
+        "name": "Παύλος Ορκόπουλος",
+        "profile_path": "/jX2LFULfLVw83yb3BfsSlBsoXl9.jpg"
+      },
+      {
+        "id": 2698177,
+        "name": "Ελένη Κρίτα",
+        "profile_path": "/zCSlCRB8XRY2FnBo4K12lF7NZOQ.jpg"
+      },
+      {
+        "id": 983965,
+        "name": "Έφη Παπαθεοδώρου",
+        "profile_path": "/yo4Sta1h0MrHjHff7mTPhUvZ4om.jpg"
+      },
+      {
+        "id": 935632,
+        "name": "Μιχάλης Μαρίνος",
+        "profile_path": "/jUBzjruevJ6JQMnI193QCWPZ5uu.jpg"
+      }
+    ]
   },
   "sto-para-pente---20-chronia-meta": {
     "id": "1603455",
@@ -26990,7 +28617,8 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777144862
+    "last_updated": 1777144862,
+    "cast": []
   },
   "to-dichty": {
     "id": "274612",
@@ -27160,7 +28788,39 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777146521
+    "last_updated": 1777146521,
+    "cast": [
+      {
+        "id": 1074621,
+        "name": "Άννα-Μαρία Παπαχαραλάμπους",
+        "profile_path": "/9e255iLdaFYIcanE8KVIdIKcFoo.jpg"
+      },
+      {
+        "id": 934628,
+        "name": "Θοδωρής Αθερίδης",
+        "profile_path": "/708sVpk73er82FSFgSAiXLETFIn.jpg"
+      },
+      {
+        "id": 1905514,
+        "name": "Φιόνα Γεωργιάδη",
+        "profile_path": "/XrlagscgfjTGX2quPe9nBNin0k.jpg"
+      },
+      {
+        "id": 2851141,
+        "name": "Σπύρος Μαραγκουδάκης",
+        "profile_path": "/rUz4vbBI7HRa5eAGcw5C9bo4kg9.jpg"
+      },
+      {
+        "id": 2685577,
+        "name": "Κατερίνα Κρανίδη",
+        "profile_path": "/9zctS1I9gIFjx75u3jBZoRWOzlC.jpg"
+      },
+      {
+        "id": 935678,
+        "name": "Γιάννης Τσιμιτσέλης",
+        "profile_path": "/v7L4OI3VnVyaluCXfiKTUAJEg06.jpg"
+      }
+    ]
   },
   "serres": {
     "id": "197956",
@@ -27370,7 +29030,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777147902
+    "last_updated": 1777147902,
+    "cast": [
+      {
+        "id": 2975453,
+        "name": "Γιώργος Ζυγούρης",
+        "profile_path": "/mpKaZhdfts4zs4McZfoUhJOxgsB.jpg"
+      },
+      {
+        "id": 1756038,
+        "name": "Γιώργος Γάλλος",
+        "profile_path": "/dXlNzObd2PQunMMGKRKTWoGqzAa.jpg"
+      },
+      {
+        "id": 2916180,
+        "name": "Λένα Δροσάκη",
+        "profile_path": "/qTOgKYFAWvqq5ONAHqx6cILdYtL.jpg"
+      },
+      {
+        "id": 3710747,
+        "name": "Μαριλού Κατσαφάδου",
+        "profile_path": "/jGOTwcQQwCO9uT7QhHwvwwAxSWj.jpg"
+      },
+      {
+        "id": 1638902,
+        "name": "Γιούλη Τσαγκαράκη",
+        "profile_path": "/29DGDZnSDhEOgbwcsbeK5cJIx2V.jpg"
+      },
+      {
+        "id": 2162995,
+        "name": "Ελένη Ουζουνίδου",
+        "profile_path": "/lvTNI6xkdCIxqRMilAz8HkiOQJK.jpg"
+      },
+      {
+        "id": 2133875,
+        "name": "Κωνσταντίνος Μουταφτσής",
+        "profile_path": "/dxmHacfgqscBfPdeuA4XzLtw6Dp.jpg"
+      },
+      {
+        "id": 5679612,
+        "name": "Louiza Pyriohou-Gyu",
+        "profile_path": "/q9n8lZKWQKP0MLOvdeZedwp5xu7.jpg"
+      },
+      {
+        "id": 3739660,
+        "name": "Γιώργος Βουβάκης",
+        "profile_path": "/vV5S3v1JpbODKZ33RIsBMQei8FG.jpg"
+      },
+      {
+        "id": 3731274,
+        "name": "Αλέξανδρος Πιεχόβιακ",
+        "profile_path": "/liGclfcwFUjXl6xs4MdfNnRO0kJ.jpg"
+      }
+    ]
   },
   "tampoy": {
     "id": "273056",
@@ -27889,7 +29601,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777150842
+    "last_updated": 1777150842,
+    "cast": [
+      {
+        "id": 1259849,
+        "name": "Μέμος Μπεγνής",
+        "profile_path": "/jkTpxJLBZf0Dc9HVioklhgxVm7t.jpg"
+      },
+      {
+        "id": 1483942,
+        "name": "Κατερίνα Μισιχρόνη",
+        "profile_path": "/a3F4EbaQorTcJiZx8fzSfSLGaep.jpg"
+      },
+      {
+        "id": 4972463,
+        "name": "Θάνος Λάμπρου",
+        "profile_path": "/AeIUnft1JR0Y8guxFHATEaEue5N.jpg"
+      },
+      {
+        "id": 4972464,
+        "name": "Χριστιάνα Βατίστα",
+        "profile_path": "/dflnV6h3c4wAOOFGLixb9nnrqh9.jpg"
+      },
+      {
+        "id": 2590865,
+        "name": "Θεοχάρης Ιωαννίδης",
+        "profile_path": "/mBoyn96KnrPBIhQxRiZ3MYZJMuV.jpg"
+      },
+      {
+        "id": 4972466,
+        "name": "Ιάσονας Χρόνης",
+        "profile_path": "/dlWLlxTUQol05Wgjn9BhvMXpwwo.jpg"
+      },
+      {
+        "id": 1552007,
+        "name": "Νίκη Βακάλη",
+        "profile_path": "/AsO2fufU2jNVAO6xFAwHznCUiKR.jpg"
+      },
+      {
+        "id": 4972468,
+        "name": "Εβίτα Αγαΐτση",
+        "profile_path": "/ofidlZOJYbLJksoxu0mRO2EHPln.jpg"
+      },
+      {
+        "id": 3250556,
+        "name": "Χρύσα Μιχαλοπούλου",
+        "profile_path": "/vNmyKcjUnPAuqvVXl3doXWFQCTH.jpg"
+      },
+      {
+        "id": 3494740,
+        "name": "Νικόλας Μακρής",
+        "profile_path": "/ktB0cc1o0IsLYNhyETs8zDxDuFS.jpg"
+      }
+    ]
   },
   "maestro": {
     "id": "209504",
@@ -28134,7 +29898,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777152651
+    "last_updated": 1777152651,
+    "cast": [
+      {
+        "id": 221966,
+        "name": "Χριστόφορος Παπακαλιάτης",
+        "profile_path": "/9W3OHt1sEgPhvoKhyfudtKArTy1.jpg"
+      },
+      {
+        "id": 3305710,
+        "name": "Κλέλια Ανδριολάτου",
+        "profile_path": "/ePHyPgWa1fJb5FhqDjnN0e2T2u9.jpg"
+      },
+      {
+        "id": 3688767,
+        "name": "Ορέστης Χαλκιάς",
+        "profile_path": "/8iirn5uEqgrNCwUox6brAMKqYlK.jpg"
+      },
+      {
+        "id": 1287134,
+        "name": "Φάνης Μουρατίδης",
+        "profile_path": "/asHekemJz9AemBJ3ud59eLbtzwg.jpg"
+      },
+      {
+        "id": 1094733,
+        "name": "Μαρίσσα Τριανταφυλλίδου",
+        "profile_path": "/qsgTbSX4BAHpPzNpFfXlqUWbZ3w.jpg"
+      },
+      {
+        "id": 980215,
+        "name": "Γιάννης Τσορτέκης",
+        "profile_path": "/bpMkkFGhZCRHBdEtv7zgxTEM2Qt.jpg"
+      },
+      {
+        "id": 1274544,
+        "name": "Μαρία Καβογιάννη",
+        "profile_path": "/ponAG7CTYxHIfabbGvqEOnipis0.jpg"
+      },
+      {
+        "id": 3239387,
+        "name": "Γιώργος Μπένος",
+        "profile_path": "/bDoVrPwoShypmZegaaVx4z5nuen.jpg"
+      },
+      {
+        "id": 1847255,
+        "name": "Χάρις Αλεξίου",
+        "profile_path": "/hKlrPIsTBvrjOLGMFtgCH7rEr97.jpg"
+      },
+      {
+        "id": 980210,
+        "name": "Στεφανία Γουλιώτη",
+        "profile_path": "/9Vhn5Wi3heKIix1654ktiXKbw3L.jpg"
+      }
+    ]
   },
   "i-katara-tis-tzelas-delafragka": {
     "id": "272369",
@@ -28313,7 +30129,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777157224
+    "last_updated": 1777157224,
+    "cast": [
+      {
+        "id": 82504,
+        "name": "Αλέξανδρος Αντωνόπουλος",
+        "profile_path": "/gyhGBT1F8ODEjvdKo5eeDJe4TlZ.jpg"
+      },
+      {
+        "id": 2491659,
+        "name": "Ιωάννης Απέργης",
+        "profile_path": "/3kZkV1mUw6mKXYCuLQSh5XwRcn4.jpg"
+      },
+      {
+        "id": 2594699,
+        "name": "Σοφία Βογιατζάκη",
+        "profile_path": "/estbeTlmboPW0c4VnK74DntDJZo.jpg"
+      },
+      {
+        "id": 2001808,
+        "name": "Βάσω Γουλιελμάκη",
+        "profile_path": "/dCEwJw6RBp9wyssZm4dOztxMWTs.jpg"
+      },
+      {
+        "id": 2923294,
+        "name": "Τζένη Διαγούπη",
+        "profile_path": "/27HRyPuRXu4IDksNGj8tECls57S.jpg"
+      },
+      {
+        "id": 576491,
+        "name": "Τζόυς Ευείδη",
+        "profile_path": "/jwGBVqqcb8yWHOlCqSnhSxwVUtH.jpg"
+      },
+      {
+        "id": 1731400,
+        "name": "Μάνος Ιωάννου",
+        "profile_path": "/kpX8cMmVfpL4ZZpMdkP8EOj0pWT.jpg"
+      },
+      {
+        "id": 2433897,
+        "name": "Κώστας Καζάκας",
+        "profile_path": "/zYwDU7WurVZqPapL8WmZqzeEPKe.jpg"
+      },
+      {
+        "id": 1944111,
+        "name": "Άννα Κουρή",
+        "profile_path": "/oBiwCjFMjS9jcwzbJmkpsdv6TPE.jpg"
+      },
+      {
+        "id": 2678095,
+        "name": "Καίτη Κωνσταντίνου",
+        "profile_path": "/2TmQ7D9HEeedOnHRpuFaK85rHSq.jpg"
+      }
+    ]
   },
   "eytychismenoi-mazi": {
     "id": "49268",
@@ -28967,7 +30835,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777187499
+    "last_updated": 1777187499,
+    "cast": [
+      {
+        "id": 1009361,
+        "name": "Γιάννης Μπέζος",
+        "profile_path": "/3UnW6LTJ01tryxM72MlmQnsXwcY.jpg"
+      },
+      {
+        "id": 1252815,
+        "name": "Κατερίνα Λέχου",
+        "profile_path": "/sYnbaMoL6C0OpLUFdUbl6cgfPqA.jpg"
+      },
+      {
+        "id": 2591073,
+        "name": "Πέτρος Μπουσουλόπουλος",
+        "profile_path": "/tcVV8Tbta9TtGYNOlmFapmbhwvY.jpg"
+      },
+      {
+        "id": 2120350,
+        "name": "Ιωάννα Πηλιχού",
+        "profile_path": "/vfjdjA2eP8cwMDSkZrS1fufRJRT.jpg"
+      },
+      {
+        "id": 1505063,
+        "name": "Άρης Τσάπης",
+        "profile_path": "/czaTbRWDHmRoxpQWzTJDmNpMU50.jpg"
+      },
+      {
+        "id": 2591076,
+        "name": "Εύη Δαέλη",
+        "profile_path": "/3ORcK7nascFHQwEiPvb9G9NMTZ8.jpg"
+      },
+      {
+        "id": 2591077,
+        "name": "Σάββας Σαλίπας",
+        "profile_path": "/qcbF5khBPKSSlwa3m63e8ar6O4b.jpg"
+      },
+      {
+        "id": 2260235,
+        "name": "Τάσος Γιαννόπουλος",
+        "profile_path": "/wZA2ytT50ZsfjfTip7OrvmmSb7N.jpg"
+      },
+      {
+        "id": 1960374,
+        "name": "Βιβή Κόκκα",
+        "profile_path": "/rU0ot9mZZq158FvgcKOjcVWeGI3.jpg"
+      },
+      {
+        "id": 1505958,
+        "name": "Δημήτρης Μαυρόπουλος",
+        "profile_path": "/qgluvSZKi0xhRB0iGVzZRK4W23w.jpg"
+      }
+    ]
   },
   "eisai-to-tairi-moy": {
     "id": "34363",
@@ -29306,7 +31226,54 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777196279
+    "last_updated": 1777196279,
+    "cast": [
+      {
+        "id": 1252817,
+        "name": "Βίκυ Σταυροπούλου",
+        "profile_path": "/uadjYl60OUyzxHcWobrpgRR2iSl.jpg"
+      },
+      {
+        "id": 1252816,
+        "name": "Βασίλης Χαραλαμπόπουλος",
+        "profile_path": "/i4EVBH78c4GONzACMTO9aCm04tl.jpg"
+      },
+      {
+        "id": 102999,
+        "name": "Αλέκος Συσσοβίτης",
+        "profile_path": "/no0CGPfNMjJGKAicvLZ4QmyCGIG.jpg"
+      },
+      {
+        "id": 1252815,
+        "name": "Κατερίνα Λέχου",
+        "profile_path": "/sYnbaMoL6C0OpLUFdUbl6cgfPqA.jpg"
+      },
+      {
+        "id": 89705,
+        "name": "Αλέξης Γεωργούλης",
+        "profile_path": "/6R8fwSp48qU4eeZm20QRrVbXMwU.jpg"
+      },
+      {
+        "id": 134790,
+        "name": "Άρης Σερβετάλης",
+        "profile_path": "/dbHDNmLwBVjJ7EcipfCq2CWcW9q.jpg"
+      },
+      {
+        "id": 1252821,
+        "name": "Δάφνη Λαμπρόγιαννη",
+        "profile_path": "/8ByACOC3zlHT9k4CZfnJ9Dzietg.jpg"
+      },
+      {
+        "id": 3051479,
+        "name": "Μαρία Κατσουλίδη",
+        "profile_path": "/8AoKRUZQNCXV6KhPndgVJO8vGRZ.jpg"
+      },
+      {
+        "id": 3179703,
+        "name": "Κάτια Αυγουστάτου",
+        "profile_path": null
+      }
+    ]
   },
   "famagusta": {
     "id": "242840",
@@ -29514,7 +31481,54 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777193678
+    "last_updated": 1777193678,
+    "cast": [
+      {
+        "id": 1009361,
+        "name": "Γιάννης Μπέζος",
+        "profile_path": "/3UnW6LTJ01tryxM72MlmQnsXwcY.jpg"
+      },
+      {
+        "id": 1235132,
+        "name": "Κοραλία Καράντη",
+        "profile_path": "/6T10bEuNsjfdRatfI3HWxXzMI6N.jpg"
+      },
+      {
+        "id": 980217,
+        "name": "Χρήστος Λούλης",
+        "profile_path": "/8JZSfO7ZTfXXy74ABd9GHjUn9Cv.jpg"
+      },
+      {
+        "id": 1573967,
+        "name": "Αντρέας Γεωργίου",
+        "profile_path": "/22lUrYlZ3oQD0vW1E9ha7KWFOW.jpg"
+      },
+      {
+        "id": 1944115,
+        "name": "Βασιλική Τρουφάκου",
+        "profile_path": "/xlHfxuWaOGzoepgoqIqshNRQ7Se.jpg"
+      },
+      {
+        "id": 2589225,
+        "name": "Στέφανος Μιχαήλ",
+        "profile_path": "/z0vhMNKgMZuE5utNJOX1in845qZ.jpg"
+      },
+      {
+        "id": 4496155,
+        "name": "Χριστίνα Παπαδοπούλου",
+        "profile_path": "/7BQhIC7uRKRJNmfgsk0Lf1HvzRB.jpg"
+      },
+      {
+        "id": 2133867,
+        "name": "Σοφία Παυλίδου",
+        "profile_path": "/sXgNXiaRYnAhcS63xAkS832wWSx.jpg"
+      },
+      {
+        "id": 2204644,
+        "name": "Μαριάννα Σάντη",
+        "profile_path": "/rImOiuLaM03qNqd2hHrSzzvCbRH.jpg"
+      }
+    ]
   },
   "i-maria-poy-egine-kallas": {
     "id": "272373",
@@ -29659,7 +31673,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777197666
+    "last_updated": 1777197666,
+    "cast": [
+      {
+        "id": 4959758,
+        "name": "Κλεοπάτρα Ελευθεριάδου",
+        "profile_path": "/5fATVen57evBUwapfkWwwpnMrfR.jpg"
+      },
+      {
+        "id": 1252564,
+        "name": "Ελένη Ράντου",
+        "profile_path": "/xEO3XSGQGTvfkUo7ide8jsj4N9R.jpg"
+      },
+      {
+        "id": 72514,
+        "name": "Ρένια Λουιζίδου",
+        "profile_path": "/alB84YXLJ4HGHgmiGiCZdYgRPRH.jpg"
+      },
+      {
+        "id": 3076618,
+        "name": "Δήμητρα Παπαδέα",
+        "profile_path": "/sxz7Vkt3z35HixYfTObQI0GNf7t.jpg"
+      },
+      {
+        "id": 428967,
+        "name": "Ιωάννης Παπαζήσης",
+        "profile_path": "/iq47Uv3Qh8HkyBGFdp0S0iUvpz5.jpg"
+      },
+      {
+        "id": 1262859,
+        "name": "Μάξιμος Μουμούρης",
+        "profile_path": "/7qcUuFdmNAWSSVVKqQcK0OmM24j.jpg"
+      },
+      {
+        "id": 2444400,
+        "name": "Κάρμεν Ρουγγέρη",
+        "profile_path": "/jf2KySEQYBDF6zfn269zZ7EeT8X.jpg"
+      },
+      {
+        "id": 936030,
+        "name": "Χάρης Μαυρουδής",
+        "profile_path": "/kCaQehuljQF6oqNXgKtP5QCn073.jpg"
+      },
+      {
+        "id": 1324007,
+        "name": "Νίκος Ορφανός",
+        "profile_path": "/nK1LNm93C5UjN3WXbmi3fAwumnX.jpg"
+      },
+      {
+        "id": 2001810,
+        "name": "Χάρης Γρηγορόπουλος",
+        "profile_path": "/AcixdBzFYw8jk3qPYF00TgEYAe1.jpg"
+      }
+    ]
   },
   "mayroi-pinakes": {
     "id": "273166",
@@ -29800,7 +31866,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777198195
+    "last_updated": 1777198195,
+    "cast": [
+      {
+        "id": 1184648,
+        "name": "Κάτια Γκουλιώνη",
+        "profile_path": "/gJMnJwV3rTQMWglWj3T4l9faZey.jpg"
+      },
+      {
+        "id": 1262857,
+        "name": "Σοφία Κόκκαλη",
+        "profile_path": "/f73BjobgrH9dwqwyoBHeCTZTpgw.jpg"
+      },
+      {
+        "id": 550332,
+        "name": "Αντίνοος Αλμπάνης",
+        "profile_path": "/xIWdcWAZywLSZy3A2xKrzUjWO3x.jpg"
+      },
+      {
+        "id": 1672812,
+        "name": "Δημήτρης Κίτσος",
+        "profile_path": "/xJEDdzJCPv44PhRvAm05fAK7tQg.jpg"
+      },
+      {
+        "id": 428967,
+        "name": "Ιωάννης Παπαζήσης",
+        "profile_path": "/iq47Uv3Qh8HkyBGFdp0S0iUvpz5.jpg"
+      },
+      {
+        "id": 1394174,
+        "name": "Λένα Παπαληγούρα",
+        "profile_path": "/pjVnvtvgvutYFYPLpjduQpbtI0O.jpg"
+      },
+      {
+        "id": 1800229,
+        "name": "Θοδωρής Κατσαφάδος",
+        "profile_path": "/elsZS9CsBkeK9u4e2Z4UNZnAfbK.jpg"
+      },
+      {
+        "id": 1301104,
+        "name": "Όλγα Πολίτου",
+        "profile_path": "/nEipDPEoP5ophwzz3nQ3PTEtiRA.jpg"
+      },
+      {
+        "id": 2424701,
+        "name": "Σωτήρης Χατζάκης",
+        "profile_path": "/aJKOGKHoiawDaTfSRdEEIlcgXq2.jpg"
+      },
+      {
+        "id": 1314030,
+        "name": "Ελένη Βεργέτη",
+        "profile_path": "/8HW5JOrRNdlRniILTfHiMggDSKM.jpg"
+      }
+    ]
   },
   "san-psema": {
     "id": "251505",
@@ -30491,7 +32609,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777200417
+    "last_updated": 1777200417,
+    "cast": [
+      {
+        "id": 1191421,
+        "name": "Κατερίνα Γερονικολού",
+        "profile_path": "/pe6wkYcagryHfyhQi1CiGUE0Jh5.jpg"
+      },
+      {
+        "id": 2589227,
+        "name": "Νίκος Πολυδερόπουλος",
+        "profile_path": "/5wIir1T0OcpVp532qqAtYNmQ53X.jpg"
+      },
+      {
+        "id": 2232512,
+        "name": "Χάρης Σώζος",
+        "profile_path": "/ezEhB5Z1q9TxS06QJMsHC3Ze4vn.jpg"
+      },
+      {
+        "id": 1605840,
+        "name": "Αλέξανδρος Μπουρδούμης",
+        "profile_path": "/bZDHTxoPu0w4EwfvWBWK7N6jDGl.jpg"
+      },
+      {
+        "id": 3767335,
+        "name": "Μαρίνα Βρόντη",
+        "profile_path": "/wFyQLsfb5zmNNTfonfRvltXUrLM.jpg"
+      },
+      {
+        "id": 3745044,
+        "name": "Κατερίνα Νικολοπούλου",
+        "profile_path": "/rAY1hzGbEQ0lB1w1hS6cT2mWYEX.jpg"
+      },
+      {
+        "id": 2981303,
+        "name": "Ευθύμης Γεωργόπουλος",
+        "profile_path": "/w5Wagumenv41Al5LRnG5PUNBhcp.jpg"
+      },
+      {
+        "id": 2830950,
+        "name": "Παναγιώτης Κυριάκου",
+        "profile_path": "/7SZ3Jp6h5YqRqqSQvuXDGsdmNft.jpg"
+      },
+      {
+        "id": 2832732,
+        "name": "Μαρίλια Χαριδήμου",
+        "profile_path": "/bqyEhfZVFzx6glQEXsog8X4xO8H.jpg"
+      },
+      {
+        "id": 2640615,
+        "name": "Πολυξένη Σάββα",
+        "profile_path": "/nn56W3AoKfSTUkP4d8QOdiW2JyN.jpg"
+      }
+    ]
   },
   "erimi-chora": {
     "id": "240827",
@@ -30695,7 +32865,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777205268
+    "last_updated": 1777205268,
+    "cast": [
+      {
+        "id": 1543387,
+        "name": "Γιώργος Κέντρος",
+        "profile_path": "/fuDlZlvQJILxVJDGehxOm8Sh52F.jpg"
+      },
+      {
+        "id": 1404666,
+        "name": "Δανάη Σκιάδη",
+        "profile_path": "/7PS7iuG9pEXCSxZzoo37X5P2ynj.jpg"
+      },
+      {
+        "id": 1132978,
+        "name": "Γιώργος Καραμίχος",
+        "profile_path": "/thRvCCxhqXWd5LINXzEOmxjdwza.jpg"
+      },
+      {
+        "id": 4409666,
+        "name": "Άννα Μαρία Μαρινάκη",
+        "profile_path": "/veKVT3gAiIdYh8QAdroVec9fd77.jpg"
+      },
+      {
+        "id": 1932443,
+        "name": "Νίκος Αρβανίτης",
+        "profile_path": "/a8OwerZ4He5oHwLznWqKLLrJrad.jpg"
+      },
+      {
+        "id": 1327096,
+        "name": "Αλεξάνδρα Αϊδίνη",
+        "profile_path": "/ilmLRLO6JaSxhjQn5QGwhVeta61.jpg"
+      },
+      {
+        "id": 5213091,
+        "name": "Fidel Talampoukas",
+        "profile_path": "/xR3hCV3fOm68RMMzPpivUzejbwB.jpg"
+      },
+      {
+        "id": 569316,
+        "name": "Γιώργος Γιαννόπουλος",
+        "profile_path": "/odX4BbgT4kcjgVOSRyVwXKiTWSF.jpg"
+      },
+      {
+        "id": 2010724,
+        "name": "Κίττυ Παϊταζόγλου",
+        "profile_path": "/x8u77sWMdlc2FTIS5AUjm529ws3.jpg"
+      },
+      {
+        "id": 2707850,
+        "name": "Χρήστος Κοντογεώργης",
+        "profile_path": "/rCQi6odmj7IVNmtDBJgKb1BU9p.jpg"
+      }
+    ]
   },
   "monterna-oikogeneia": {
     "id": "102126",
@@ -31169,7 +33391,8 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777203399
+    "last_updated": 1777203399,
+    "cast": []
   },
   "sta-synora": {
     "id": "238381",
@@ -31808,7 +34031,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777209898
+    "last_updated": 1777209898,
+    "cast": [
+      {
+        "id": 1371806,
+        "name": "Υρώ Μανέ",
+        "profile_path": "/sqkrDkgJ5sklJL17tI9FZHLx4CV.jpg"
+      },
+      {
+        "id": 1260645,
+        "name": "Κώστας Κόκλας",
+        "profile_path": "/xjZVYFpPMyKFEqXjldnJ8Le9EET.jpg"
+      },
+      {
+        "id": 1327097,
+        "name": "Νίκος Πουρσανίδης",
+        "profile_path": "/waLxFpE70XMfIut14ILcNe39eSV.jpg"
+      },
+      {
+        "id": 2424556,
+        "name": "Λίλα Μπακλέση",
+        "profile_path": "/ig4y2ka5htXRdiiTzEbhZUJvFqN.jpg"
+      },
+      {
+        "id": 2607204,
+        "name": "Σπύρος Πούλης",
+        "profile_path": "/7aTg8y85K9k2V9FLwi3EwGs9Ikt.jpg"
+      },
+      {
+        "id": 935666,
+        "name": "Κώστας Αποστολάκης",
+        "profile_path": "/ncI0p46KJYdceJqkpbDDSUOj3fM.jpg"
+      },
+      {
+        "id": 2040799,
+        "name": "Βαλέρια Κουρούπη",
+        "profile_path": "/yYWTBvhS4aVFfosPCDZQ7yjKED0.jpg"
+      },
+      {
+        "id": 547056,
+        "name": "Γιάννης Μποσταντζόγλου",
+        "profile_path": "/nzC5iMDN5sdYfCnrDHysI1a6S2Q.jpg"
+      },
+      {
+        "id": 3250557,
+        "name": "Ρένος Ρώτας",
+        "profile_path": "/lsOcYyigRD1ddvQC6I3W2e9a1Pk.jpg"
+      },
+      {
+        "id": 2965221,
+        "name": "Πάρις Θωμόπουλος",
+        "profile_path": "/t0q5iPdMH3zk9F4gAiiKQ2iWrFm.jpg"
+      }
+    ]
   },
   "oi-pantheoi": {
     "id": "235603",
@@ -32957,7 +35232,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777216468
+    "last_updated": 1777216468,
+    "cast": [
+      {
+        "id": 26697,
+        "name": "Κάτια Δανδουλάκη",
+        "profile_path": "/tekLNq4eqY1nmnIAliTQNzZtUIZ.jpg"
+      },
+      {
+        "id": 347513,
+        "name": "Αιμίλιος Χειλάκης",
+        "profile_path": "/gouquF9x8Mh5tWJefNrdfOWbyQq.jpg"
+      },
+      {
+        "id": 1133011,
+        "name": "Μελία Κράιλινγκ",
+        "profile_path": "/qOU56iXoaIouUX5zBip85tGKcrd.jpg"
+      },
+      {
+        "id": 2144696,
+        "name": "Μιχάλης Σαράντης",
+        "profile_path": "/u5tcdimNyvueow9tiXKlc2lvHjb.jpg"
+      },
+      {
+        "id": 1552010,
+        "name": "Νίκος Χατζόπουλος",
+        "profile_path": "/jxkwqX31kCLDOmGVPpcScF8Hj2K.jpg"
+      },
+      {
+        "id": 2862708,
+        "name": "Θανάσης Κουρλαμπάς",
+        "profile_path": "/eJgDppqpzWNsxSX3tGs7IiLGc2r.jpg"
+      },
+      {
+        "id": 1094734,
+        "name": "Μαρία Καλλιμάνη",
+        "profile_path": "/yF2As1EYjkyAu6OJbVNzHoKaFxw.jpg"
+      },
+      {
+        "id": 935648,
+        "name": "Πηνελόπη Πιτσούλη",
+        "profile_path": "/g7yJpl7Yly8HeTIjrmsFTTBmQaY.jpg"
+      },
+      {
+        "id": 980211,
+        "name": "Κόρα Καρβούνη",
+        "profile_path": "/7z0Yn7Ckhcoeapzj5LnN0TKiEaI.jpg"
+      },
+      {
+        "id": 2548786,
+        "name": "Σπύρος Σταμούλης",
+        "profile_path": "/z3sW5gMyPYJhpKdzft8k5aQAfkV.jpg"
+      }
+    ]
   },
   "o-skarabaios": {
     "id": "246140",
@@ -33138,7 +35465,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777217907
+    "last_updated": 1777217907,
+    "cast": [
+      {
+        "id": 980215,
+        "name": "Γιάννης Τσορτέκης",
+        "profile_path": "/bpMkkFGhZCRHBdEtv7zgxTEM2Qt.jpg"
+      },
+      {
+        "id": 935654,
+        "name": "Γιώργος Πυρπασόπουλος",
+        "profile_path": "/aIJkP19buid0HALQTmbT6GvUpv6.jpg"
+      },
+      {
+        "id": 3701206,
+        "name": "Μαρία Παπαφωτίου",
+        "profile_path": "/t6yIgVoy6PfxLM4KvkanbDWtEuz.jpg"
+      },
+      {
+        "id": 1261726,
+        "name": "Νικολέττα Καρρά",
+        "profile_path": "/sRk7dvVhsGWafP3lASTAXdXOaOs.jpg"
+      },
+      {
+        "id": 2707849,
+        "name": "Αλεξάνδρα Ταβουλάρη",
+        "profile_path": "/5HnkqLuRSPZvZxGqMEbdHXwn3Jo.jpg"
+      },
+      {
+        "id": 1479647,
+        "name": "Βάσω Καβαλιεράτου",
+        "profile_path": "/85J4CFZuyIWp07fziBscFW0H8Wo.jpg"
+      },
+      {
+        "id": 2172150,
+        "name": "Κωνσταντίνος Λιάρος",
+        "profile_path": "/8IyWEtUuae5Hf7q9ZyfKU3eZYyR.jpg"
+      },
+      {
+        "id": 1266210,
+        "name": "Μανώλης Μαυροματάκης",
+        "profile_path": "/5DMnJPmR1K8r1vOC0d8EVSHPRd2.jpg"
+      },
+      {
+        "id": 448591,
+        "name": "Ράνια Οικονομίδου",
+        "profile_path": "/4pZvjjNbAqeXxSuqaa4lltAUFQx.jpg"
+      },
+      {
+        "id": 1800229,
+        "name": "Θοδωρής Κατσαφάδος",
+        "profile_path": "/elsZS9CsBkeK9u4e2Z4UNZnAfbK.jpg"
+      }
+    ]
   },
   "to-nayagio": {
     "id": "236210",
@@ -34317,7 +36696,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777236650
+    "last_updated": 1777236650,
+    "cast": [
+      {
+        "id": 1009362,
+        "name": "Γιάννης Στάνκογλου",
+        "profile_path": "/5W0k7Avq0rVyFC2H6rYXUQWNhbC.jpg"
+      },
+      {
+        "id": 2263843,
+        "name": "Αναστασία Παντούση",
+        "profile_path": "/4zjfSwYd774GWKiEAwih36Lhshp.jpg"
+      },
+      {
+        "id": 1208489,
+        "name": "Λεωνίδας Κακούρης",
+        "profile_path": "/mv9N3IEdYlrfGCH5K5487AV0MNT.jpg"
+      },
+      {
+        "id": 2783230,
+        "name": "Μιχαήλ Ταμπακάκης",
+        "profile_path": "/4gQadAEmfHPY94kkSlWxe8BV79I.jpg"
+      },
+      {
+        "id": 1455553,
+        "name": "Γιώργος Χρυσοστόμου",
+        "profile_path": "/w5OYOI3VFZRSBuEdriopRKoj8u4.jpg"
+      },
+      {
+        "id": 18848,
+        "name": "Γεράσιμος Σκιαδαρέσης",
+        "profile_path": "/mEgKWwbNNQLhF9s7dOSQM0FezoS.jpg"
+      },
+      {
+        "id": 2851140,
+        "name": "Δημήτρης Καπουράνης",
+        "profile_path": "/kA3lOStmSVAJC4MHmIWjbuwOzp2.jpg"
+      },
+      {
+        "id": 3259695,
+        "name": "Αθηνά Ροδίτου",
+        "profile_path": "/mmb5MWIXYFlXS5sIqgoTWeaUbRE.jpg"
+      },
+      {
+        "id": 4325610,
+        "name": "Αμαλία Καβάλη",
+        "profile_path": "/rKUv9fQAl42FqZnIkBvVAUGNwIO.jpg"
+      },
+      {
+        "id": 1186185,
+        "name": "Μαρία Ζορμπά",
+        "profile_path": "/zaaju2c9gNTtji56nZFqQ0M4Duu.jpg"
+      }
+    ]
   },
   "zoi": {
     "id": "224485",
@@ -34482,7 +36913,39 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777237595
+    "last_updated": 1777237595,
+    "cast": [
+      {
+        "id": 1274544,
+        "name": "Μαρία Καβογιάννη",
+        "profile_path": "/ponAG7CTYxHIfabbGvqEOnipis0.jpg"
+      },
+      {
+        "id": 2922962,
+        "name": "Ευδοκία Ρουμελιώτη",
+        "profile_path": "/vxmLZ2CDCSG9rGu00NbE1tNDWID.jpg"
+      },
+      {
+        "id": 1418981,
+        "name": "Κώστας Φιλίππογλου",
+        "profile_path": "/f9bGWLBWS31nLpE9aJSNPftEUkl.jpg"
+      },
+      {
+        "id": 3758561,
+        "name": "Γιάννης Σοφολόγης",
+        "profile_path": "/3yMZFKVGQlSnaUGtbYPOqf8MxQB.jpg"
+      },
+      {
+        "id": 929254,
+        "name": "Γιώργος Κοψιδάς",
+        "profile_path": "/1EASaekUomrf2RBsD3WDPU0kmOI.jpg"
+      },
+      {
+        "id": 1476489,
+        "name": "Ιωάννα Τριανταφυλλίδου",
+        "profile_path": "/eLQ8YOoRV4x9lKFIx3s8cObLvHK.jpg"
+      }
+    ]
   },
   "psychokores": {
     "id": "233804",
@@ -35135,7 +37598,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777241947
+    "last_updated": 1777241947,
+    "cast": [
+      {
+        "id": 4344189,
+        "name": "Μαριάννα Κιμούλη",
+        "profile_path": "/flviGNW3xU3HP0zQtzVsujnZmKB.jpg"
+      },
+      {
+        "id": 3833141,
+        "name": "Μαργαρίτα Αλεξιάδη",
+        "profile_path": "/AvIhhMTtZXfvBDiQ2hIegf29PbA.jpg"
+      },
+      {
+        "id": 3748426,
+        "name": "Άννα Λουιζίδη",
+        "profile_path": "/9vR3JpFe545aWRDmMqBJWLIt6Op.jpg"
+      },
+      {
+        "id": 4344202,
+        "name": "Μένια Βουλιώτη",
+        "profile_path": "/jCAGYpXplCKE2EVQf776hIsW2S8.jpg"
+      },
+      {
+        "id": 1152205,
+        "name": "Δήμητρα Ματσούκα",
+        "profile_path": "/z3UxwOKJZ3HFlM16kyT0oGoXjam.jpg"
+      },
+      {
+        "id": 1194929,
+        "name": "Γιούλικα Σκαφιδά",
+        "profile_path": "/ag7QJW3CkG9Bbqm7vaEVDsfVx2r.jpg"
+      },
+      {
+        "id": 935647,
+        "name": "Πυγμαλίων Δαδακαρίδης",
+        "profile_path": "/xR2Imx1ykXG0lep5K1YOab9pyix.jpg"
+      },
+      {
+        "id": 123049,
+        "name": "Οδυσσέας Παπασπηλιόπουλος",
+        "profile_path": "/AcHMBNeIstM1HOXB0V0E7zAWBu7.jpg"
+      },
+      {
+        "id": 82504,
+        "name": "Αλέξανδρος Αντωνόπουλος",
+        "profile_path": "/gyhGBT1F8ODEjvdKo5eeDJe4TlZ.jpg"
+      },
+      {
+        "id": 2888532,
+        "name": "Μαρίνα Ασλάνογλου",
+        "profile_path": "/yUr0NsSScs8T69X23RXX2CEjAb0.jpg"
+      }
+    ]
   },
   "o-protos-apo-emas": {
     "id": "236446",
@@ -35776,7 +38291,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777244572
+    "last_updated": 1777244572,
+    "cast": [
+      {
+        "id": 935678,
+        "name": "Γιάννης Τσιμιτσέλης",
+        "profile_path": "/v7L4OI3VnVyaluCXfiKTUAJEg06.jpg"
+      },
+      {
+        "id": 2586069,
+        "name": "Μάριος Αθανασίου",
+        "profile_path": "/vXlibi7rqGns7JBPYbHaon5WRVB.jpg"
+      },
+      {
+        "id": 1585077,
+        "name": "Αθηνά Οικονομάκου",
+        "profile_path": "/wt87bBXh6qVxiNZWg4MUtgbfVZ8.jpg"
+      },
+      {
+        "id": 2916180,
+        "name": "Λένα Δροσάκη",
+        "profile_path": "/qTOgKYFAWvqq5ONAHqx6cILdYtL.jpg"
+      },
+      {
+        "id": 1984091,
+        "name": "Σπύρος Χατζηαγγελάκης",
+        "profile_path": "/6jTPq8q2L1JIcUbUyapUN5Osf1l.jpg"
+      },
+      {
+        "id": 1940867,
+        "name": "Βίβιαν Κοντομάρη",
+        "profile_path": "/2neUqmha9mebEX2LbCVPWl2QA5Y.jpg"
+      },
+      {
+        "id": 1620753,
+        "name": "Γιάννης Δρακόπουλος",
+        "profile_path": "/nhl2uRSthmBPAYgj4OwAyKaj9ft.jpg"
+      },
+      {
+        "id": 3767801,
+        "name": "Αντώνης Γιαννακός",
+        "profile_path": "/fSZfj7I4PkQSx6jg83xIlNAURdk.jpg"
+      },
+      {
+        "id": 2987067,
+        "name": "Εύα Κοτανίδου",
+        "profile_path": "/QFDylswh2yZtVuUNWmCYxJhluL.jpg"
+      },
+      {
+        "id": 4341129,
+        "name": "Σεμέλη Μητροπούλου",
+        "profile_path": "/TtItTLzV4VGnr9CMPGEl3jUf3J.jpg"
+      }
+    ]
   },
   "kane-oti-koimasai": {
     "id": "210020",
@@ -35809,7 +38376,59 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777245000
+    "last_updated": 1777245000,
+    "cast": [
+      {
+        "id": 447183,
+        "name": "Σπύρος Παπαδόπουλος",
+        "profile_path": "/3WJoiXAMzHQbJeIb23uMdRfCad7.jpg"
+      },
+      {
+        "id": 550335,
+        "name": "Δημήτρης Καπετανάκος",
+        "profile_path": "/xnEwOzwMFwEi75978M5PLmk9iDV.jpg"
+      },
+      {
+        "id": 1944087,
+        "name": "Νικολέτα Κοτσαηλίδου",
+        "profile_path": "/fATK7hEvcA1y7fhbFi6nsL9cEMz.jpg"
+      },
+      {
+        "id": 3699322,
+        "name": "Γεωργία Μεσαρίτη",
+        "profile_path": "/zQNVXnwFLq7EiUfJ1UiKVw35LZr.jpg"
+      },
+      {
+        "id": 1817895,
+        "name": "Βίκυ Μαϊδάνογλου",
+        "profile_path": "/pgZKTXCqgE9LKTMU2IlC8NZ1HcJ.jpg"
+      },
+      {
+        "id": 1157093,
+        "name": "Φωτεινή Μπαξεβάνη",
+        "profile_path": "/dHMehZCrIlbOIBlMqYfJ6eQIqCO.jpg"
+      },
+      {
+        "id": 3667416,
+        "name": "Βασίλης Ευταξόπουλος",
+        "profile_path": "/1AXBzzUIrm0ZQAvpToo6ieBcius.jpg"
+      },
+      {
+        "id": 1148324,
+        "name": "Τζένη Θεωνά",
+        "profile_path": "/hafrfA0ONXAp26MIqMgr5HxgZGA.jpg"
+      },
+      {
+        "id": 2282424,
+        "name": "Ιωάννα Ασημακοπούλου",
+        "profile_path": "/d9Enm6H9TwmGdR2nSjUEkPW1sg.jpg"
+      },
+      {
+        "id": 2853948,
+        "name": "Αλέξανδρος Καλπακίδης",
+        "profile_path": "/xKABYzBBDBugoBMMYwUGysPNTvP.jpg"
+      }
+    ]
   },
   "sta-syrmata": {
     "id": "235649",
@@ -36102,6 +38721,53 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777246922
+    "last_updated": 1777246922,
+    "cast": [
+      {
+        "id": 936029,
+        "name": "Θανάσης Τσαλταμπάσης",
+        "profile_path": "/pqydFuemE4KHQe32CoVYj0Tg5yL.jpg"
+      },
+      {
+        "id": 3113000,
+        "name": "Ιβάν Σβιτάιλο",
+        "profile_path": "/1DY8Iy4EP7lcxPazcIyM1GVJt8W.jpg"
+      },
+      {
+        "id": 134791,
+        "name": "Βίκυ Παπαδοπούλου",
+        "profile_path": "/y2zSNMyjpNtdcpZIi2lqDw3RMxw.jpg"
+      },
+      {
+        "id": 935614,
+        "name": "Ντορέττα Παπαδημητρίου",
+        "profile_path": "/l8M4YsMf0ZIqDIJGdGF8AGhxWp1.jpg"
+      },
+      {
+        "id": 462664,
+        "name": "Γιώργος Χρανιώτης",
+        "profile_path": "/nBbO8lOGYTueJgh7qBAl2aFZXZV.jpg"
+      },
+      {
+        "id": 2372347,
+        "name": "Πάνος Σταθακόπουλος",
+        "profile_path": "/kAsa9bRiv08K5LMufbOWHCFnERM.jpg"
+      },
+      {
+        "id": 1184200,
+        "name": "Τάσος Παλαντζίδης",
+        "profile_path": "/qYqtHB1NUgo4kgFNzsU4eK4DvXm.jpg"
+      },
+      {
+        "id": 2040762,
+        "name": "Βασίλης Χαλακατεβάκης",
+        "profile_path": "/dQ70TJU8qQllJ4qdY8zK6PnLcJk.jpg"
+      },
+      {
+        "id": 1561760,
+        "name": "Στέλιος Ιακωβίδης",
+        "profile_path": "/5WSwzX51DzCzJL9gTN1OoAza345.jpg"
+      }
+    ]
   }
 }
