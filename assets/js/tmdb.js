@@ -148,16 +148,11 @@ export class TMDBClient {
         fetch(`${TMDB_BASE}/${type}/${tmdbId}/credits?api_key=${TMDB_API_KEY}&language=el-GR`),
         5000
       );
-      if (!res || !res.ok) return [];
+      if (!res || !res.ok) return { cast: [] };
       const data = await res.json();
-      const cast = (data.cast || []).slice(0, 12).map(a => ({
-        id: a.id,
-        name: a.name,
-        profile_path: a.profile_path ? IMG.thumb(a.profile_path) : null,
-      }));
-      this._cache.set(key, cast);
-      return cast;
-    } catch (_) { return []; }
+      this._cache.set(key, data);
+      return data;
+    } catch (_) { return { cast: [] }; }
   }
 
   cacheSize() { return this._cache.size; }
