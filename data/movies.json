@@ -13,6 +13,58 @@
       "Vidmoly": "https://vidmoly.biz/embed-9agj9fx8eobr.html"
     },
     "tmdb_id": 377072,
-    "last_updated": 1777191597
+    "last_updated": 1777191597,
+    "cast": [
+      {
+        "id": 1259971,
+        "name": "Αλίκη Βουγιουκλάκη",
+        "profile_path": "/dbgdB2EKMBUK89CR1oB3s5GCHwm.jpg"
+      },
+      {
+        "id": 1129635,
+        "name": "Λάμπρος Κωνσταντάρας",
+        "profile_path": "/l5cLMwyjxnGPQlphtoDFCzdWATK.jpg"
+      },
+      {
+        "id": 1031166,
+        "name": "Θανάσης Βέγγος",
+        "profile_path": "/9kcThHrl3m7o7eLET2OkgKrDqgR.jpg"
+      },
+      {
+        "id": 1382548,
+        "name": "Γιώργος Πάντζας",
+        "profile_path": "/jPk40pDlqxojb3HscUxr0dqwQ3m.jpg"
+      },
+      {
+        "id": 1119904,
+        "name": "Τζόλυ Γαρμπή",
+        "profile_path": "/gBeHiQsuM3IeKjV0IJwek0FdeYY.jpg"
+      },
+      {
+        "id": 147220,
+        "name": "Γιώργος Κωνσταντίνου",
+        "profile_path": "/h3YpaKm9wSFtVz9ykEuUvrOyBuO.jpg"
+      },
+      {
+        "id": 1119986,
+        "name": "Παντελής Ζερβός",
+        "profile_path": "/cHDAiC8K3ktqkvHjDEVbI6WuBRh.jpg"
+      },
+      {
+        "id": 1394247,
+        "name": "Γιώργος Λευτεριώτης",
+        "profile_path": "/dT8sIfHfMSOKFqIVobo9H3j9ibl.jpg"
+      },
+      {
+        "id": 1123686,
+        "name": "Λαυρέντης Διανέλλος",
+        "profile_path": "/6eZMvkPXZNDrlhuOOLWorn48ZsB.jpg"
+      },
+      {
+        "id": 1373886,
+        "name": "Θανάσης Παπαδόπουλος",
+        "profile_path": "/5MuCESVlD0YBLn4S0AKFCnjbZ2V.jpg"
+      }
+    ]
   }
 }
