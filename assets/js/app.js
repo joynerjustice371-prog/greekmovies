@@ -811,43 +811,6 @@ async function renderComments(container, slug) {
    ACTORS SYSTEM  — non-blocking, fail-safe
    ══════════════════════════════════════════════════════════ */
 
-const castCache = new Map();
-
-async function loadCastIfMissing(item) {
-  try {
-    if (item.cast && item.cast.length) return;
-    if (item._loadingCast) return;
-    item._loadingCast = true;
-
-    const cacheKey = `${item.type}_${item.id}`;
-    if (castCache.has(cacheKey)) {
-      item.cast = castCache.get(cacheKey);
-      return;
-    }
-    if (!item.id) return;
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-
-    const credits = await tmdb.getCredits(item.id, item.type, { signal: controller.signal });
-
-    clearTimeout(timeout);
-
-    const cast = (credits.cast || []).slice(0, 12).map(a => ({
-      id: a.id,
-      name: a.name,
-      profile_path: a.profile_path,
-    }));
-
-    castCache.set(cacheKey, cast);
-    item.cast = cast;
-  } catch (e) {
-    console.warn('cast fetch failed or timeout', e);
-  } finally {
-    if (item) item._loadingCast = false;
-  }
-}
-
 function renderCastUI(item) {
   try {
     const container = document.getElementById('castContainer');
@@ -886,14 +849,14 @@ async function openActorResults(actorId, actorName) {
     for (const slug in sRaw) {
       if (Object.prototype.hasOwnProperty.call(sRaw, slug)) {
         const d = sRaw[slug] || {};
-        series.push({ slug, ...d, type: 'series', cast: castCache.get(`tv_${d.tmdb_id}`) });
+        series.push({ slug, ...d, type: 'series' });
       }
     }
     const movies = [];
     for (const slug in mRaw) {
       if (Object.prototype.hasOwnProperty.call(mRaw, slug)) {
         const d = mRaw[slug] || {};
-        movies.push({ slug, ...d, type: 'movie', cast: castCache.get(`movie_${d.tmdb_id}`) });
+        movies.push({ slug, ...d, type: 'movie' });
       }
     }
     const results = [...series, ...movies].filter(item =>
@@ -1002,18 +965,8 @@ class SeriesController {
       <section style="padding:0 4vw 4rem"><div id="seriesComments"></div></section>`;
     await this._renderDetail(entry);
     initCardClicks();
-    /* Non-blocking actor load — fast cache + 5s abort + once-only flag */
-    setTimeout(() => {
-      const item = {
-        slug: entry.slug,
-        id: entry.tmdb?.tmdbId ?? entry.data?.tmdb_id,
-        type: entry.data?.type === 'movie' ? 'movie' : 'tv',
-      };
-      /* Optional UX: instant placeholder */
-      const c = document.getElementById('castContainer');
-      if (c && !c.innerHTML) c.innerHTML = '<p style="color:var(--text-3);font-size:.85rem;margin:0">Φόρτωση ηθοποιών…</p>';
-      loadCastIfMissing(item).then(() => renderCastUI(item));
-    }, 0);
+    /* Render cast directly from JSON — NO TMDB call */
+    renderCastUI({ cast: entry.data?.cast || entry.cast || [] });
   }
 
   async _renderDetail(entry) {
