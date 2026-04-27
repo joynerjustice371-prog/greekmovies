@@ -38364,7 +38364,33 @@
     "backdrop": "https://image.tmdb.org/t/p/original/tQaMQRiBTORsTNFxeT7areyCP9K.jpg",
     "year": 2022,
     "rating": 8.4,
-    "seasons": [],
+    "seasons": [
+      {
+        "season_number": 1,
+        "episodes": [
+          {
+            "episode_number": 1,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-7zmjy85jwz36.html"
+              }
+            ]
+          },
+          {
+            "episode_number": 2,
+            "title": "",
+            "sources": [
+              {
+                "server": "Vidmoly",
+                "url": "https://vidmoly.biz/embed-www5iwta0isz.html"
+              }
+            ]
+          }
+        ]
+      }
+    ],
     "seo": {
       "title": "Κάνε Ότι Κοιμάσαι Online Greek Subs",
       "description": "Δες τη Κάνε Ότι Κοιμάσαι online με ελληνικούς υπότιτλους. Είδος: Δράμα. Σειρά 2022.",
@@ -38376,7 +38402,7 @@
         "δωρεάν"
       ]
     },
-    "last_updated": 1777245000,
+    "last_updated": 1777269740,
     "cast": [
       {
         "id": 447183,
