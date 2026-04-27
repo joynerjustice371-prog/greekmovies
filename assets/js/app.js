@@ -669,7 +669,7 @@ class HomepageController {
     const featured   = $('#homeFeatured');
     if (!grid) return;
 
-    const sorted = [...all].sort(() => Math.random() - 0.5);
+    const sorted = [...all].sort((a, b) => (b.data?.last_updated || 0) - (a.data?.last_updated || 0));
 
     /* Featured movies → dedicated hero section */
     if (featured) {
@@ -1118,48 +1118,42 @@ class WatchController {
    MOVIES CONTROLLER  — type=movie only, paginated
    ══════════════════════════════════════════════════════════ */
 class MoviesController {
-  constructor() { this._dm = new DataManager(); this._movies = []; this._genre = 'all'; }
+  constructor() { this._dm = new DataManager(); this._movies = []; this._cat = 'all'; }
 
   async init() {
     initNavScroll(); new AuthController().init();
     const all = await this._dm.loadAll();
-    this._movies = all
-      .filter(e => e.data.type === 'movie')
-      .sort((a, b) => (b.data.last_updated || 0) - (a.data.last_updated || 0));
+    this._movies = [...all.filter(e => e.data?.type === 'movie')]
+      .sort((a, b) => (b.data?.last_updated || 0) - (a.data?.last_updated || 0));
     this._render(); initCardClicks();
     new SearchController(all);
   }
 
   _render() {
     const results = $('#moviesResults'); if (!results) return;
-
-    /* Build unique genre list from all movies */
-    const allGenres = [...new Set(this._movies.flatMap(e => e.data.genres ?? []))].sort((a, b) => a.localeCompare(b, 'el'));
-
-    /* Filter */
-    const filtered = this._genre === 'all'
-      ? this._movies
-      : this._movies.filter(e => (e.data.genres ?? []).includes(this._genre));
+    let displayMovies = this._movies;
+    if (this._cat === 'greek')   displayMovies = this._movies.filter(m => m.data?.category === 'greek');
+    if (this._cat === 'foreign') displayMovies = this._movies.filter(m => m.data?.category !== 'greek');
 
     const ce = $('#moviesCount');
-    if (ce) ce.textContent = `${filtered.length} ταινίες`;
+    if (ce) ce.textContent = `${displayMovies.length} ταινίες`;
 
-    const genreBar = `<div class="genres-bar" id="moviesGenreFilter" style="margin-bottom:2rem">
-      <button class="genre-chip${this._genre === 'all' ? ' active' : ''}" data-genre="all" type="button">Όλες</button>
-      ${allGenres.map(g => `<button class="genre-chip${this._genre === g ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g)}</button>`).join('')}
+    const catBar = `<div class="genres-bar" id="moviesCatFilter" style="margin-bottom:2rem">
+      <button class="genre-chip${this._cat === 'all'     ? ' active' : ''}" data-cat="all"     type="button">Όλες</button>
+      <button class="genre-chip${this._cat === 'greek'   ? ' active' : ''}" data-cat="greek"   type="button">Ελληνικές Ταινίες</button>
+      <button class="genre-chip${this._cat === 'foreign' ? ' active' : ''}" data-cat="foreign" type="button">Ξένες Ταινίες</button>
     </div>`;
 
-    if (!filtered.length) {
-      results.innerHTML = genreBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
+    if (!displayMovies.length) {
+      results.innerHTML = catBar + `<div style="text-align:center;padding:4rem 2rem;color:var(--text-3)"><div style="font-size:3rem;margin-bottom:1rem">🎬</div><p>Δεν υπάρχουν ταινίες σε αυτή την κατηγορία.</p></div>`;
     } else {
-      results.innerHTML = genreBar + `<div class="series-grid" style="padding:0 4vw">${filtered.map(renderCard).join('')}</div>`;
+      results.innerHTML = catBar + `<div class="series-grid" style="padding:0 4vw">${displayMovies.map(renderCard).join('')}</div>`;
       setupCards(results);
     }
 
-    $('#moviesGenreFilter')?.addEventListener('click', e => {
-      const b = e.target.closest('.genre-chip'); if (!b || !('genre' in b.dataset)) return;
-      this._genre = b.dataset.genre;
-      this._render();
+    $('#moviesCatFilter')?.addEventListener('click', e => {
+      const b = e.target.closest('.genre-chip'); if (!b || !b.dataset.cat) return;
+      this._cat = b.dataset.cat; this._render();
     });
   }
 }
@@ -1257,11 +1251,22 @@ class NetworksController {
    GENRES CONTROLLER
    ══════════════════════════════════════════════════════════ */
 class GenresController {
-  constructor() { this._dm = new DataManager(); this._all = []; this._active = 'all'; }
+  constructor() { this._combined = []; this._active = 'all'; }
 
   async init() {
     initNavScroll(); new AuthController().init();
-    this._all = await this._dm.loadAll();
+    /* Fetch RAW JSON directly — no loadAll, no DataManager */
+    let series = [], movies = [];
+    try {
+      const [sRaw, mRaw] = await Promise.all([
+        fetch(`${BASE_URL}data/series.json`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+        fetch(`${BASE_URL}data/movies.json`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+      ]);
+      series = Object.entries(sRaw || {}).map(([slug, d]) => ({ slug, ...d, type: 'series', genres: d?.genres || [] }));
+      movies = Object.entries(mRaw || {}).map(([slug, d]) => ({ slug, ...d, type: 'movie',  genres: d?.genres || [] }));
+    } catch (_) { series = []; movies = []; }
+    /* USE ORIGINAL DATA — direct concat */
+    this._combined = [...series, ...movies];
     this._renderBar(); this._applyFilter(); initCardClicks();
     const qp = new URLSearchParams(location.search).get('genre');
     if (qp) { const b = $(`.genre-chip[data-genre="${CSS.escape(qp)}"]`); if (b) b.click(); }
@@ -1269,7 +1274,9 @@ class GenresController {
 
   _renderBar() {
     const bar = $('#genresBar'); if (!bar) return;
-    bar.innerHTML = ['all', ...GREEK_GENRES].map(g =>
+    /* Remove 'Σειρές' chip */
+    const chips = ['all', ...GREEK_GENRES.filter(g => g !== 'Σειρές')];
+    bar.innerHTML = chips.map(g =>
       `<button class="genre-chip${g === this._active ? ' active' : ''}" data-genre="${esc(g)}" type="button">${esc(g === 'all' ? 'Όλα' : g)}</button>`
     ).join('');
     bar.addEventListener('click', e => {
@@ -1281,13 +1288,33 @@ class GenresController {
 
   _applyFilter() {
     const results = $('#genresResults'); if (!results) return;
-    const filtered = this._active === 'all' ? this._all : this._all.filter(e => classifyEntry(e).includes(this._active));
-    const ce = $('#genresCount'); if (ce) ce.textContent = `${filtered.length} σειρ${filtered.length === 1 ? 'ά' : 'ές'}`;
-    if (filtered.length) {
-      results.innerHTML = `<div class="series-grid">${filtered.map(renderCard).join('')}</div>`;
+    const combined = this._combined || [];
+    let display;
+    if (this._active === 'all' || this._active === 'Όλα') {
+      display = combined;
+    } else {
+      display = combined.filter(item => (item.genres || []).includes(this._active));
+    }
+    /* Safety: fall back to combined if empty */
+    if (!display.length) display = combined;
+    /* Random ONLY here — safe copy */
+    display = [...display].sort(() => Math.random() - 0.5);
+
+    const ce = $('#genresCount'); if (ce) ce.textContent = `${display.length} σειρ${display.length === 1 ? 'ά' : 'ές'}`;
+    if (display.length) {
+      /* Wrap raw items so renderCard works (renderCard reads entry.data, entry._posterFallback, etc.) */
+      const cards = display.map(item => ({
+        slug: item.slug,
+        data: item,
+        tmdb: null,
+        title: item.title || item.slug,
+        channel: null,
+        _posterFallback: item.poster || null,
+      }));
+      results.innerHTML = `<div class="series-grid">${cards.map(renderCard).join('')}</div>`;
       setupCards(results);
     } else {
-      results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν σειρές για "${esc(this._active)}".</p></div>`;
+      results.innerHTML = `<div class="profile-empty"><div class="profile-empty-icon">🎬</div><p>Δεν βρέθηκαν αποτελέσματα.</p></div>`;
     }
   }
 }
