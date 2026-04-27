@@ -810,6 +810,10 @@ async function renderComments(container, slug) {
 /* ══════════════════════════════════════════════════════════
    SERIES CONTROLLER  — listing (no ?id) + detail (?id=slug)
    ══════════════════════════════════════════════════════════ */
+
+/* Module-level cast cache: slug -> cast[] (populated by detail page visits) */
+const _castCache = new Map();
+
 class SeriesController {
   constructor() { this._dm = new DataManager(); }
 
@@ -873,6 +877,7 @@ class SeriesController {
           <div id="seriesRatingWrap" style="margin-top:1rem"></div>
         </div>
       </section>
+      <section style="padding:0 4vw 1.5rem"><div id="seriesCast"></div></section>
       <section class="episodes-section"><h2>Επεισόδια</h2><div id="episodesContainer"></div></section>
       <section style="padding:0 4vw 4rem"><div id="seriesComments"></div></section>`;
     await this._renderDetail(entry);
@@ -951,6 +956,7 @@ class SeriesController {
     $('#seenBtn')?.addEventListener('click', async () => { if (!authOk()) { toast('Συνδεθείτε.', 'info'); return; } try { const a = await Session.toggleSeen(slug); toast(a ? '✓ Σημειώθηκε!' : 'Αφαιρέθηκε.', 'success'); } catch (e) { toast('Σφάλμα: ' + e.message, 'error'); } });
 
     this._renderEpisodes(slug, data.episodes ?? []);
+    this._renderCast(entry);
     const ce = $('#seriesComments');
     if (ce) { await renderComments(ce, slug); document.addEventListener('authStateChanged', () => renderComments(ce, slug)); }
   }
@@ -981,6 +987,98 @@ class SeriesController {
       $$('.season-tab', c).forEach(b => b.addEventListener('click', () => { active = +b.dataset.season; update(); }));
     };
     update();
+  }
+}
+
+  async _renderCast(entry) {
+    const castWrap = $('#seriesCast'); if (!castWrap) return;
+    try {
+      const tmdbId = entry.tmdb?.tmdbId ?? entry.data?.tmdb_id;
+      if (!tmdbId) { castWrap.innerHTML = ''; return; }
+      /* ONLY add cast IF missing or empty — never overwrite */
+      if (!entry.cast || !entry.cast.length) {
+        const type = entry.data?.type === 'movie' ? 'movie' : 'tv';
+        const credits = await tmdb.getCredits(tmdbId, type);
+        entry.cast = (credits || []).slice(0, 12).map(actor => ({
+          id: actor.id,
+          name: actor.name,
+          profile_path: actor.profile_path,
+        }));
+        _castCache.set(entry.slug, entry.cast);
+      }
+      const cast = entry.cast || [];
+      /* Safety: no cast → render nothing */
+      if (!cast.length) { castWrap.innerHTML = ''; return; }
+      let html = `<h3 style="font-size:1.05rem;margin:0 0 1rem;color:var(--text-1)">Ηθοποιοί</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:.75rem">`;
+      for (const a of cast) {
+        html += `<button class="actor-card" data-actor-id="${a.id}" data-actor-name="${esc(a.name)}" type="button"
+          style="background:none;border:none;cursor:pointer;width:76px;text-align:center;color:var(--text-2);padding:0">
+          ${a.profile_path
+            ? `<img src="${esc(a.profile_path)}" alt="${esc(a.name)}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 5px" loading="lazy">`
+            : `<div style="width:60px;height:60px;border-radius:50%;background:var(--surface-2,#2a2a2a);display:flex;align-items:center;justify-content:center;margin:0 auto 5px">${ICONS.user}</div>`}
+          <div style="font-size:.72rem;line-height:1.3;word-break:break-word">${esc(a.name)}</div>
+        </button>`;
+      }
+      html += `</div>`;
+      castWrap.innerHTML = html;
+      castWrap.querySelectorAll('.actor-card').forEach(btn => {
+        btn.addEventListener('click', () => this._openActorModal(+btn.dataset.actorId, btn.dataset.actorName));
+      });
+    } catch (_) { castWrap.innerHTML = ''; }
+  }
+
+  async _openActorModal(actorId, actorName) {
+    /* Load raw JSON — combine series + movies, attach cast from cache */
+    let sRaw = {}, mRaw = {};
+    try {
+      const [s, m] = await Promise.all([
+        fetch(`${BASE_URL}data/series.json`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+        fetch(`${BASE_URL}data/movies.json`).then(r => r.ok ? r.json() : {}).catch(() => ({})),
+      ]);
+      sRaw = s || {}; mRaw = m || {};
+    } catch (_) {}
+    const series = [];
+    for (const slug in sRaw) {
+      if (Object.prototype.hasOwnProperty.call(sRaw, slug)) {
+        const d = sRaw[slug] || {};
+        series.push({ slug, ...d, type: 'series', cast: _castCache.get(slug) });
+      }
+    }
+    const movies = [];
+    for (const slug in mRaw) {
+      if (Object.prototype.hasOwnProperty.call(mRaw, slug)) {
+        const d = mRaw[slug] || {};
+        movies.push({ slug, ...d, type: 'movie', cast: _castCache.get(slug) });
+      }
+    }
+    const results = [...series, ...movies].filter(item =>
+      item.cast?.some(actor => actor.id === actorId)
+    );
+
+    const o = document.createElement('div'); o.className = 'auth-overlay';
+    let cardsHtml = '';
+    for (const item of results) {
+      cardsHtml += renderCard({
+        slug: item.slug,
+        data: item,
+        tmdb: null,
+        title: item.title || item.slug,
+        channel: null,
+        _posterFallback: item.poster || null,
+      });
+    }
+    o.innerHTML = `<div class="auth-modal" style="max-width:820px;width:95vw;max-height:85vh;overflow-y:auto">
+      <button class="auth-modal-close" id="actorModalClose" type="button">✕</button>
+      <h3 style="margin:0 0 1.5rem;font-size:1.05rem;color:var(--text-1)">📽 ${esc(actorName)}</h3>
+      ${results.length
+        ? `<div class="series-grid">${cardsHtml}</div>`
+        : `<p style="color:var(--text-3)">Δεν βρέθηκε περιεχόμενο με αυτόν τον ηθοποιό.</p>`}
+    </div>`;
+    document.body.appendChild(o);
+    if (results.length) setupCards(o);
+    o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+    o.querySelector('#actorModalClose')?.addEventListener('click', () => o.remove());
   }
 }
 
